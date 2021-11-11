@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ResetDcMotorPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.RunToPositionPipe;
 import org.firstinspires.ftc.teamcode.core.opmodes.Constants;
@@ -23,9 +24,12 @@ public class Auto extends EnhancedAutonomous {
                         "FilterElement",
                         new ResetDcMotorPipe(
                                 "MotorReset",
-                                new RunToPositionPipe(
-                                        "RunToPosition",
-                                        new ExitPipe("Exit")
+                                new MotorTrackerPipe(
+                                        "MotorTracker",
+                                        new RunToPositionPipe(
+                                                "RunToPosition",
+                                                new ExitPipe("Exit")
+                                        )
                                 )
                         )
                 )

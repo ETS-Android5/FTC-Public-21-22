@@ -2,9 +2,12 @@ package org.firstinspires.ftc.teamcode.core.hardware.state;
 
 import org.firstinspires.ftc.teamcode.core.controller.Namable;
 
+import java.util.function.Function;
+
 public class RunToPositionTracker implements Namable {
-    public RunToPositionTracker(String name, int startingTicks, int targetTicks) {
+    public RunToPositionTracker(String name, Function<Double, Double> powerCurve, int startingTicks, int targetTicks) {
         this.name = name;
+        this.powerCurve = powerCurve;
         this.startingTicks = startingTicks;
         this.targetTicks = targetTicks;
     }
@@ -15,24 +18,18 @@ public class RunToPositionTracker implements Namable {
     }
 
     private final String name;
+    private final Function<Double, Double> powerCurve;
     private int startingTicks;
     private int targetTicks;
 
-    public int getStartingTicks() {
-        return startingTicks;
-    }
-
-    public int getTargetTicks() {
-        return targetTicks;
-    }
-
     public double getTargetPowerPercentage(int currentTicks) {
         double startingDifference = Math.abs(targetTicks - startingTicks);
+        if (startingDifference == 0) return 0;
         double currentDifference = Math.abs(targetTicks - currentTicks);
-        double progressPercentage = (startingDifference - currentDifference) / startingDifference;
-        progressPercentage = progressPercentage < 0 ? 0 : progressPercentage > 1 ? 1 : progressPercentage;
-        double power = Math.abs(1 - progressPercentage) > .02 ? 1 - Math.pow(progressPercentage, 6) : 0;
-        return power * (currentTicks < targetTicks ? 1 : -1);
+        if (currentDifference == 0) return 0;
+        double progressPercentage = currentTicks > targetTicks
+                ? 1 + (currentDifference / startingDifference) : 1 - (currentDifference / startingDifference);
+        return powerCurve.apply(progressPercentage) * (startingTicks < targetTicks ? 1 : -1);
     }
 
     @Override

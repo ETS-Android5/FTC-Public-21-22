@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ResetDcMotorPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.RunToPositionPipe;
 import org.firstinspires.ftc.teamcode.core.opmodes.Constants;
@@ -35,9 +36,12 @@ public class Test1 extends EnhancedTeleOp {
                         "FilterElement",
                         new ResetDcMotorPipe(
                                 "MotorReset",
-                                new RunToPositionPipe(
-                                        "RunToPosition",
-                                        new ExitPipe("Exit")
+                                new MotorTrackerPipe(
+                                        "MotorTrackerPipe",
+                                        new RunToPositionPipe(
+                                                "RunToPosition",
+                                                new ExitPipe("Exit")
+                                        )
                                 )
                         )
                 )
@@ -60,18 +64,14 @@ public class Test1 extends EnhancedTeleOp {
         Log.d("STATUS", "ON START PRESSED");
         controller1.setManipulation(Test1::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
 
-        controller1.registerOnPressedCallback(
-                robot.carouselSpinner::stopSpinning,
-                true,
-                BooleanSurface.RIGHT_STICK);
-        controller1.registerOnPressedCallback(
+        controller2.registerOnPressedCallback(
                 robot.carouselSpinner::spinForward,
                 true,
-                BooleanSurface.RIGHT_BUMPER);
-        controller1.registerOnPressedCallback(
+                BooleanSurface.LEFT_STICK);
+        controller2.registerOnPressedCallback(
                 robot.carouselSpinner::spinBackward,
                 true,
-                BooleanSurface.LEFT_BUMPER);
+                BooleanSurface.RIGHT_STICK);
         controller1.registerOnPressedCallback(() -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
         controller2.registerOnPressedCallback(

@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
+import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.MotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
@@ -24,7 +25,7 @@ public class FourHeightLift implements IFourHeightLift {
         initialize();
     }
 
-    @Hardware(name = LIFT_MOTOR_NAME)
+    @Hardware(name = LIFT_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
     public DcMotor liftMotor;
 
     private IMotorState liftMotorState;
@@ -32,7 +33,8 @@ public class FourHeightLift implements IFourHeightLift {
     private void initialize() {
         liftMotorState = new MotorState(LIFT_MOTOR_NAME, false)
                 .withRunMode(RunMode.RUN_TO_POSITION)
-                .withTargetPosition(HEIGHT_0_TICKS);
+                .withTargetPosition(HEIGHT_0_TICKS)
+                .withPowerCurve(PowerCurves.RUN_TO_POSITION_RAMP);
     }
 
     @Override

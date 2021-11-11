@@ -5,6 +5,8 @@ import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.ZeroPowerBehavior;
 
+import java.util.function.Function;
+
 public abstract class IMotorState extends State implements Duplicatable<IMotorState> {
   IMotorState(String name) {
     super(name);
@@ -34,4 +36,9 @@ public abstract class IMotorState extends State implements Duplicatable<IMotorSt
   public abstract int getTargetPosition();
 
   public abstract IMotorState withTargetPosition(int targetPosition);
+
+  @Observable(key = "PowerCurve")
+  public abstract Function<Double, Double> getPowerCurve();
+
+  public abstract IMotorState withPowerCurve(Function<Double, Double> powerCurve);
 }
