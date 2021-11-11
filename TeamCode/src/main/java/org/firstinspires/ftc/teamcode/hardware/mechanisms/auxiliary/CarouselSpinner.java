@@ -1,9 +1,14 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
+import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.MotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
@@ -14,22 +19,29 @@ import java.util.List;
 public class CarouselSpinner implements ICarouselSpinner {
     private static final String CAROUSEL_SPINNER_MOTOR_NAME = "CAROUSEL_SPINNER_MOTOR";
 
-    private static final double STOPPED_SPEED = 0.0;
-    private static final double MOVING_SPEED = 0.8;
-    private static final double FORWARD_SPEED = MOVING_SPEED;
-    private static final double BACKWARD_SPEED = MOVING_SPEED * -1;
+    private static final double CAROUSEL_CIRCUMFERENCE_IN = 15.0 * Math.PI;
+    private static final double CAROUSEL_SPINNER_WHEEL_CIRCUMFERENCE_IN = 4.0 * Math.PI;
+    private static final double MOTOR_TICKS_PER_MOTOR_REVOLUTION = 560.0;
+    private static final int TICKS_PER_CAROUSEL_REVOLUTION =
+            (int) (((CAROUSEL_CIRCUMFERENCE_IN / CAROUSEL_SPINNER_WHEEL_CIRCUMFERENCE_IN)
+                    * MOTOR_TICKS_PER_MOTOR_REVOLUTION) + .5);
 
     public CarouselSpinner() {
         initialize();
     }
 
-    @Hardware(name = CAROUSEL_SPINNER_MOTOR_NAME)
+    @Hardware(name = CAROUSEL_SPINNER_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
     public DcMotor spinnerMotor;
 
     private IMotorState spinnerMotorState;
 
+    private CarouselSpinnerState carouselSpinnerState = CarouselSpinnerState.STOPPED;
+
     private void initialize() {
-        spinnerMotorState = new MotorState(CAROUSEL_SPINNER_MOTOR_NAME, false);
+        spinnerMotorState = new MotorState(CAROUSEL_SPINNER_MOTOR_NAME, false)
+                .withRunMode(RunMode.RUN_TO_POSITION)
+                .withTargetPosition(0)
+                .withPowerCurve(PowerCurves.CAROUSEL_CURVE);
     }
 
     @Override
@@ -39,29 +51,28 @@ public class CarouselSpinner implements ICarouselSpinner {
 
     @Override
     public List<? super State> getNextState() {
-        return Collections.singletonList(spinnerMotorState);
+        return Collections.singletonList(spinnerMotorState.duplicate());
     }
 
     @Override
     public void spinForward() {
-        spinnerMotorState = spinnerMotorState.withPower(FORWARD_SPEED);
+        spinnerMotorState = spinnerMotorState
+                .withRunMode(RunMode.RUN_TO_POSITION)
+                .withTargetPosition(MotorTrackerPipe.getInstance().getPositionOf(CAROUSEL_SPINNER_MOTOR_NAME) + TICKS_PER_CAROUSEL_REVOLUTION);
+        carouselSpinnerState = CarouselSpinnerState.SPINNING_BACKWARD;
     }
 
     @Override
     public void spinBackward() {
-        spinnerMotorState = spinnerMotorState.withPower(BACKWARD_SPEED);
-    }
-
-    @Override
-    public void stopSpinning() {
-        spinnerMotorState = spinnerMotorState.withPower(STOPPED_SPEED);
+        spinnerMotorState = spinnerMotorState
+                .withRunMode(RunMode.RUN_TO_POSITION)
+                .withTargetPosition(MotorTrackerPipe.getInstance().getPositionOf(CAROUSEL_SPINNER_MOTOR_NAME) - TICKS_PER_CAROUSEL_REVOLUTION);
+        carouselSpinnerState = CarouselSpinnerState.SPINNING_FORWARD;
     }
 
     @Override
     @Observable(key = "CAROUSELSPINNER")
     public CarouselSpinnerState getState() {
-        return spinnerMotorState.getPower() == FORWARD_SPEED
-                ? CarouselSpinnerState.SPINNING_FORWARD : spinnerMotorState.getPower() == BACKWARD_SPEED
-                ? CarouselSpinnerState.SPINNING_BACKWARD : CarouselSpinnerState.STOPPED;
+        return carouselSpinnerState;
     }
 }
