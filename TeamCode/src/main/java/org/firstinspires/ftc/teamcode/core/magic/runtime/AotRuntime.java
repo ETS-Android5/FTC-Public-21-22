@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 
 import java.lang.reflect.Field;
@@ -35,13 +36,15 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
   private HardwareMap hardwareMap;
   private final ConcurrentHashMap<String, Object> initializedObjects;
   private final List<AnnotationPair> hardwareFields;
+  private final boolean isAutonomous;
 
   public AotRuntime(
       Object robotObject,
-      ConcurrentHashMap<String, Object> initializedObjects) {
+      ConcurrentHashMap<String, Object> initializedObjects, boolean isAutonomous) {
     this.robotObject = robotObject;
     this.initializedObjects = initializedObjects;
     this.hardwareFields = new LinkedList<>();
+    this.isAutonomous = isAutonomous;
   }
 
   @Override
@@ -76,6 +79,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
       if (Arrays.asList(Constants.BOXING_CONVERSIONS).contains(objField.getType())) {
         continue;
       }
+      if (objField.isAnnotationPresent(AutonomousOnly.class) && !isAutonomous) continue;
       if (objField.isAnnotationPresent(Hardware.class)) {
         injectableFields.add(
             new AnnotationPair(objField.getAnnotation(Hardware.class), targetObject, objField));

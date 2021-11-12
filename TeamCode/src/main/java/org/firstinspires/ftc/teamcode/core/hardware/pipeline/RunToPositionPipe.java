@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
+import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.RunToPositionTracker;
@@ -14,7 +13,6 @@ import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class RunToPositionPipe extends HardwarePipeline {
@@ -41,7 +39,7 @@ public class RunToPositionPipe extends HardwarePipeline {
                     && nextState.getRunMode() == RunMode.RUN_TO_POSITION) {
                 try {
                     int currentPosition = MotorTrackerPipe.getInstance().getPositionOf(motorName);
-                    Function<Double, Double> powerCurve = nextState.getPowerCurve();
+                    TriFunction<Double, Integer, Integer, Double> powerCurve = nextState.getPowerCurve();
                     if (powerCurve == null) {
                         powerCurve = PowerCurves.RUN_TO_POSITION_RAMP;
                     }

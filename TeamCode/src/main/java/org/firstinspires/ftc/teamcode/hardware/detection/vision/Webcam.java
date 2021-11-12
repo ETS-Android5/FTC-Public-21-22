@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.teamcode.hardware;
+package org.firstinspires.ftc.teamcode.hardware.detection.vision;
 
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.os.Handler;
 
 import androidx.annotation.NonNull;
-
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.android.util.Size;
@@ -21,27 +19,30 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.network.CallbackLooper;
 import org.firstinspires.ftc.robotcore.internal.system.ContinuationSynchronizer;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
 import java.util.concurrent.TimeUnit;
 
-public class Webcam {
+public class Webcam implements FtcCamera {
     private static final int secondsPermissionTimeout = Integer.MAX_VALUE;
+    private static final String CAMERA_NAME = "Webcam 1";
+
+    @Hardware(name=CAMERA_NAME)
+    public WebcamName cameraName;
 
     private CameraManager cameraManager;
-    private WebcamName cameraName;
     private Camera camera;
     private final Handler callbackHandler = CallbackLooper.getDefault().getHandler();
     private Bitmap bitmap;
     private CameraCaptureSession session;
 
-    public void init(HardwareMap hardwareMap) {
+    @Override
+    public void init() {
+        if (cameraName == null) return;
         if (cameraManager == null) {
             cameraManager = ClassFactory.getInstance().getCameraManager();
-        }
-        if (cameraName == null) {
-            cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
         }
         if (camera == null) {
             camera = cameraManager.requestPermissionAndOpenCamera(new Deadline(secondsPermissionTimeout, TimeUnit.SECONDS), cameraName, null);
@@ -82,7 +83,9 @@ public class Webcam {
         session = synchronizer.getValue();
     }
 
+    @Override
     public void deinit() {
+        if (cameraName == null) return;
         if (session != null) {
             session.stopCapture();
             session.close();
@@ -94,7 +97,9 @@ public class Webcam {
         }
     }
 
-    public Mat grabFrame(HardwareMap hardwareMap) {
+    @Override
+    public Mat grabFrame() {
+        if (cameraName == null) return null;
         Mat mat = new Mat();
         Bitmap bmp32 = bitmap.copy(Bitmap.Config.RGB_565, true);
         Utils.bitmapToMat(bmp32, mat);

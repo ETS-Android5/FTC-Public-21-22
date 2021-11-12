@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
@@ -22,9 +20,10 @@ public class CarouselSpinner implements ICarouselSpinner {
     private static final double CAROUSEL_CIRCUMFERENCE_IN = 15.0 * Math.PI;
     private static final double CAROUSEL_SPINNER_WHEEL_CIRCUMFERENCE_IN = 4.0 * Math.PI;
     private static final double MOTOR_TICKS_PER_MOTOR_REVOLUTION = 560.0;
+    private static final double LOSS_FACTOR = 1.33;
     private static final int TICKS_PER_CAROUSEL_REVOLUTION =
             (int) (((CAROUSEL_CIRCUMFERENCE_IN / CAROUSEL_SPINNER_WHEEL_CIRCUMFERENCE_IN)
-                    * MOTOR_TICKS_PER_MOTOR_REVOLUTION) + .5);
+                    * MOTOR_TICKS_PER_MOTOR_REVOLUTION * LOSS_FACTOR) + .5);
 
     public CarouselSpinner() {
         initialize();

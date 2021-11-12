@@ -3,8 +3,7 @@ package org.firstinspires.ftc.teamcode.core.hardware.state;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.ZeroPowerBehavior;
-
-import java.util.function.Function;
+import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
 public class MotorState extends IMotorState {
   private final Direction direction;
@@ -12,7 +11,7 @@ public class MotorState extends IMotorState {
   private final ZeroPowerBehavior zeroPowerBehavior;
   private final double power;
   private final int targetPosition;
-  private final Function<Double, Double> powerCurve;
+  private final TriFunction<Double, Integer, Integer, Double> powerCurve;
 
   public MotorState(String name, boolean reverse) {
     this(name, reverse ? Direction.REVERSE : Direction.FORWARD, RunMode.RUN_WITHOUT_ENCODER, ZeroPowerBehavior.BRAKE, 0.0, 0, null);
@@ -25,7 +24,7 @@ public class MotorState extends IMotorState {
       ZeroPowerBehavior zeroPowerBehavior,
       Double power,
       Integer targetPosition,
-      Function<Double, Double> powerCurve
+      TriFunction<Double, Integer, Integer, Double> powerCurve
       ) {
     super(name);
     this.direction = direction;
@@ -122,12 +121,12 @@ public class MotorState extends IMotorState {
   }
 
   @Override
-  public Function<Double, Double> getPowerCurve() {
+  public TriFunction<Double, Integer, Integer, Double> getPowerCurve() {
     return this.powerCurve;
   }
 
   @Override
-  public IMotorState withPowerCurve(Function<Double, Double> powerCurve) {
+  public IMotorState withPowerCurve(TriFunction<Double, Integer, Integer, Double> powerCurve) {
     return new MotorState(
             this.name,
             this.direction,

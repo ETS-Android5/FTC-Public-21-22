@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 import org.firstinspires.ftc.teamcode.core.magic.runtime.AotRuntime;
+import org.firstinspires.ftc.teamcode.core.magic.runtime.HardwareMapDependentReflectionBasedMagicRuntime;
 import org.firstinspires.ftc.teamcode.core.magic.runtime.ReflectionBasedMagicRuntime;
 import org.firstinspires.ftc.teamcode.core.magic.runtime.ServiceRuntime;
 
@@ -15,11 +16,12 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
 
   protected final ConcurrentHashMap<String, Object> initializedHardware;
   protected final HardwarePipeline hardwarePipeline;
-  private ReflectionBasedMagicRuntime aotRuntime;
+  private HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
   private ReflectionBasedMagicRuntime serviceRuntime;
   private Component robotObject;
 
   public EnhancedAutonomous(HardwarePipeline pipeline) {
+    State.clear();
     initializedHardware = new ConcurrentHashMap<>();
     hardwarePipeline = pipeline;
   }
@@ -29,7 +31,8 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
     aotRuntime =
             new AotRuntime(
                     robotObject,
-                    initializedHardware);
+                    initializedHardware,
+                    true);
     aotRuntime.initialize();
     serviceRuntime = new ServiceRuntime(telemetry, robotObject);
     serviceRuntime.initialize();
@@ -38,10 +41,11 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
   @Override
   public final void runOpMode() {
     telemetry.setMsTransmissionInterval(Constants.TELEMETRY_TRANSMISSION_INTERVAL);
-    waitForStart();
-    onInitPressed();
+    aotRuntime.setHardwareMap(hardwareMap);
     aotRuntime.waveWand();
     serviceRuntime.waveWand();
+    waitForStart();
+    onInitPressed();
     onStartPressed();
     State.clear();
   }
