@@ -34,17 +34,17 @@ public class Auto extends EnhancedAutonomous {
                         )
                 )
         ));
+        super.initialize(robot);
     }
 
     @Override
-    public void onInitPressed() {
-        super.initialize(robot);
-    }
+    public void onInitPressed() {}
 
     @Override
     public void onStartPressed() {
         long start = System.currentTimeMillis();
         robot.drivetrain.setAllPower(1);
+        hardwarePipeline.process(initializedHardware, robot);
         while (System.currentTimeMillis() - start < 2000 && opModeIsActive()) {
 
         }

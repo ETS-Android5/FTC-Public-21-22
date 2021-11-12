@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
+import org.firstinspires.ftc.teamcode.hardware.detection.vision.FtcCamera;
+import org.firstinspires.ftc.teamcode.hardware.detection.vision.Webcam;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.CarouselSpinner;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.ICarouselSpinner;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.IOuttakeBucket;
@@ -24,6 +27,9 @@ public class MecanumBot implements Component {
     public final IFourHeightLift fourHeightLift = new FourHeightLift();
     public final IOuttakeBucket outtakeBucket = new OuttakeBucket();
     public final ICarouselSpinner carouselSpinner = new CarouselSpinner();
+
+    @AutonomousOnly
+    public final FtcCamera webcam = new Webcam();
 
     @Override
     public String getName() {

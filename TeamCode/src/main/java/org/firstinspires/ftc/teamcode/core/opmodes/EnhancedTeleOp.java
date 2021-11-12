@@ -24,6 +24,7 @@ public abstract class EnhancedTeleOp extends OpMode {
   private Component robotObject;
 
   public EnhancedTeleOp(HardwarePipeline pipeline) {
+    State.clear();
     initializedHardware = new ConcurrentHashMap<>();
     hardwarePipeline = pipeline;
     controller1 = new Controller(Constants.GAMEPAD_1_NAME);
@@ -35,7 +36,8 @@ public abstract class EnhancedTeleOp extends OpMode {
     aotRuntime =
         new AotRuntime(
             robotObject,
-            initializedHardware);
+            initializedHardware,
+                false);
     aotRuntime.initialize();
     serviceRuntime = new ServiceRuntime(telemetry, robotObject, controller1, controller2);
     serviceRuntime.initialize();
@@ -84,8 +86,8 @@ public abstract class EnhancedTeleOp extends OpMode {
   @Override
   public final void stop() {
     super.stop();
-    State.clear();
     onStop();
+    State.clear();
   }
 
   public abstract void onStop();

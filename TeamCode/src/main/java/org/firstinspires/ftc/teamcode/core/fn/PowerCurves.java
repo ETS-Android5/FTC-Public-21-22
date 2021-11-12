@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.fn;
 
-import java.util.function.Function;
-
 public class PowerCurves {
-    public static final Function<Double, Double> RUN_TO_POSITION_RAMP = (Double percentProgress) -> {
+    public static final TriFunction<Double, Integer, Integer, Double> RUN_TO_POSITION_RAMP = (Double percentProgress, Integer startingTicks, Integer targetTicks) -> {
         if (percentProgress < 0) return 1.0;
         if (percentProgress >= 2) return -1.0;
         double adjustedPercentProgress = percentProgress;
@@ -20,22 +18,22 @@ public class PowerCurves {
         }
     };
 
-    public static final Function<Double, Double> CAROUSEL_CURVE = (Double percentProgress) -> {
-        if (percentProgress < 0) return 1.0;
-        if (percentProgress >= 2) return -1.0;
-        double direction = 1.0;
+    public static final TriFunction<Double, Integer, Integer, Double> CAROUSEL_CURVE = (Double percentProgress, Integer startingTicks, Integer targetTicks) -> {
+        if (startingTicks < targetTicks && percentProgress < 0) return 1.0;
+        if (startingTicks < targetTicks && percentProgress >= 1) return 0.0;
+        if (startingTicks > targetTicks && percentProgress < 0) return 0.0;
+        if (startingTicks > targetTicks && percentProgress >= 1) return -1.0;
         double adjustedPercentProgress = percentProgress;
         if (adjustedPercentProgress > 1) {
-            adjustedPercentProgress -= (int) adjustedPercentProgress;
-            direction = -1;
+            adjustedPercentProgress -= ((int) adjustedPercentProgress) - 1;
         }
-
-        if (adjustedPercentProgress <= .25) {
-            return Math.max(25.6 * Math.pow(adjustedPercentProgress, 3), .1) * direction;
-        } else if (adjustedPercentProgress > .25 && adjustedPercentProgress < .75) {
-            return .4 * direction;
+        double ret = 20 * (1 - adjustedPercentProgress);
+        if (ret < -1) {
+            return -1.0;
+        } else if (ret > 1) {
+            return 1.0;
         } else {
-            return direction;
+            return ret;
         }
     };
 }
