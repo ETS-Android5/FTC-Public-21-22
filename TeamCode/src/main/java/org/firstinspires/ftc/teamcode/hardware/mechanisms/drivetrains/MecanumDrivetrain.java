@@ -31,10 +31,10 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
     @Hardware(name = REAR_RIGHT_MOTOR_NAME, direction = Direction.REVERSE)
     public DcMotor rearRightMotor;
 
-    private IMotorState frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, true);
-    private IMotorState frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, false);
-    private IMotorState rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, true);
-    private IMotorState rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, false);
+    protected IMotorState frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, true);
+    protected IMotorState frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, false);
+    protected IMotorState rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, true);
+    protected IMotorState rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, false);
 
     private void initialize() {
         frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, true);
