@@ -89,16 +89,20 @@ public class Test1 extends EnhancedTeleOp {
                 BooleanSurface.RIGHT_STICK);
 
         controller2.registerOnPressedCallback(
-                robot.intake::beginOuttaking,
+                () -> {
+                    if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
+                        robot.intake.beginOuttaking();
+                    }
+                },
                 true,
                 BooleanSurface.LEFT_BUMPER
         );
         controller2.registerOnPressedCallback(
-        () -> {
-          if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
-            robot.intake.beginIntaking();
-          }
-        },
+                () -> {
+                    if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
+                        robot.intake.beginIntaking();
+                    }
+                },
         true,
         BooleanSurface.RIGHT_BUMPER);
         controller2.registerOnPressedCallback(
@@ -118,6 +122,7 @@ public class Test1 extends EnhancedTeleOp {
         controller2.registerOnPressedCallback(
                 () -> {
                     robot.outtakeBucket.carry();
+                    robot.intake.stop();
                     robot.fourHeightLift.goToHeight1();
                 },
                 true,
@@ -126,6 +131,7 @@ public class Test1 extends EnhancedTeleOp {
         controller2.registerOnPressedCallback(
                 () -> {
                     robot.outtakeBucket.carry();
+                    robot.intake.stop();
                     robot.fourHeightLift.goToHeight2();
                 },
                 true,
@@ -134,6 +140,7 @@ public class Test1 extends EnhancedTeleOp {
         controller2.registerOnPressedCallback(
                 () -> {
                     robot.outtakeBucket.carry();
+                    robot.intake.stop();
                     robot.fourHeightLift.goToHeight3();
                 },
                 true,
