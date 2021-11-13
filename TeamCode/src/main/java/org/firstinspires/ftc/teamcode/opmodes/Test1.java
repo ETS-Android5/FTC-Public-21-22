@@ -64,6 +64,21 @@ public class Test1 extends EnhancedTeleOp {
         Log.d("STATUS", "ON START PRESSED");
         controller1.setManipulation(Test1::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
 
+        controller1.registerOnPressedCallback(
+                () -> {
+                    if (robot.intake.getState().isLowered()) {
+                        robot.intake.raise();
+                    } else {
+                        robot.intake.lower();
+                    }
+                },
+                true,
+                BooleanSurface.DPAD_DOWN
+        );
+
+        controller1.registerOnPressedCallback(() -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
+
+
         controller2.registerOnPressedCallback(
                 robot.carouselSpinner::spinForward,
                 true,
@@ -72,14 +87,13 @@ public class Test1 extends EnhancedTeleOp {
                 robot.carouselSpinner::spinBackward,
                 true,
                 BooleanSurface.RIGHT_STICK);
-        controller1.registerOnPressedCallback(() -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
         controller2.registerOnPressedCallback(
                 robot.intake::beginOuttaking,
                 true,
                 BooleanSurface.LEFT_BUMPER
         );
-    controller2.registerOnPressedCallback(
+        controller2.registerOnPressedCallback(
         () -> {
           if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
             robot.intake.beginIntaking();
@@ -91,17 +105,6 @@ public class Test1 extends EnhancedTeleOp {
                 robot.intake::stop,
                 true,
                 BooleanSurface.DPAD_UP
-        );
-        controller2.registerOnPressedCallback(
-                () -> {
-                    if (robot.intake.getState().isLowered()) {
-                        robot.intake.raise();
-                    } else {
-                        robot.intake.lower();
-                    }
-                },
-                true,
-                BooleanSurface.DPAD_DOWN
         );
 
         controller2.registerOnPressedCallback(
