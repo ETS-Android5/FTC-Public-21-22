@@ -10,28 +10,12 @@ public class PowerCurves {
             // Motor should spin forward
             if (currentTicks < startingTicks) return 1.0;
             double percentProgress = ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
-            if (currentTicks >= startingTicks && currentTicks < targetTicks) {
-                // Here's the positive curve
-                return 2.33 * (1 - percentProgress);
-            } else {
-                // We've overshot
-                if (percentProgress >= 2) percentProgress = 1.9999999;
-                percentProgress %= 1;
-                return -2.33 * (1 - percentProgress);
-            }
+            return 2.33 * (1 - percentProgress);
         } else {
             // Motor should spin backward
             if (currentTicks > startingTicks) return -1.0;
             double percentProgress = ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
-            if (currentTicks <= startingTicks && currentTicks > targetTicks) {
-                // Here's the negative curve
-                return -2.33 * (percentProgress);
-            } else {
-                // We've overshot
-                if (percentProgress >= 2) percentProgress = 1.9999999;
-                percentProgress %= 1;
-                return 2.33 * (1 - percentProgress);
-            }
+            return -2.33 * (1 - percentProgress);
         }
     };
 
