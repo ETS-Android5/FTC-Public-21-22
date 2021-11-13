@@ -27,19 +27,19 @@ public class PowerCurves {
         if (startingTicks < targetTicks) {
             // Motor should spin forward
             if (currentTicks > targetTicks) return 0.0; // We're past it, stop
-            if (currentTicks < startingTicks) return 0.4;
+            if (currentTicks < startingTicks) return 0.6;
             double percentProgress = ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
-            if (percentProgress > .8) return 1.0;
-            if (percentProgress > .5) return 0.5;
-            return 0.4;
+            if (percentProgress > .65) return 1.0;
+            if (percentProgress > .1) return 0.8;
+            return 0.6;
         } else {
             // Motor should spin backward
             if (currentTicks < targetTicks) return 0.0;
-            if (currentTicks > startingTicks) return -0.4;
+            if (currentTicks > startingTicks) return -0.6;
             double percentProgress = ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
-            if (percentProgress > .8) return -1.0;
-            if (percentProgress > .5) return -0.5;
-            return -0.4;
+            if (percentProgress > .65) return -1.0;
+            if (percentProgress > .1) return -0.8;
+            return -0.6;
         }
     };
 }
