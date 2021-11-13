@@ -79,11 +79,14 @@ public class Test1 extends EnhancedTeleOp {
                 true,
                 BooleanSurface.LEFT_BUMPER
         );
-        controller2.registerOnPressedCallback(
-                robot.intake::beginIntaking,
-                true,
-                BooleanSurface.RIGHT_BUMPER
-        );
+    controller2.registerOnPressedCallback(
+        () -> {
+          if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
+            robot.intake.beginIntaking();
+          }
+        },
+        true,
+        BooleanSurface.RIGHT_BUMPER);
         controller2.registerOnPressedCallback(
                 robot.intake::stop,
                 true,

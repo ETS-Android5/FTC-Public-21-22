@@ -11,7 +11,7 @@ public class MotorState extends IMotorState {
   private final ZeroPowerBehavior zeroPowerBehavior;
   private final double power;
   private final int targetPosition;
-  private final TriFunction<Double, Integer, Integer, Double> powerCurve;
+  private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
 
   public MotorState(String name, boolean reverse) {
     this(name, reverse ? Direction.REVERSE : Direction.FORWARD, RunMode.RUN_WITHOUT_ENCODER, ZeroPowerBehavior.BRAKE, 0.0, 0, null);
@@ -24,7 +24,7 @@ public class MotorState extends IMotorState {
       ZeroPowerBehavior zeroPowerBehavior,
       Double power,
       Integer targetPosition,
-      TriFunction<Double, Integer, Integer, Double> powerCurve
+      TriFunction<Integer, Integer, Integer, Double> powerCurve
       ) {
     super(name);
     this.direction = direction;
@@ -121,12 +121,12 @@ public class MotorState extends IMotorState {
   }
 
   @Override
-  public TriFunction<Double, Integer, Integer, Double> getPowerCurve() {
+  public TriFunction<Integer, Integer, Integer, Double> getPowerCurve() {
     return this.powerCurve;
   }
 
   @Override
-  public IMotorState withPowerCurve(TriFunction<Double, Integer, Integer, Double> powerCurve) {
+  public IMotorState withPowerCurve(TriFunction<Integer, Integer, Integer, Double> powerCurve) {
     return new MotorState(
             this.name,
             this.direction,
