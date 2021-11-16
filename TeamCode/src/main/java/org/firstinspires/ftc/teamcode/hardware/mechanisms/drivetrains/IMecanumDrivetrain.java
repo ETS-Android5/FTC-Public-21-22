@@ -13,4 +13,8 @@ public interface IMecanumDrivetrain extends IAWDClassicDrivetrain {
     void setRearRightTarget(int ticks);
     void driveBySticks(double lateral, double longitudinal, double turn);
     void setPowerCurve(TriFunction<Integer, Integer, Integer, Double> powerCurve);
+    String getFrontLeftName();
+    String getFrontRightName();
+    String getRearLeftName();
+    String getRearRightName();
 }
