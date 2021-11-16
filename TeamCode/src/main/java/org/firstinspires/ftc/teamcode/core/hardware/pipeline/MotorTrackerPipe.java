@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
@@ -10,6 +8,9 @@ import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class MotorTrackerPipe extends HardwarePipeline {
@@ -30,6 +31,11 @@ public class MotorTrackerPipe extends HardwarePipeline {
     }
 
     private final Map<String, Integer> motorPositions = new HashMap<>();
+    private final List<CallbackData> motorPositionCallbacks = new LinkedList<>();
+
+    public void setCallbackForMotorPosition(CallbackData data) {
+        motorPositionCallbacks.add(data);
+    }
 
     public int getPositionOf(String motorName) throws IllegalArgumentException {
         Integer motorPosition = motorPositions.get(motorName);
@@ -53,6 +59,17 @@ public class MotorTrackerPipe extends HardwarePipeline {
                 }
             }
         });
+        for (CallbackData data : motorPositionCallbacks) {
+            if (data != null && motorPositions.containsKey(data.getMotorName())) {
+                Integer motorPosition = motorPositions.get(data.getMotorName());
+                int minimum = data.getMotorTargetPosition() - data.getToleranceTicks();
+                int maximum = data.getMotorTargetPosition() + data.getToleranceTicks();
+                if (motorPosition != null && motorPosition >= minimum && motorPosition <= maximum) {
+                    data.getCallback().run();
+                    motorPositionCallbacks.remove(data);
+                }
+            }
+        }
         return super.process(hardware, c);
     }
 }
