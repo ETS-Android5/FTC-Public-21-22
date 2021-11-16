@@ -6,12 +6,16 @@ import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.CallbackData;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.MotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 public class MecanumDrivetrain implements IMecanumDrivetrain {
     private static final String FRONT_LEFT_MOTOR_NAME = "FRONT_LEFT_MOTOR";
@@ -183,6 +187,46 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
         frontRightMotorState = frontRightMotorState.withPowerCurve(powerCurve);
         rearLeftMotorState = rearLeftMotorState.withPowerCurve(powerCurve);
         rearRightMotorState = rearRightMotorState.withPowerCurve(powerCurve);
+    }
+
+    @Override
+    public void autoRunToPosition(int target, int toleranceTicks, Supplier<Boolean> opModeIsActive, Runnable update) {
+        AtomicBoolean reachedFrontLeftTarget = new AtomicBoolean(false);
+        AtomicBoolean reachedFrontRightTarget = new AtomicBoolean(false);
+        AtomicBoolean reachedRearLeftTarget = new AtomicBoolean(false);
+        AtomicBoolean reachedRearRightTarget = new AtomicBoolean(false);
+        setAllTarget(target);
+        MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
+                getFrontLeftName(),
+                target,
+                toleranceTicks,
+                () -> reachedFrontLeftTarget.set(true)
+        ));
+        MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
+                getFrontRightName(),
+                target,
+                toleranceTicks,
+                () -> reachedFrontRightTarget.set(true)
+        ));
+        MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
+                getRearLeftName(),
+                target,
+                toleranceTicks,
+                () -> reachedRearLeftTarget.set(true)
+        ));
+        MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
+                getRearRightName(),
+                target,
+                toleranceTicks,
+                () -> reachedRearRightTarget.set(true)
+        ));
+        while (opModeIsActive.get()
+                && !reachedFrontLeftTarget.get()
+                && !reachedFrontRightTarget.get()
+                && !reachedRearLeftTarget.get()
+                && !reachedRearRightTarget.get()) {
+            update.run();
+        }
     }
 
     @Override
