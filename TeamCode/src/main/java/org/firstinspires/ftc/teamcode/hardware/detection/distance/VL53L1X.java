@@ -36,7 +36,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
         return 0; // TODO: IMPLEMENT THIS
     }
 
-
+/*
     public byte VL53L1X_GetSWVersion(VL53L1X_Version pVersion)
     {
         byte Status = 0;
@@ -682,7 +682,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
         return status;
     }
 
-
+*/
     @Override
     public void calibrate() {
         // TODO: IMPLEMENT THIS
