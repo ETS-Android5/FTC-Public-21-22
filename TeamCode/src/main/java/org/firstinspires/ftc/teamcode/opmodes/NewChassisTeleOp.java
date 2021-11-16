@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.hardware.robots.NewChassis;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp(name="NewChassis")
-public class NewChassisBot extends EnhancedTeleOp {
+public class NewChassisTeleOp extends EnhancedTeleOp {
     private static double THIRD_MANIPULATION(double in) {
         return Math.pow(in, 3);
     }
@@ -26,7 +26,7 @@ public class NewChassisBot extends EnhancedTeleOp {
 
     private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
 
-    public NewChassisBot() {
+    public NewChassisTeleOp() {
         super(new HardwarePipeline(
                 Constants.PIPELINE_BASE_NAME,
                 new InitializedFilterPipe(
@@ -58,7 +58,7 @@ public class NewChassisBot extends EnhancedTeleOp {
 
     @Override
     public void onStartPressed() {
-        controller1.setManipulation(NewChassisBot::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
+        controller1.setManipulation(NewChassisTeleOp::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
 
         controller1.registerOnPressedCallback(() -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 

@@ -51,51 +51,14 @@ public class Auto extends EnhancedAutonomous {
 
     @Override
     public void onStartPressed() {
-        int ticksPerInch = 15;
         robot.drivetrain.setRunMode(RunMode.RUN_TO_POSITION);
         robot.drivetrain.setPowerCurve(PowerCurves.RUN_TO_POSITION_HALF_POWER);
-        AtomicBoolean reachedFrontLeftTarget = new AtomicBoolean(false);
-        AtomicBoolean reachedFrontRightTarget = new AtomicBoolean(false);
-        AtomicBoolean reachedRearLeftTarget = new AtomicBoolean(false);
-        AtomicBoolean reachedRearRightTarget = new AtomicBoolean(false);
         int[] targetPositions = {15, 105, 285, 300, 390, 570, 585, 675, 855};
         for (int target : targetPositions) {
-            robot.drivetrain.setAllTarget(target);
-            MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
-                    robot.drivetrain.getFrontLeftName(),
-                    target,
+            robot.drivetrain.autoRunToPosition(target,
                     5,
-                    () -> reachedFrontLeftTarget.set(true)
-            ));
-            MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
-                    robot.drivetrain.getFrontRightName(),
-                    target,
-                    5,
-                    () -> reachedFrontRightTarget.set(true)
-            ));
-            MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
-                    robot.drivetrain.getRearLeftName(),
-                    target,
-                    5,
-                    () -> reachedRearLeftTarget.set(true)
-            ));
-            MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
-                    robot.drivetrain.getRearRightName(),
-                    target,
-                    5,
-                    () -> reachedRearRightTarget.set(true)
-            ));
-            while (opModeIsActive()
-                    && !reachedFrontLeftTarget.get()
-            && !reachedFrontRightTarget.get()
-            && !reachedRearLeftTarget.get()
-            && !reachedRearRightTarget.get()) {
-                hardwarePipeline.process(initializedHardware, robot);
-            }
-            reachedFrontLeftTarget.set(false);
-            reachedFrontRightTarget.set(false);
-            reachedRearLeftTarget.set(false);
-            reachedRearRightTarget.set(false);
+                    super::opModeIsActive,
+                    () -> hardwarePipeline.process(initializedHardware, robot));
             sleep(4000);
         }
     }
