@@ -59,14 +59,16 @@ public class MotorTrackerPipe extends HardwarePipeline {
                 }
             }
         });
-        for (CallbackData data : motorPositionCallbacks) {
+        Iterator<CallbackData> iter = motorPositionCallbacks.iterator();
+        while (iter.hasNext()) {
+            CallbackData data = iter.next();
             if (data != null && motorPositions.containsKey(data.getMotorName())) {
                 Integer motorPosition = motorPositions.get(data.getMotorName());
                 int minimum = data.getMotorTargetPosition() - data.getToleranceTicks();
                 int maximum = data.getMotorTargetPosition() + data.getToleranceTicks();
                 if (motorPosition != null && motorPosition >= minimum && motorPosition <= maximum) {
                     data.getCallback().run();
-                    motorPositionCallbacks.remove(data);
+                    iter.remove();
                 }
             }
         }

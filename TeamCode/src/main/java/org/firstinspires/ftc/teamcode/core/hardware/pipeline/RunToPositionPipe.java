@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
@@ -65,6 +67,11 @@ public class RunToPositionPipe extends HardwarePipeline {
                 double power = motor.getTargetPowerPercentage(MotorTrackerPipe.getInstance().getPositionOf(motorName));
                 Object motorObj = hardware.get(motorName);
                 if (motorObj instanceof DcMotor) {
+                    if (motorName.startsWith("FRONT") || motorName.startsWith("REAR")) {
+                        Log.d("RTP", motorName + " HAS POSITION: " + MotorTrackerPipe.getInstance().getPositionOf(motorName));
+                        Log.d("RTP", motorName + " HAS TARGET: " + nextState.getTargetPosition());
+                        Log.d("RTP", motorName + " SET TO: " + power);
+                    }
                     ((DcMotor) motorObj).setPower(power);
                 }
             }
