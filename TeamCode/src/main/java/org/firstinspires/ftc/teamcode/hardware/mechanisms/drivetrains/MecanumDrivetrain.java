@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
+import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.MotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
@@ -174,5 +175,13 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
         frontRightMotorState = frontRightMotorState.withPower(frontWheelPower * frontSinAngleRadians * frontFactor - turn);
         rearLeftMotorState = rearLeftMotorState.withPower(rearWheelPower * rearSinAngleRadians * rearFactor + turn);
         rearRightMotorState = rearRightMotorState.withPower(rearWheelPower * rearCosAngleRadians * rearFactor - turn);
+    }
+
+    @Override
+    public void setPowerCurve(TriFunction<Integer, Integer, Integer, Double> powerCurve) {
+        frontLeftMotorState = frontLeftMotorState.withPowerCurve(powerCurve);
+        frontRightMotorState = frontRightMotorState.withPowerCurve(powerCurve);
+        rearLeftMotorState = rearLeftMotorState.withPowerCurve(powerCurve);
+        rearRightMotorState = rearRightMotorState.withPowerCurve(powerCurve);
     }
 }
