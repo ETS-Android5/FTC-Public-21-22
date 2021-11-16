@@ -36,7 +36,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
         return 0; // TODO: IMPLEMENT THIS
     }
 
-    /*
+
     public byte VL53L1X_GetSWVersion(VL53L1X_Version pVersion)
     {
         byte Status = 0;
@@ -403,7 +403,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
         return status;
     }
 
-    byte VL53L1X_GetAmbientPerSpad(int dev, int *=ambPerSp)
+    byte VL53L1X_GetAmbientPerSpad(int dev, int ambPerSp)
     {
         byte status = 0;
         int AmbientRate, SpNb = 1;
@@ -481,7 +481,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     byte VL53L1X_SetOffset(int dev, short OffsetValue)
     {
         byte status = 0;
-        short Temp;
+        int Temp;
 
         Temp = (OffsetValue*4);
         status |= VL53L1_WrWord(dev, VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM,
@@ -531,7 +531,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
                                                short IntOnNoTarget)
     {
         byte status = 0;
-        short Temp = 0;
+        int Temp = 0;
 
         status |= VL53L1_RdByte(dev, VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO, Temp);
         Temp = Temp & 0x47;
@@ -681,7 +681,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
         status |= VL53L1_WrByte(dev, 0x0B, 0);
         return status;
     }
-    */
+
 
     @Override
     public void calibrate() {

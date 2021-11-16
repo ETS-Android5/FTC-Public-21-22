@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
@@ -42,12 +43,15 @@ public class Auto extends EnhancedAutonomous {
 
     @Override
     public void onStartPressed() {
-        long start = System.currentTimeMillis();
-        robot.drivetrain.setAllPower(1);
-        hardwarePipeline.process(initializedHardware, robot);
-        while (System.currentTimeMillis() - start < 2000 && opModeIsActive()) {
-
+        int ticksPerInch = 15;
+        robot.drivetrain.setRunMode(RunMode.RUN_TO_POSITION);
+        for (int rep = 0; rep < 4; rep++) {
+            robot.drivetrain.setAllTarget(ticksPerInch);
+            sleep(5000);
+            robot.drivetrain.setAllTarget(ticksPerInch*6);
+            sleep(5000);
+            robot.drivetrain.setAllTarget(ticksPerInch*12);
+            sleep(10000);
         }
-        robot.drivetrain.setAllPower(0);
     }
 }
