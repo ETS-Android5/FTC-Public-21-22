@@ -6,9 +6,9 @@ public class CallbackData {
     private final int toleranceTicks;
     private final Runnable callback;
 
-    public CallbackData(String motorName, int motorPosition, int toleranceTicks, Runnable callback) {
+    public CallbackData(String motorName, int motorTargetPosition, int toleranceTicks, Runnable callback) {
         this.motorName = motorName;
-        this.motorTargetPosition = motorPosition;
+        this.motorTargetPosition = motorTargetPosition;
         this.toleranceTicks = toleranceTicks;
         this.callback = callback;
     }

@@ -184,4 +184,24 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
         rearLeftMotorState = rearLeftMotorState.withPowerCurve(powerCurve);
         rearRightMotorState = rearRightMotorState.withPowerCurve(powerCurve);
     }
+
+    @Override
+    public String getFrontLeftName() {
+        return frontLeftMotorState.getName();
+    }
+
+    @Override
+    public String getFrontRightName() {
+        return frontRightMotorState.getName();
+    }
+
+    @Override
+    public String getRearLeftName() {
+        return rearLeftMotorState.getName();
+    }
+
+    @Override
+    public String getRearRightName() {
+        return rearRightMotorState.getName();
+    }
 }
