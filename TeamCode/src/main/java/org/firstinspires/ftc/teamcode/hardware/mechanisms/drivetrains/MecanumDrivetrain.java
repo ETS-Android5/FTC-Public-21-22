@@ -23,6 +23,8 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
     private static final String REAR_LEFT_MOTOR_NAME = "REAR_LEFT_MOTOR";
     private static final String REAR_RIGHT_MOTOR_NAME = "REAR_RIGHT_MOTOR";
 
+    private boolean autoMode = false;
+
     public MecanumDrivetrain() {
         initialize();
     }
@@ -36,10 +38,10 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
     @Hardware(name = REAR_RIGHT_MOTOR_NAME, direction = Direction.REVERSE)
     public DcMotor rearRightMotor;
 
-    protected IMotorState frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, true);
-    protected IMotorState frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, false);
-    protected IMotorState rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, true);
-    protected IMotorState rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, false);
+    protected IMotorState frontLeftMotorState;
+    protected IMotorState frontRightMotorState;
+    protected IMotorState rearLeftMotorState;
+    protected IMotorState rearRightMotorState;
 
     private void initialize() {
         frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, true);
@@ -95,6 +97,7 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
     @Override
     public void setRunMode(RunMode runMode) {
+        autoMode = runMode == RunMode.RUN_TO_POSITION;
         frontLeftMotorState = frontLeftMotorState.withRunMode(runMode);
         frontRightMotorState = frontRightMotorState.withRunMode(runMode);
         rearLeftMotorState = rearLeftMotorState.withRunMode(runMode);
@@ -108,7 +111,12 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
     @Override
     public List<? super State> getNextState() {
-        return Arrays.asList(
+        return autoMode ? Arrays.asList(
+                frontLeftMotorState.duplicate(),
+                frontRightMotorState.duplicate(),
+                rearLeftMotorState.duplicate(),
+                rearRightMotorState.duplicate()
+        ) : Arrays.asList(
                 frontLeftMotorState,
                 frontRightMotorState,
                 rearLeftMotorState,
@@ -191,6 +199,9 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
     @Override
     public void autoRunToPosition(int target, int toleranceTicks, Supplier<Boolean> opModeIsActive, Runnable update) {
+        frontLeftMotorState = frontLeftMotorState.withDirection(frontLeftMotorState.getDirection().opposite());
+        frontRightMotorState = frontRightMotorState.withDirection(frontRightMotorState.getDirection().opposite());
+        update.run();
         AtomicBoolean reachedFrontLeftTarget = new AtomicBoolean(false);
         AtomicBoolean reachedFrontRightTarget = new AtomicBoolean(false);
         AtomicBoolean reachedRearLeftTarget = new AtomicBoolean(false);
@@ -227,6 +238,9 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
                 && !reachedRearRightTarget.get()) {
             update.run();
         }
+        frontLeftMotorState = frontLeftMotorState.withDirection(frontLeftMotorState.getDirection().opposite());
+        frontRightMotorState = frontRightMotorState.withDirection(frontRightMotorState.getDirection().opposite());
+        update.run();
     }
 
     @Override

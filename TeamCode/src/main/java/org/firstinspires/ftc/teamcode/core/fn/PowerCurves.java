@@ -28,12 +28,12 @@ public class PowerCurves {
                     // Motor should spin forward
                     if (currentTicks < startingTicks) return 0.5;
                     double percentProgress = ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
-                    return 2.33 * (1 - percentProgress);
+                    return Math.max(Math.min(.5, 2.33 * (1 - percentProgress)), -.5);
                 } else {
                     // Motor should spin backward
                     if (currentTicks > startingTicks) return -0.5;
                     double percentProgress = ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
-                    return -2.33 * (1 - percentProgress);
+                    return -Math.max(Math.min(.5, 2.33 * (1 - percentProgress)), -.5);
                 }
     };
 
@@ -46,12 +46,12 @@ public class PowerCurves {
                     // Motor should spin forward
                     if (currentTicks < startingTicks) return 0.25;
                     double percentProgress = ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
-                    return 2.33 * (1 - percentProgress);
+                    return Math.max(Math.min(.25, 2.33 * (1 - percentProgress)), -.5);
                 } else {
                     // Motor should spin backward
                     if (currentTicks > startingTicks) return -0.25;
                     double percentProgress = ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
-                    return -2.33 * (1 - percentProgress);
+                    return -Math.max(Math.min(.25, 2.33 * (1 - percentProgress)), -.5);
                 }
     };
 
