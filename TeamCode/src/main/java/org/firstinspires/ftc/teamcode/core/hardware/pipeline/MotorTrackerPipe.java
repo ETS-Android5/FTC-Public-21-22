@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;

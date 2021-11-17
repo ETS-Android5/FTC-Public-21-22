@@ -6,8 +6,6 @@ import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.ZeroPowerBehavior;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
-import java.util.function.Function;
-
 public abstract class IMotorState extends State implements Duplicatable<IMotorState> {
   IMotorState(String name) {
     super(name);

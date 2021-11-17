@@ -1,10 +1,19 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.drivetrains;
 
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
 import java.util.function.Supplier;
 
 public interface IMecanumDrivetrain extends IAWDClassicDrivetrain {
+    Direction getFrontLeftDirection();
+    Direction getFrontRightDirection();
+    Direction getRearLeftDirection();
+    Direction getRearRightDirection();
+    void setFrontLeftDirection(Direction direction);
+    void setFrontRightDirection(Direction direction);
+    void setRearLeftDirection(Direction direction);
+    void setRearRightDirection(Direction direction);
     void setFrontLeftPower(double power);
     void setFrontRightPower(double power);
     void setRearLeftPower(double power);
