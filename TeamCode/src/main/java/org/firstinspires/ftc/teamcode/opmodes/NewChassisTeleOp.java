@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ResetDcMotorPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.RunToPositionPipe;
 import org.firstinspires.ftc.teamcode.core.opmodes.Constants;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
+import org.firstinspires.ftc.teamcode.hardware.robots.MecanumBot;
 import org.firstinspires.ftc.teamcode.hardware.robots.NewChassis;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,28 +23,13 @@ public class NewChassisTeleOp extends EnhancedTeleOp {
         return Math.pow(in, 3);
     }
 
-    private final NewChassis robot = new NewChassis();
+    private final NewChassis robot;
 
     private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
 
     public NewChassisTeleOp() {
-        super(new HardwarePipeline(
-                Constants.PIPELINE_BASE_NAME,
-                new InitializedFilterPipe(
-                        "FilterElement",
-                        new ResetDcMotorPipe(
-                                "MotorReset",
-                                new MotorTrackerPipe(
-                                        "MotorTrackerPipe",
-                                        new RunToPositionPipe(
-                                                "RunToPosition",
-                                                new ExitPipe("Exit")
-                                        )
-                                )
-                        )
-                )
-        ));
-        super.initialize(robot);
+        super(new NewChassis());
+        this.robot = (NewChassis) super.robotObject;
     }
 
     @Override
@@ -59,7 +45,6 @@ public class NewChassisTeleOp extends EnhancedTeleOp {
     @Override
     public void onStartPressed() {
         controller1.setManipulation(NewChassisTeleOp::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
-
         controller1.registerOnPressedCallback(() -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
     }
