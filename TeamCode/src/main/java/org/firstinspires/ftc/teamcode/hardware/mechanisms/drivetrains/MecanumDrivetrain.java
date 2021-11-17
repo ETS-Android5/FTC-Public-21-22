@@ -125,6 +125,46 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
     }
 
     @Override
+    public Direction getFrontLeftDirection() {
+        return frontLeftMotorState.getDirection();
+    }
+
+    @Override
+    public Direction getFrontRightDirection() {
+        return frontRightMotorState.getDirection();
+    }
+
+    @Override
+    public Direction getRearLeftDirection() {
+        return rearLeftMotorState.getDirection();
+    }
+
+    @Override
+    public Direction getRearRightDirection() {
+        return rearRightMotorState.getDirection();
+    }
+
+    @Override
+    public void setFrontLeftDirection(Direction direction) {
+        frontLeftMotorState = frontLeftMotorState.withDirection(direction);
+    }
+
+    @Override
+    public void setFrontRightDirection(Direction direction) {
+        frontRightMotorState = frontRightMotorState.withDirection(direction);
+    }
+
+    @Override
+    public void setRearLeftDirection(Direction direction) {
+        rearLeftMotorState = rearLeftMotorState.withDirection(direction);
+    }
+
+    @Override
+    public void setRearRightDirection(Direction direction) {
+        rearRightMotorState = rearRightMotorState.withDirection(direction);
+    }
+
+    @Override
     public void setFrontLeftPower(double power) {
         frontLeftMotorState = frontLeftMotorState.withPower(power);
     }
@@ -199,9 +239,6 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
     @Override
     public void autoRunToPosition(int target, int toleranceTicks, Supplier<Boolean> opModeIsActive, Runnable update) {
-        frontLeftMotorState = frontLeftMotorState.withDirection(frontLeftMotorState.getDirection().opposite());
-        frontRightMotorState = frontRightMotorState.withDirection(frontRightMotorState.getDirection().opposite());
-        update.run();
         AtomicBoolean reachedFrontLeftTarget = new AtomicBoolean(false);
         AtomicBoolean reachedFrontRightTarget = new AtomicBoolean(false);
         AtomicBoolean reachedRearLeftTarget = new AtomicBoolean(false);
@@ -238,9 +275,6 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
                 && !reachedRearRightTarget.get()) {
             update.run();
         }
-        frontLeftMotorState = frontLeftMotorState.withDirection(frontLeftMotorState.getDirection().opposite());
-        frontRightMotorState = frontRightMotorState.withDirection(frontRightMotorState.getDirection().opposite());
-        update.run();
     }
 
     @Override

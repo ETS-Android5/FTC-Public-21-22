@@ -20,7 +20,8 @@ public class HardwarePipeline {
 
   public Component process(Map<String, Object> hardware, Component c) {
     if (nextElement != null) {
-      return nextElement.process(hardware, c);
+      Component res = nextElement.process(hardware, c);
+      return res;
     } else {
       return c;
     }

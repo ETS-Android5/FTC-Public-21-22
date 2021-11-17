@@ -22,20 +22,25 @@ public class ResetDcMotorPipe extends HardwarePipeline {
 
     @Override
     public Component process(Map<String, Object> hardware, Component c) {
-        hardware.forEach((k, v) -> {
-            if (v instanceof DcMotor) {
-                IMotorState motorState = (IMotorState) c.getNextState().stream()
-                        .filter((s) -> ((State) s).getName().equals(k)).findFirst().orElse(null);
-                if (motorState != null && resetStates.get(k) != ResetState.RESET) {
-                    if (!resetStates.containsKey(k)) {
-                        ((DcMotor) v).setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                        resetStates.put(k, ResetState.RESETTING);
-                    } else {
-                        ((DcMotor) v).setMode(motorState.getRunMode().primitiveConversion());
-                        resetStates.put(k, ResetState.RESET);
-                    }
-                }
+    hardware.forEach(
+        (k, v) -> {
+          if (!(resetStates.containsKey(k) && resetStates.get(k) == ResetState.RESET) && v instanceof DcMotor) {
+            IMotorState motorState =
+                (IMotorState)
+                    c.getNextState().stream()
+                        .filter((s) -> ((State) s).getName().equals(k))
+                        .findFirst()
+                        .orElse(null);
+            if (motorState != null && resetStates.get(k) != ResetState.RESET) {
+              if (!resetStates.containsKey(k)) {
+                ((DcMotor) v).setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                resetStates.put(k, ResetState.RESETTING);
+              } else {
+                ((DcMotor) v).setMode(motorState.getRunMode().primitiveConversion());
+                resetStates.put(k, ResetState.RESET);
+              }
             }
+          }
         });
         return super.process(hardware, c);
     }

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
@@ -49,32 +47,35 @@ public class RunToPositionPipe extends HardwarePipeline {
                             motorName,
                             powerCurve,
                             currentPosition,
-                            nextState.getTargetPosition()));
+                            nextState.getTargetPosition(),
+                            nextState.getPower()));
                 } catch (IllegalArgumentException ignored) {}
             } else if ((currentState == null || currentState.getRunMode() == RunMode.RUN_TO_POSITION)
                     && nextState.getRunMode() != RunMode.RUN_TO_POSITION) {
                 trackedMotors.removeIf((p) -> p.getName().equals(motorName));
             }
         });
-        trackedMotors.forEach((motor) -> {
-            String motorName = motor.getName();
-            IMotorState currentState = State.currentStateOf(motorName);
-            IMotorState nextState = State.nextStateOf(motorName);
-            if (currentState != null && nextState != null) {
-                if (currentState.getTargetPosition() != nextState.getTargetPosition()) {
-                    motor.mutateTo(MotorTrackerPipe.getInstance().getPositionOf(motorName), nextState.getTargetPosition());
-                }
-                double power = motor.getTargetPowerPercentage(MotorTrackerPipe.getInstance().getPositionOf(motorName));
-                Object motorObj = hardware.get(motorName);
-                if (motorObj instanceof DcMotor) {
-                    if (motorName.startsWith("FRONT") || motorName.startsWith("REAR")) {
-                        Log.d("RTP", motorName + " HAS POSITION: " + MotorTrackerPipe.getInstance().getPositionOf(motorName));
-                        Log.d("RTP", motorName + " HAS TARGET: " + nextState.getTargetPosition());
-                        Log.d("RTP", motorName + " SET TO: " + power);
-                    }
-                    ((DcMotor) motorObj).setPower(power);
-                }
+    trackedMotors.forEach(
+        (motor) -> {
+          String motorName = motor.getName();
+          IMotorState currentState = State.currentStateOf(motorName);
+          IMotorState nextState = State.nextStateOf(motorName);
+          if (currentState != null && nextState != null) {
+            if (currentState.getTargetPosition() != nextState.getTargetPosition()) {
+              motor.mutateTo(
+                  MotorTrackerPipe.getInstance().getPositionOf(motorName),
+                  nextState.getTargetPosition());
             }
+            double power =
+                motor.getTargetPowerPercentage(
+                    MotorTrackerPipe.getInstance().getPositionOf(motorName));
+            if (motor.shouldUpdatePower()) {
+              Object motorObj = hardware.get(motorName);
+              if (motorObj instanceof DcMotor) {
+                ((DcMotor) motorObj).setPower(power);
+              }
+            }
+          }
         });
         return super.process(hardware, c);
     }

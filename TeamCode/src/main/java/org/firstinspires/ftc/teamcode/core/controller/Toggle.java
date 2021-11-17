@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.core.controller;
 
-import android.util.Log;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
