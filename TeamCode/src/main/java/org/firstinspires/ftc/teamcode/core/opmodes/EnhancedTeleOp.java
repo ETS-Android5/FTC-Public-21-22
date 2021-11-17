@@ -3,7 +3,13 @@ package org.firstinspires.ftc.teamcode.core.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.core.controller.Controller;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ResetDcMotorPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.RunToPositionPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 import org.firstinspires.ftc.teamcode.core.magic.runtime.AotRuntime;
@@ -21,18 +27,34 @@ public abstract class EnhancedTeleOp extends OpMode {
   protected final HardwarePipeline hardwarePipeline;
   private HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
   private ReflectionBasedMagicRuntime serviceRuntime;
-  private Component robotObject;
+  protected Component robotObject;
 
-  public EnhancedTeleOp(HardwarePipeline pipeline) {
+  public EnhancedTeleOp(Component robotObject) {
     State.clear();
     initializedHardware = new ConcurrentHashMap<>();
-    hardwarePipeline = pipeline;
+    hardwarePipeline = new HardwarePipeline(
+            Constants.PIPELINE_BASE_NAME,
+            new InitializedFilterPipe(
+                    "FilterElement",
+                    new ResetDcMotorPipe(
+                            "MotorReset",
+                            new MotorTrackerPipe(
+                                    "MotorTrackerPipe",
+                                    new RunToPositionPipe(
+                                            "RunToPosition",
+                                            new ExitPipe("Exit")
+                                    )
+                            )
+                    )
+            )
+    );
     controller1 = new Controller(Constants.GAMEPAD_1_NAME);
     controller2 = new Controller(Constants.GAMEPAD_2_NAME);
+    this.robotObject = robotObject;
+    initialize();
   }
 
-  protected void initialize(Component robotObject) {
-    this.robotObject = robotObject;
+  protected void initialize() {
     aotRuntime =
         new AotRuntime(
             robotObject,
@@ -78,7 +100,7 @@ public abstract class EnhancedTeleOp extends OpMode {
     controller1.update();
     controller2.update();
     onLoop();
-    hardwarePipeline.process(initializedHardware, robotObject);
+    hardwarePipeline.process(initializedHardware, new StateFilterResult(robotObject));
   }
 
   public abstract void onLoop();

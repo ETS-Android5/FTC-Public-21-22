@@ -18,11 +18,11 @@ public class HardwarePipeline {
     this.nextElement = nextElement;
   }
 
-  public Component process(Map<String, Object> hardware, Component c) {
+  public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
     if (nextElement != null) {
-      return nextElement.process(hardware, c);
+      return nextElement.process(hardware, r);
     } else {
-      return c;
+      return r;
     }
   }
 

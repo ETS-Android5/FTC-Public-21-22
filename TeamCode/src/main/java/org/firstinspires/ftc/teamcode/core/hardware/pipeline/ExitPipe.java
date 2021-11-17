@@ -18,20 +18,10 @@ public class ExitPipe extends HardwarePipeline {
   }
 
   @Override
-  public Component process(Map<String, Object> hardware, Component c) {
-    List<IMotorState> motors =
-        c.getNextState().stream()
-            .filter((s) -> s instanceof IMotorState)
-            .map((s) -> (IMotorState) s)
-            .collect(Collectors.toList());
-    List<IServoState> servos =
-        c.getNextState().stream()
-            .filter((s) -> s instanceof IServoState)
-            .map((s) -> (IServoState) s)
-            .collect(Collectors.toList());
-    motors.forEach((m) -> processMotor(m, hardware));
-    servos.forEach((s) -> processServo(s, hardware));
-    return super.process(hardware, c);
+  public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
+    r.getNextMotorStates().forEach((m) -> processMotor(m, hardware));
+    r.getNextServoStates().forEach((s) -> processServo(s, hardware));
+    return super.process(hardware, r);
   }
 
   private void processMotor(IMotorState nextState, Map<String, Object> hardware) {

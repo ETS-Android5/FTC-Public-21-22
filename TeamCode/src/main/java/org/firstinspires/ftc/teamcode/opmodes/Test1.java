@@ -25,28 +25,13 @@ public class Test1 extends EnhancedTeleOp {
         return Math.pow(in, 3);
     }
 
-    private final MecanumBot robot = new MecanumBot();
+    private final MecanumBot robot;
 
     private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
 
     public Test1() {
-        super(new HardwarePipeline(
-                Constants.PIPELINE_BASE_NAME,
-                new InitializedFilterPipe(
-                        "FilterElement",
-                        new ResetDcMotorPipe(
-                                "MotorReset",
-                                new MotorTrackerPipe(
-                                        "MotorTrackerPipe",
-                                        new RunToPositionPipe(
-                                                "RunToPosition",
-                                                new ExitPipe("Exit")
-                                        )
-                                )
-                        )
-                )
-        ));
-        super.initialize(robot);
+        super(new MecanumBot());
+        this.robot = (MecanumBot) super.robotObject;
     }
 
     @Override

@@ -3,9 +3,7 @@ package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
-import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
-import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,11 +44,11 @@ public class MotorTrackerPipe extends HardwarePipeline {
     }
 
     @Override
-    public Component process(Map<String, Object> hardware, Component c) {
+    public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
         hardware.forEach((k, v) -> {
             if (v instanceof DcMotor) {
-                IMotorState motorState = (IMotorState) c.getNextState().stream()
-                        .filter((s) -> ((State) s).getName().equals(k)).findFirst().orElse(null);
+                IMotorState motorState = r.getNextMotorStates().stream()
+                        .filter((s) -> s.getName().equals(k)).findFirst().orElse(null);
                 if (motorState != null) {
                     RunMode runMode = motorState.getRunMode();
                     if (runMode == RunMode.RUN_TO_POSITION || runMode == RunMode.RUN_USING_ENCODER) {
@@ -72,6 +70,6 @@ public class MotorTrackerPipe extends HardwarePipeline {
                 }
             }
         }
-        return super.process(hardware, c);
+        return super.process(hardware, r);
     }
 }
