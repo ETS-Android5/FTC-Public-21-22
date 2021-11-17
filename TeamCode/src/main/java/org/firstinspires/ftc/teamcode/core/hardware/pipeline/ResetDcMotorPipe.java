@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
-import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,14 +19,13 @@ public class ResetDcMotorPipe extends HardwarePipeline {
     private final Map<String, ResetState> resetStates = new HashMap<>();
 
     @Override
-    public Component process(Map<String, Object> hardware, Component c) {
+    public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
     hardware.forEach(
         (k, v) -> {
           if (!(resetStates.containsKey(k) && resetStates.get(k) == ResetState.RESET) && v instanceof DcMotor) {
             IMotorState motorState =
-                (IMotorState)
-                    c.getNextState().stream()
-                        .filter((s) -> ((State) s).getName().equals(k))
+                    r.getNextMotorStates().stream()
+                        .filter((m) -> m.getName().equals(k))
                         .findFirst()
                         .orElse(null);
             if (motorState != null && resetStates.get(k) != ResetState.RESET) {
@@ -42,7 +39,7 @@ public class ResetDcMotorPipe extends HardwarePipeline {
             }
           }
         });
-        return super.process(hardware, c);
+        return super.process(hardware, r);
     }
 
     private enum ResetState {

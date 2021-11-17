@@ -27,12 +27,8 @@ public class RunToPositionPipe extends HardwarePipeline {
     private final List<RunToPositionTracker> trackedMotors = new LinkedList<>();
 
     @Override
-    public Component process(Map<String, Object> hardware, Component c) {
-        List<IMotorState> motors = c.getNextState().stream()
-                .filter((s) -> s instanceof IMotorState)
-                .map((s) -> (IMotorState) s)
-                .collect(Collectors.toList());
-        motors.forEach((nextState) -> {
+    public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
+        r.getNextMotorStates().forEach((nextState) -> {
             String motorName = nextState.getName();
             IMotorState currentState = State.currentStateOf(motorName);
             if ((currentState == null || currentState.getRunMode() != RunMode.RUN_TO_POSITION)
@@ -77,6 +73,6 @@ public class RunToPositionPipe extends HardwarePipeline {
             }
           }
         });
-        return super.process(hardware, c);
+        return super.process(hardware, r);
     }
 }

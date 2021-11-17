@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
-import org.firstinspires.ftc.teamcode.core.hardware.state.State;
+import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
+import org.firstinspires.ftc.teamcode.core.hardware.state.IServoState;
 
 import java.util.List;
 import java.util.Map;
@@ -19,30 +19,20 @@ public class InitializedFilterPipe extends HardwarePipeline {
   private boolean allInitialized = false;
 
   @Override
-  public Component process(Map<String, Object> hardware, Component c) {
+  public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
     if (!allInitialized) {
-      return super.process(
-          hardware,
-          new Component() {
-            @Override
-            public List<? super State> getNextState() {
-                List<? super State> nextStateList = c.getNextState();
-              List<? super State> initialized = nextStateList.stream()
-                  .filter((s) -> hardware.containsKey(((State) s).getName()))
-                  .collect(Collectors.toList());
-              if (initialized.size() == nextStateList.size()) {
-                  allInitialized = true;
-              }
-              return initialized;
-            }
-
-            @Override
-            public String getName() {
-              return c.getName();
-            }
-          });
+        List<IMotorState> initializedMotors = r.getNextMotorStates().stream()
+                .filter((m) -> hardware.containsKey(m.getName()))
+                .collect(Collectors.toList());
+        List<IServoState> initializedServos = r.getNextServoStates().stream()
+                .filter((s) -> hardware.containsKey(s.getName()))
+                .collect(Collectors.toList());
+        if (initializedMotors.size() == r.getNextMotorStates().size() && initializedServos.size() == r.getNextServoStates().size()) {
+            allInitialized = true;
+        }
+        return super.process(hardware, new StateFilterResult(initializedMotors, initializedServos));
     } else {
-        return super.process(hardware, c);
+        return super.process(hardware, r);
     }
   }
 }

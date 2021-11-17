@@ -2,7 +2,13 @@ package org.firstinspires.ftc.teamcode.core.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ResetDcMotorPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.RunToPositionPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 import org.firstinspires.ftc.teamcode.core.magic.runtime.AotRuntime;
@@ -18,18 +24,33 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
   protected final HardwarePipeline hardwarePipeline;
   private HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
   private ReflectionBasedMagicRuntime serviceRuntime;
-  private Component robotObject;
+  protected Component robotObject;
 
-  public EnhancedAutonomous(HardwarePipeline pipeline) {
+  public EnhancedAutonomous(Component robotObject) {
     State.clear();
     initializedHardware = new ConcurrentHashMap<>();
-    hardwarePipeline = pipeline;
+    hardwarePipeline = new HardwarePipeline(
+            Constants.PIPELINE_BASE_NAME,
+            new InitializedFilterPipe(
+                    "FilterElement",
+                    new ResetDcMotorPipe(
+                            "MotorReset",
+                            new MotorTrackerPipe(
+                                    "MotorTracker",
+                                    new RunToPositionPipe(
+                                            "RunToPosition",
+                                            new ExitPipe("Exit")
+                                    )
+                            )
+                    )
+            )
+    );
+    this.robotObject = robotObject;
+    initialize();
   }
 
-  protected void initialize(Component robotObject) {
-    this.robotObject = robotObject;
-    aotRuntime =
-            new AotRuntime(
+  private void initialize() {
+    aotRuntime = new AotRuntime(
                     robotObject,
                     initializedHardware,
                     true);
@@ -38,14 +59,18 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
     serviceRuntime.initialize();
   }
 
+  protected void processChanges() {
+    hardwarePipeline.process(initializedHardware, new StateFilterResult(robotObject));
+  }
+
   @Override
   public final void runOpMode() {
     telemetry.setMsTransmissionInterval(Constants.TELEMETRY_TRANSMISSION_INTERVAL);
     aotRuntime.setHardwareMap(hardwareMap);
     aotRuntime.waveWand();
     serviceRuntime.waveWand();
-    waitForStart();
     onInitPressed();
+    waitForStart();
     onStartPressed();
     State.clear();
   }

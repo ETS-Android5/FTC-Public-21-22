@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPi
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ResetDcMotorPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.RunToPositionPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.opmodes.Constants;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
 import org.firstinspires.ftc.teamcode.hardware.robots.MecanumBot;
@@ -17,30 +18,11 @@ import org.firstinspires.ftc.teamcode.hardware.robots.MecanumBot;
 @Autonomous(name="Uhoh")
 public class Auto extends EnhancedAutonomous {
 
-    private final MecanumBot robot = new MecanumBot();
-
-    private void processChanges() {
-        hardwarePipeline.process(initializedHardware, robot);
-    }
+    private final MecanumBot robot;
 
     public Auto() {
-        super(new HardwarePipeline(
-                Constants.PIPELINE_BASE_NAME,
-                new InitializedFilterPipe(
-                        "FilterElement",
-                        new ResetDcMotorPipe(
-                                "MotorReset",
-                                new MotorTrackerPipe(
-                                        "MotorTracker",
-                                        new RunToPositionPipe(
-                                                "RunToPosition",
-                                                new ExitPipe("Exit")
-                                        )
-                                )
-                        )
-                )
-        ));
-        super.initialize(robot);
+        super(new MecanumBot());
+        this.robot = (MecanumBot) super.robotObject;
     }
 
     @Override
@@ -63,7 +45,7 @@ public class Auto extends EnhancedAutonomous {
             robot.drivetrain.autoRunToPosition(target,
                     6,
                     super::opModeIsActive,
-                    this::processChanges);
+                    super::processChanges);
             sleep(4000);
         }
     }
