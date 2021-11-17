@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
