@@ -8,27 +8,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ResetDcMotorPipe extends HardwarePipeline {
-    public ResetDcMotorPipe(String name) {
-        super(name);
-    }
+  private final Map<String, ResetState> resetStates = new HashMap<>();
+  boolean allReset = false;
 
-    public ResetDcMotorPipe(String name, HardwarePipeline nextPipe) {
-        super(name, nextPipe);
-    }
+  public ResetDcMotorPipe(String name) {
+    super(name);
+  }
 
-    private final Map<String, ResetState> resetStates = new HashMap<>();
+  public ResetDcMotorPipe(String name, HardwarePipeline nextPipe) {
+    super(name, nextPipe);
+  }
 
-    @Override
-    public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
-    hardware.forEach(
-        (k, v) -> {
-          if (!(resetStates.containsKey(k) && resetStates.get(k) == ResetState.RESET) && v instanceof DcMotor) {
-            IMotorState motorState =
-                    r.getNextMotorStates().stream()
-                        .filter((m) -> m.getName().equals(k))
-                        .findFirst()
-                        .orElse(null);
-            if (motorState != null && resetStates.get(k) != ResetState.RESET) {
+  @Override
+  @SuppressWarnings("all")
+  public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
+    if (!allReset) {
+      hardware.forEach(
+          (k, v) -> {
+            if (!(resetStates.containsKey(k) && resetStates.get(k) == ResetState.RESET)
+                && v instanceof DcMotor) {
+              IMotorState motorState =
+                  r.getNextMotorStates().stream()
+                      .filter((m) -> m.getName().equals(k))
+                      .findFirst()
+                      .orElse(null);
               if (!resetStates.containsKey(k)) {
                 ((DcMotor) v).setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 resetStates.put(k, ResetState.RESETTING);
@@ -37,13 +40,13 @@ public class ResetDcMotorPipe extends HardwarePipeline {
                 resetStates.put(k, ResetState.RESET);
               }
             }
-          }
-        });
-        return super.process(hardware, r);
+          });
+      if (InitializedFilterPipe.getInstance().everythingIsInitialized()) {
+        if (resetStates.values().stream().allMatch((v) -> v == ResetState.RESET)) {
+          allReset = true;
+        }
+      }
     }
-
-    private enum ResetState {
-        RESETTING,
-        RESET,
-    }
+    return super.process(hardware, r);
+  }
 }

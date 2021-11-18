@@ -29,31 +29,22 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
   public EnhancedAutonomous(Component robotObject) {
     State.clear();
     initializedHardware = new ConcurrentHashMap<>();
-    hardwarePipeline = new HardwarePipeline(
+    hardwarePipeline =
+        new HardwarePipeline(
             Constants.PIPELINE_BASE_NAME,
             new InitializedFilterPipe(
-                    "FilterElement",
-                    new ResetDcMotorPipe(
-                            "MotorReset",
-                            new MotorTrackerPipe(
-                                    "MotorTracker",
-                                    new RunToPositionPipe(
-                                            "RunToPosition",
-                                            new ExitPipe("Exit")
-                                    )
-                            )
-                    )
-            )
-    );
+                "FilterElement",
+                new ResetDcMotorPipe(
+                    "MotorReset",
+                    new MotorTrackerPipe(
+                        "MotorTracker",
+                        new RunToPositionPipe("RunToPosition", new ExitPipe("Exit"))))));
     this.robotObject = robotObject;
     initialize();
   }
 
   private void initialize() {
-    aotRuntime = new AotRuntime(
-                    robotObject,
-                    initializedHardware,
-                    true);
+    aotRuntime = new AotRuntime(robotObject, initializedHardware, true);
     aotRuntime.initialize();
     serviceRuntime = new ServiceRuntime(telemetry, robotObject);
     serviceRuntime.initialize();

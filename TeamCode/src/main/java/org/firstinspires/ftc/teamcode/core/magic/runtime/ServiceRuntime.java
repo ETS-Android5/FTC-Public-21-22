@@ -77,9 +77,9 @@ public class ServiceRuntime implements ReflectionBasedMagicRuntime {
               srcName + (fieldAnnotation != null ? fieldAnnotation.key() : ""),
               () -> {
                 try {
-                    f.setAccessible(true);
-                    Object result = f.get(root);
-                    return result == null ? "null" : result.toString();
+                  f.setAccessible(true);
+                  Object result = f.get(root);
+                  return result == null ? "null" : result.toString();
                 } catch (IllegalAccessException ignored) {
                   return "IllegalAccess";
                 }
@@ -92,9 +92,9 @@ public class ServiceRuntime implements ReflectionBasedMagicRuntime {
               srcName + (methodAnnotation != null ? methodAnnotation.key() : ""),
               () -> {
                 try {
-                    m.setAccessible(true);
-                    Object result = m.invoke(root);
-                    return result == null ? "null" : result.toString();
+                  m.setAccessible(true);
+                  Object result = m.invoke(root);
+                  return result == null ? "null" : result.toString();
                 } catch (IllegalAccessException | InvocationTargetException ignored) {
                   return "IllegalAccess";
                 }

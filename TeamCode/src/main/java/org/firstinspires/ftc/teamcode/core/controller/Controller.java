@@ -107,42 +107,48 @@ public class Controller implements Namable {
 
   public double leftTrigger() {
     return Optional.ofNullable(leftTriggerManipulation)
-            .orElse(Controller::DEFAULT_MANIPULATION).apply((double) gamepad.left_trigger);
+        .orElse(Controller::DEFAULT_MANIPULATION)
+        .apply((double) gamepad.left_trigger);
   }
 
   private Function<Double, Double> leftTriggerManipulation = null;
 
   public double rightTrigger() {
     return Optional.ofNullable(rightTriggerManipulation)
-            .orElse(Controller::DEFAULT_MANIPULATION).apply((double) gamepad.right_trigger);
+        .orElse(Controller::DEFAULT_MANIPULATION)
+        .apply((double) gamepad.right_trigger);
   }
 
   private Function<Double, Double> rightTriggerManipulation = null;
 
   public double leftStickX() {
     return Optional.ofNullable(leftStickXManipulation)
-            .orElse(Controller::DEFAULT_MANIPULATION).apply((double) gamepad.left_stick_x);
+        .orElse(Controller::DEFAULT_MANIPULATION)
+        .apply((double) gamepad.left_stick_x);
   }
 
   private Function<Double, Double> leftStickXManipulation = null;
 
   public double rightStickX() {
     return Optional.ofNullable(rightStickXManipulation)
-            .orElse(Controller::DEFAULT_MANIPULATION).apply((double) gamepad.right_stick_x);
+        .orElse(Controller::DEFAULT_MANIPULATION)
+        .apply((double) gamepad.right_stick_x);
   }
 
   private Function<Double, Double> rightStickXManipulation = null;
 
   public double leftStickY() {
     return Optional.ofNullable(leftStickYManipulation)
-            .orElse(Controller::DEFAULT_MANIPULATION).apply((double) gamepad.left_stick_y * -1);
+        .orElse(Controller::DEFAULT_MANIPULATION)
+        .apply((double) gamepad.left_stick_y * -1);
   }
 
   private Function<Double, Double> leftStickYManipulation = null;
 
   public double rightStickY() {
     return Optional.ofNullable(rightStickYManipulation)
-            .orElse(Controller::DEFAULT_MANIPULATION).apply((double) gamepad.right_stick_y * -1);
+        .orElse(Controller::DEFAULT_MANIPULATION)
+        .apply((double) gamepad.right_stick_y * -1);
   }
 
   private Function<Double, Double> rightStickYManipulation = null;

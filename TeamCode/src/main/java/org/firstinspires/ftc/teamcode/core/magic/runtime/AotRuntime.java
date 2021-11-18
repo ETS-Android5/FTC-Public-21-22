@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.core.magic.runtime;
 
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -40,7 +39,8 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
 
   public AotRuntime(
       Object robotObject,
-      ConcurrentHashMap<String, Object> initializedObjects, boolean isAutonomous) {
+      ConcurrentHashMap<String, Object> initializedObjects,
+      boolean isAutonomous) {
     this.robotObject = robotObject;
     this.initializedObjects = initializedObjects;
     this.hardwareFields = new LinkedList<>();
@@ -115,7 +115,8 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
       try {
         field.getAnnotationTargetField().set(field.getAnnotationContainer(), motor);
         initializedObjects.put(annotation.name(), motor);
-      } catch (IllegalAccessException ignored) {}
+      } catch (IllegalAccessException ignored) {
+      }
     } else if (hardwareObj == Servo.class) {
       Servo servo = hardwareMap.servo.get(annotation.name());
       servo.setDirection(annotation.direction().primitiveServoConversion());
