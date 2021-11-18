@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.drivetrains;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
@@ -239,40 +241,38 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
     @Override
     public void autoRunToPosition(int target, int toleranceTicks, Supplier<Boolean> opModeIsActive, Runnable update) {
-        AtomicBoolean reachedFrontLeftTarget = new AtomicBoolean(false);
-        AtomicBoolean reachedFrontRightTarget = new AtomicBoolean(false);
-        AtomicBoolean reachedRearLeftTarget = new AtomicBoolean(false);
-        AtomicBoolean reachedRearRightTarget = new AtomicBoolean(false);
+        boolean[] currentTargetsReached = new boolean[4];
         setAllTarget(target);
         MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
                 getFrontLeftName(),
                 target,
                 toleranceTicks,
-                () -> reachedFrontLeftTarget.set(true)
+                () -> currentTargetsReached[0] = true
         ));
         MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
                 getFrontRightName(),
                 target,
                 toleranceTicks,
-                () -> reachedFrontRightTarget.set(true)
+                () -> currentTargetsReached[1] = true
         ));
         MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
                 getRearLeftName(),
                 target,
                 toleranceTicks,
-                () -> reachedRearLeftTarget.set(true)
+                () -> currentTargetsReached[2] = true
         ));
         MotorTrackerPipe.getInstance().setCallbackForMotorPosition(new CallbackData(
                 getRearRightName(),
                 target,
                 toleranceTicks,
-                () -> reachedRearRightTarget.set(true)
+                () -> currentTargetsReached[3] = true
         ));
+        update.run();
         while (opModeIsActive.get()
-                && !reachedFrontLeftTarget.get()
-                && !reachedFrontRightTarget.get()
-                && !reachedRearLeftTarget.get()
-                && !reachedRearRightTarget.get()) {
+                && (!currentTargetsReached[0]
+                || !currentTargetsReached[1]
+                || !currentTargetsReached[2]
+                || !currentTargetsReached[3])) {
             update.run();
         }
     }

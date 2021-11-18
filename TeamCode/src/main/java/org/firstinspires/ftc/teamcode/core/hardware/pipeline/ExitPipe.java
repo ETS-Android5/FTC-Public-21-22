@@ -3,14 +3,11 @@ package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IServoState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ExitPipe extends HardwarePipeline {
   public ExitPipe(String name) {
