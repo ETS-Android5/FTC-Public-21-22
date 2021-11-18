@@ -10,18 +10,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class NewChassis implements Component {
-    public final IMecanumDrivetrain drivetrain = new GoBildaMecanumDrivetrain();
+  public final IMecanumDrivetrain drivetrain = new GoBildaMecanumDrivetrain();
 
-    @Override
-    public String getName() {
-        return this.getClass().getName();
-    }
+  @Override
+  public String getName() {
+    return this.getClass().getName();
+  }
 
-    @Override
-    public List<? super State> getNextState() {
-        List<? super State> states = new LinkedList<>();
-        Collections.singletonList(drivetrain)
-                .forEach((component) -> component.getNextState().forEach((s) -> states.add((State) s)));
-        return states;
-    }
+  @Override
+  public List<? super State> getNextState() {
+    List<? super State> states = new LinkedList<>();
+    Collections.singletonList(drivetrain)
+        .forEach((component) -> component.getNextState().forEach((s) -> states.add((State) s)));
+    return states;
+  }
 }

@@ -21,46 +21,40 @@ public class ExitPipe extends HardwarePipeline {
     return super.process(hardware, r);
   }
 
+  @SuppressWarnings("all")
   private void processMotor(IMotorState nextState, Map<String, Object> hardware) {
-    if (nextState != null) {
-      IMotorState currentState = State.currentStateOf(nextState.getName());
-      DcMotor motorObj = (DcMotor) hardware.get(nextState.getName());
-      if (motorObj != null) {
-        if (currentState == null || currentState.getDirection() != nextState.getDirection()) {
-          motorObj.setDirection(nextState.getDirection().primitiveConversion());
-        }
-        if (currentState == null || currentState.getRunMode() != nextState.getRunMode()) {
-          motorObj.setMode(nextState.getRunMode().primitiveConversion());
-        }
-        if (currentState == null
-            || currentState.getZeroPowerBehavior() != nextState.getZeroPowerBehavior()) {
-          motorObj.setZeroPowerBehavior(nextState.getZeroPowerBehavior().primitiveConversion());
-        }
-        if (currentState == null || currentState.getPower() != nextState.getPower()) {
-          motorObj.setPower(nextState.getPower());
-        }
-        if (currentState == null
-            || currentState.getTargetPosition() != nextState.getTargetPosition()) {
-          motorObj.setTargetPosition(nextState.getTargetPosition());
-        }
-        nextState.makeCurrent();
-      }
+    IMotorState currentState = State.currentStateOf(nextState.getName());
+    DcMotor motorObj = (DcMotor) hardware.get(nextState.getName());
+    boolean noState = currentState == null;
+    if (noState || currentState.getDirection() != nextState.getDirection()) {
+      motorObj.setDirection(nextState.getDirection().primitiveConversion());
     }
+    if (noState || currentState.getRunMode() != nextState.getRunMode()) {
+      motorObj.setMode(nextState.getRunMode().primitiveConversion());
+    }
+    if (noState || currentState.getZeroPowerBehavior() != nextState.getZeroPowerBehavior()) {
+      motorObj.setZeroPowerBehavior(nextState.getZeroPowerBehavior().primitiveConversion());
+    }
+    if (noState || currentState.getPower() != nextState.getPower()) {
+      motorObj.setPower(nextState.getPower());
+    }
+    if (noState || currentState.getTargetPosition() != nextState.getTargetPosition()) {
+      motorObj.setTargetPosition(nextState.getTargetPosition());
+    }
+    nextState.makeCurrent();
   }
 
+  @SuppressWarnings("all")
   private void processServo(IServoState nextState, Map<String, Object> hardware) {
-    if (nextState != null) {
-      IServoState currentState = State.currentStateOf(nextState.getName());
-      Servo servoObj = (Servo) hardware.get(nextState.getName());
-      if (servoObj != null) {
-        if (currentState == null || currentState.getDirection() != nextState.getDirection()) {
-          servoObj.setDirection(nextState.getDirection().primitiveServoConversion());
-        }
-        if (currentState == null || currentState.getPosition() != nextState.getPosition()) {
-          servoObj.setPosition(nextState.getPosition());
-        }
-        nextState.makeCurrent();
-      }
+    IServoState currentState = State.currentStateOf(nextState.getName());
+    Servo servoObj = (Servo) hardware.get(nextState.getName());
+    boolean noState = currentState == null;
+    if (noState || currentState.getDirection() != nextState.getDirection()) {
+      servoObj.setDirection(nextState.getDirection().primitiveServoConversion());
     }
+    if (noState || currentState.getPosition() != nextState.getPosition()) {
+      servoObj.setPosition(nextState.getPosition());
+    }
+    nextState.makeCurrent();
   }
 }

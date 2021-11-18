@@ -7,15 +7,15 @@ import org.firstinspires.ftc.teamcode.hardware.mechanisms.drivetrains.AWDClassic
 import java.util.List;
 
 public class AWDPushbot implements Component {
-    public final AWDClassicDrivetrain drivetrain = new AWDClassicDrivetrain();
+  public final AWDClassicDrivetrain drivetrain = new AWDClassicDrivetrain();
 
-    @Override
-    public String getName() {
-        return this.getClass().getName();
-    }
+  @Override
+  public String getName() {
+    return this.getClass().getName();
+  }
 
-    @Override
-    public List<? super State> getNextState() {
-        return drivetrain.getNextState();
-    }
+  @Override
+  public List<? super State> getNextState() {
+    return drivetrain.getNextState();
+  }
 }

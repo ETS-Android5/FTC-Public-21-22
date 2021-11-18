@@ -14,7 +14,14 @@ public class MotorState extends IMotorState {
   private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
 
   public MotorState(String name, boolean reverse) {
-    this(name, reverse ? Direction.REVERSE : Direction.FORWARD, RunMode.RUN_WITHOUT_ENCODER, ZeroPowerBehavior.BRAKE, 0.0, 0, null);
+    this(
+        name,
+        reverse ? Direction.REVERSE : Direction.FORWARD,
+        RunMode.RUN_WITHOUT_ENCODER,
+        ZeroPowerBehavior.BRAKE,
+        0.0,
+        0,
+        null);
   }
 
   public MotorState(
@@ -24,8 +31,7 @@ public class MotorState extends IMotorState {
       ZeroPowerBehavior zeroPowerBehavior,
       Double power,
       Integer targetPosition,
-      TriFunction<Integer, Integer, Integer, Double> powerCurve
-      ) {
+      TriFunction<Integer, Integer, Integer, Double> powerCurve) {
     super(name);
     this.direction = direction;
     this.runMode = runMode;
@@ -49,7 +55,7 @@ public class MotorState extends IMotorState {
         this.zeroPowerBehavior,
         this.power,
         this.targetPosition,
-            this.powerCurve);
+        this.powerCurve);
   }
 
   @Override
@@ -66,7 +72,7 @@ public class MotorState extends IMotorState {
         this.zeroPowerBehavior,
         this.power,
         this.targetPosition,
-            this.powerCurve);
+        this.powerCurve);
   }
 
   @Override
@@ -83,7 +89,7 @@ public class MotorState extends IMotorState {
         zeroPowerBehavior,
         this.power,
         this.targetPosition,
-            this.powerCurve);
+        this.powerCurve);
   }
 
   @Override
@@ -100,7 +106,7 @@ public class MotorState extends IMotorState {
         this.zeroPowerBehavior,
         power < -1 ? -1 : power > 1 ? 1 : power,
         this.targetPosition,
-            this.powerCurve);
+        this.powerCurve);
   }
 
   @Override
@@ -117,7 +123,7 @@ public class MotorState extends IMotorState {
         this.zeroPowerBehavior,
         this.power,
         targetPosition,
-            this.powerCurve);
+        this.powerCurve);
   }
 
   @Override
@@ -128,25 +134,18 @@ public class MotorState extends IMotorState {
   @Override
   public IMotorState withPowerCurve(TriFunction<Integer, Integer, Integer, Double> powerCurve) {
     return new MotorState(
-            this.name,
-            this.direction,
-            this.runMode,
-            this.zeroPowerBehavior,
-            this.power,
-            this.targetPosition,
-            powerCurve);
+        this.name,
+        this.direction,
+        this.runMode,
+        this.zeroPowerBehavior,
+        this.power,
+        this.targetPosition,
+        powerCurve);
   }
 
   @Override
   public IMotorState duplicate() {
     return new MotorState(
-            name,
-            direction,
-            runMode,
-            zeroPowerBehavior,
-            power,
-            targetPosition,
-            powerCurve
-    );
+        name, direction, runMode, zeroPowerBehavior, power, targetPosition, powerCurve);
   }
 }

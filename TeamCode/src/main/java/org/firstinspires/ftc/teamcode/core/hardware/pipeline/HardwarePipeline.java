@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
-
 import java.util.Map;
 
 public class HardwarePipeline {

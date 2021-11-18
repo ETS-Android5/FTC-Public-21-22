@@ -39,5 +39,6 @@ public abstract class IMotorState extends State implements Duplicatable<IMotorSt
   @Observable(key = "PowerCurve")
   public abstract TriFunction<Integer, Integer, Integer, Double> getPowerCurve();
 
-  public abstract IMotorState withPowerCurve(TriFunction<Integer, Integer, Integer, Double> powerCurve);
+  public abstract IMotorState withPowerCurve(
+      TriFunction<Integer, Integer, Integer, Double> powerCurve);
 }

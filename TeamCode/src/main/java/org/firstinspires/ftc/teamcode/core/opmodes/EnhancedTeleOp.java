@@ -32,22 +32,16 @@ public abstract class EnhancedTeleOp extends OpMode {
   public EnhancedTeleOp(Component robotObject) {
     State.clear();
     initializedHardware = new ConcurrentHashMap<>();
-    hardwarePipeline = new HardwarePipeline(
+    hardwarePipeline =
+        new HardwarePipeline(
             Constants.PIPELINE_BASE_NAME,
             new InitializedFilterPipe(
-                    "FilterElement",
-                    new ResetDcMotorPipe(
-                            "MotorReset",
-                            new MotorTrackerPipe(
-                                    "MotorTrackerPipe",
-                                    new RunToPositionPipe(
-                                            "RunToPosition",
-                                            new ExitPipe("Exit")
-                                    )
-                            )
-                    )
-            )
-    );
+                "FilterElement",
+                new ResetDcMotorPipe(
+                    "MotorReset",
+                    new MotorTrackerPipe(
+                        "MotorTrackerPipe",
+                        new RunToPositionPipe("RunToPosition", new ExitPipe("Exit"))))));
     controller1 = new Controller(Constants.GAMEPAD_1_NAME);
     controller2 = new Controller(Constants.GAMEPAD_2_NAME);
     this.robotObject = robotObject;
@@ -55,11 +49,7 @@ public abstract class EnhancedTeleOp extends OpMode {
   }
 
   protected void initialize() {
-    aotRuntime =
-        new AotRuntime(
-            robotObject,
-            initializedHardware,
-                false);
+    aotRuntime = new AotRuntime(robotObject, initializedHardware, false);
     aotRuntime.initialize();
     serviceRuntime = new ServiceRuntime(telemetry, robotObject, controller1, controller2);
     serviceRuntime.initialize();
