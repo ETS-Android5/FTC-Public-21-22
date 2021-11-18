@@ -31,7 +31,7 @@ public class Test1 extends EnhancedTeleOp {
 
     public Test1() {
         super(new MecanumBot());
-        this.robot = (MecanumBot) super.robotObject;
+        this.robot = (MecanumBot) robotObject;
     }
 
     @Override
@@ -149,7 +149,7 @@ public class Test1 extends EnhancedTeleOp {
         robot.drivetrain.driveBySticks(
                 -controller1.leftStickX() * speed,
                 controller1.leftStickY() * speed,
-                -turnValue * speed
+                -turnValue * .9 * speed
         );
     }
 

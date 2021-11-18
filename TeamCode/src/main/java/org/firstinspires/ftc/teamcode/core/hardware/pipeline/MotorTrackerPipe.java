@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
@@ -45,25 +47,29 @@ public class MotorTrackerPipe extends HardwarePipeline {
 
     @Override
     public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
-        hardware.forEach((k, v) -> {
-            if (v instanceof DcMotor) {
-                IMotorState motorState = r.getNextMotorStates().stream()
-                        .filter((s) -> s.getName().equals(k)).findFirst().orElse(null);
-                if (motorState != null) {
-                    RunMode runMode = motorState.getRunMode();
-                    if (runMode == RunMode.RUN_TO_POSITION || runMode == RunMode.RUN_USING_ENCODER) {
-                        motorPositions.put(k, ((DcMotor) v).getCurrentPosition());
-                    }
+        r.getNextMotorStates().forEach((m) -> {
+            if (m.getRunMode() == RunMode.RUN_TO_POSITION || m.getRunMode() == RunMode.RUN_USING_ENCODER) {
+                Object motor = hardware.get(m.getName());
+                if (motor != null) {
+                    int pos = ((DcMotor) motor).getCurrentPosition();
+                    Log.d("MTP", "FETCHING CURRENT POSITION OF " + m.getName() + ": " + pos);
+                    motorPositions.put(m.getName(), pos);
                 }
             }
         });
         Iterator<CallbackData> iter = motorPositionCallbacks.iterator();
         while (iter.hasNext()) {
+            Log.d("MTP", "MTP ITER");
             CallbackData data = iter.next();
             if (data != null && motorPositions.containsKey(data.getMotorName())) {
+                Log.d("MTP", "Callback for " + data.getMotorName());
                 Integer motorPosition = motorPositions.get(data.getMotorName());
                 int minimum = data.getMotorTargetPosition() - data.getToleranceTicks();
                 int maximum = data.getMotorTargetPosition() + data.getToleranceTicks();
+                Log.d("MTP", "CURRENT POSITION: " + motorPosition);
+                Log.d("MTP", "TARGET: " + data.getMotorTargetPosition());
+                Log.d("MTP", "MIN: " + minimum);
+                Log.d("MTP", "MAX: " + maximum);
                 if (motorPosition != null && motorPosition >= minimum && motorPosition <= maximum) {
                     data.getCallback().run();
                     iter.remove();

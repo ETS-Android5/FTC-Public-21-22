@@ -15,8 +15,8 @@ import java.util.List;
 public class OuttakeBucket implements IOuttakeBucket {
     private static final String OUTTAKE_BUCKET_SERVO_NAME = "OUTTAKE_BUCKET_SERVO";
 
-    private static final double CARRY_POSITION = .65;
-    private static final double DUMP_POSITION = 0;
+    private static final double CARRY_POSITION = .25;
+    private static final double DUMP_POSITION = .9;
 
     public OuttakeBucket() {
         initialize();

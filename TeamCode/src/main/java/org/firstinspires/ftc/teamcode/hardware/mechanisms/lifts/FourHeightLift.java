@@ -19,7 +19,7 @@ public class FourHeightLift implements IFourHeightLift {
     private static final int HEIGHT_0_TICKS = 0;
     private static final int HEIGHT_1_TICKS = 800;
     private static final int HEIGHT_2_TICKS = 1260;
-    private static final int HEIGHT_3_TICKS = 2180;
+    private static final int HEIGHT_3_TICKS = 2300;
 
     public FourHeightLift() {
         initialize();

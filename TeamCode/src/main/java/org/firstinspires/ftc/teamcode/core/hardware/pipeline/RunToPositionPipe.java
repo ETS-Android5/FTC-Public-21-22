@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
@@ -68,6 +70,7 @@ public class RunToPositionPipe extends HardwarePipeline {
             if (motor.shouldUpdatePower()) {
               Object motorObj = hardware.get(motorName);
               if (motorObj instanceof DcMotor) {
+                  Log.d("MTP", "SETTING POWER OF " + motorName + " TO: " + power);
                 ((DcMotor) motorObj).setPower(power);
               }
             }
