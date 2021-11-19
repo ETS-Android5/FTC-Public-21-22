@@ -53,29 +53,22 @@ public class MotorTrackerPipe extends HardwarePipeline {
               if (m.getRunMode() == RunMode.RUN_TO_POSITION
                   || m.getRunMode() == RunMode.RUN_USING_ENCODER) {
                 int pos = ((DcMotor) hardware.get(m.getName())).getCurrentPosition();
-                Log.d("MTP", "FETCHING CURRENT POSITION OF " + m.getName() + ": " + pos);
                 motorPositions.put(m.getName(), pos);
               }
             });
     Iterator<CallbackData> iter = motorPositionCallbacks.iterator();
     while (iter.hasNext()) {
-      Log.d("MTP", "MTP ITER");
       CallbackData data = iter.next();
       if (data == null) {
         iter.remove();
       } else {
         String motorName = data.getMotorName();
         if (motorPositions.containsKey(motorName)) {
-          Log.d("MTP", "Callback for " + motorName);
           Integer motorPosition = motorPositions.get(motorName);
           int target = data.getMotorTargetPosition();
           int tolerance = data.getToleranceTicks();
           int minimum = target - tolerance;
           int maximum = target + tolerance;
-          Log.d("MTP", "CURRENT POSITION: " + motorPosition);
-          Log.d("MTP", "TARGET: " + data.getMotorTargetPosition());
-          Log.d("MTP", "MIN: " + minimum);
-          Log.d("MTP", "MAX: " + maximum);
           if (motorPosition != null && motorPosition >= minimum && motorPosition <= maximum) {
             data.getCallback().run();
             iter.remove();

@@ -31,9 +31,9 @@ public class Auto extends EnhancedAutonomous {
             (double) Math.round(PowerCurves.RUN_TO_POSITION_QUARTER_POWER.apply(a, b, c) * 100)
                 / 100);
     processChanges();
-    int[] targetPositions = {15, 105, 285, 300, 390, 570, 585, 675, 855};
+    int[] targetPositions = {1000, -2000};
     for (int target : targetPositions) {
-      robot.drivetrain.autoRunToPosition(target, 10, super::opModeIsActive, super::processChanges);
+      robot.drivetrain.autoRunToPosition(target, 5, super::opModeIsActive, super::processChanges);
       sleep(4000);
     }
   }
