@@ -60,7 +60,7 @@ public class RunToPositionPipe extends HardwarePipeline {
           IMotorState currentState = State.currentStateOf(motorName);
           IMotorState nextState = State.nextStateOf(motorName);
           int currentPosition = MotorTrackerPipe.getInstance().getPositionOf(motorName);
-          if (currentState.getTargetPosition() != nextState.getTargetPosition()) {
+          if (currentState != null && nextState != null && currentState.getTargetPosition() != nextState.getTargetPosition()) {
             motor.mutateTo(currentPosition, nextState.getTargetPosition());
           }
           double power = motor.getTargetPowerPercentage(currentPosition);
