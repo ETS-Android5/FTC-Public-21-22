@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 
@@ -17,9 +18,7 @@ import java.util.stream.Collectors;
 
 public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRuntime {
   private static final Class<?>[] KNOWN_INJECTABLE_HARDWARE =
-      new Class<?>[] {
-        DcMotor.class, Servo.class,
-      };
+      new Class<?>[] {DcMotor.class, Servo.class, WebcamName.class};
 
   private static final Class<?>[][] HARDWARE_PRIORITY_GROUPS =
       new Class<?>[][] {
@@ -29,6 +28,9 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
         {
           Servo.class,
         },
+        {
+          WebcamName.class
+        }
       };
 
   private final Object robotObject;
@@ -123,6 +125,12 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
       try {
         field.getAnnotationTargetField().set(field.getAnnotationContainer(), servo);
         initializedObjects.put(annotation.name(), servo);
+      } catch (IllegalAccessException ignored) {
+      }
+    } else if (hardwareObj == WebcamName.class) {
+      WebcamName webcamName = hardwareMap.get(WebcamName.class, annotation.name());
+      try {
+        field.getAnnotationTargetField().set(field.getAnnotationContainer(), webcamName);
       } catch (IllegalAccessException ignored) {
       }
     }
