@@ -28,9 +28,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
         {
           Servo.class,
         },
-        {
-          WebcamName.class
-        }
+        {WebcamName.class}
       };
 
   private final Object robotObject;

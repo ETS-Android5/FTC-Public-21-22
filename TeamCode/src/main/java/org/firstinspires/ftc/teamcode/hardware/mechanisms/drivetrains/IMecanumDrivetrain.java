@@ -45,6 +45,22 @@ public interface IMecanumDrivetrain extends IAWDClassicDrivetrain {
   void autoRunToPosition(
       int ticks, int tolerance, Supplier<Boolean> opModeIsActive, Runnable update);
 
+  void autoRunToPosition(
+      int leftTicks,
+      int rightTicks,
+      int tolerance,
+      Supplier<Boolean> opModeIsActive,
+      Runnable update);
+
+  void autoRunToPosition(
+      int frontLeftTicks,
+      int frontRightTicks,
+      int rearLeftTicks,
+      int rearRightTicks,
+      int tolerance,
+      Supplier<Boolean> opModeIsActive,
+      Runnable update);
+
   String getFrontLeftName();
 
   String getFrontRightName();

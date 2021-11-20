@@ -61,6 +61,26 @@ public class PowerCurves {
         }
       };
 
+  public static final TriFunction<Integer, Integer, Integer, Double> RUN_TO_POSITION_TENTH_POWER =
+      (Integer currentTicks, Integer startingTicks, Integer targetTicks) -> {
+        if (startingTicks.equals(targetTicks)) return 0.0;
+        if (currentTicks.equals(targetTicks)) return 0.0;
+        // We haven't reached our target
+        if (startingTicks < targetTicks) {
+          // Motor should spin forward
+          if (currentTicks < startingTicks) return 0.1;
+          double percentProgress =
+              ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
+          return Math.max(Math.min(.1, 2.33 * (1 - percentProgress)), -.1);
+        } else {
+          // Motor should spin backward
+          if (currentTicks > startingTicks) return -0.1;
+          double percentProgress =
+              ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
+          return -Math.max(Math.min(.1, 2.33 * (1 - percentProgress)), -.1);
+        }
+      };
+
   public static final TriFunction<Integer, Integer, Integer, Double> CAROUSEL_CURVE =
       (Integer currentTicks, Integer startingTicks, Integer targetTicks) -> {
         if (startingTicks.equals(targetTicks)) return 0.0;
