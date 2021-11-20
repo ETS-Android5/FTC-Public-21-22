@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.drivetrains;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;

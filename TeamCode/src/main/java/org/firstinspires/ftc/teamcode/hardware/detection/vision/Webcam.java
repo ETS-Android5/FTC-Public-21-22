@@ -88,8 +88,8 @@ public class Webcam implements FtcCamera {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
-
     session = synchronizer.getValue();
+    while (bitmap == null) {}
   }
 
   @Override
@@ -109,8 +109,13 @@ public class Webcam implements FtcCamera {
   @Override
   public Mat grabFrame() {
     if (cameraName == null) return null;
+
     Mat mat = new Mat();
-    Bitmap bmp32 = bitmap.copy(Bitmap.Config.RGB_565, true);
+    Bitmap bmp32 = Bitmap.createScaledBitmap(
+            bitmap,
+            bitmap.getWidth() / 2,
+            bitmap.getHeight() / 2,
+            false).copy(Bitmap.Config.RGB_565, true);
     Utils.bitmapToMat(bmp32, mat);
     return mat;
   }
