@@ -243,27 +243,62 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   @Override
   public void autoRunToPosition(
       int target, int toleranceTicks, Supplier<Boolean> opModeIsActive, Runnable update) {
+    autoRunToPosition(target, target, target, target, toleranceTicks, opModeIsActive, update);
+  }
+
+  @Override
+  public void autoRunToPosition(
+      int leftTicks,
+      int rightTicks,
+      int toleranceTicks,
+      Supplier<Boolean> opModeIsActive,
+      Runnable update) {
+    autoRunToPosition(
+        leftTicks, rightTicks, leftTicks, rightTicks, toleranceTicks, opModeIsActive, update);
+  }
+
+  @Override
+  public void autoRunToPosition(
+      int frontLeftTicks,
+      int frontRightTicks,
+      int rearLeftTicks,
+      int rearRightTicks,
+      int toleranceTicks,
+      Supplier<Boolean> opModeIsActive,
+      Runnable update) {
     boolean[] currentTargetsReached = new boolean[4];
-    setAllTarget(target);
+    setFrontLeftTarget(frontLeftTicks);
+    setFrontRightTarget(frontRightTicks);
+    setRearLeftTarget(rearLeftTicks);
+    setRearRightTarget(rearRightTicks);
     MotorTrackerPipe.getInstance()
         .setCallbackForMotorPosition(
             new CallbackData(
-                getFrontLeftName(), target, toleranceTicks, () -> currentTargetsReached[0] = true));
+                getFrontLeftName(),
+                frontLeftTicks,
+                toleranceTicks,
+                () -> currentTargetsReached[0] = true));
     MotorTrackerPipe.getInstance()
         .setCallbackForMotorPosition(
             new CallbackData(
                 getFrontRightName(),
-                target,
+                frontRightTicks,
                 toleranceTicks,
                 () -> currentTargetsReached[1] = true));
     MotorTrackerPipe.getInstance()
         .setCallbackForMotorPosition(
             new CallbackData(
-                getRearLeftName(), target, toleranceTicks, () -> currentTargetsReached[2] = true));
+                getRearLeftName(),
+                rearLeftTicks,
+                toleranceTicks,
+                () -> currentTargetsReached[2] = true));
     MotorTrackerPipe.getInstance()
         .setCallbackForMotorPosition(
             new CallbackData(
-                getRearRightName(), target, toleranceTicks, () -> currentTargetsReached[3] = true));
+                getRearRightName(),
+                rearRightTicks,
+                toleranceTicks,
+                () -> currentTargetsReached[3] = true));
     update.run();
     while (opModeIsActive.get()
         && (!currentTargetsReached[0]

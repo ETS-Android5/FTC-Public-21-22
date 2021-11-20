@@ -52,6 +52,7 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
 
   protected void processChanges() {
     hardwarePipeline.process(initializedHardware, new StateFilterResult(robotObject));
+    telemetry.update();
   }
 
   @Override
@@ -63,10 +64,14 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
     onInitPressed();
     waitForStart();
     onStartPressed();
+    while (opModeIsActive()) {}
+    onStop();
     State.clear();
   }
 
   public abstract void onInitPressed();
 
   public abstract void onStartPressed();
+
+  public abstract void onStop();
 }

@@ -111,11 +111,9 @@ public class Webcam implements FtcCamera {
     if (cameraName == null) return null;
 
     Mat mat = new Mat();
-    Bitmap bmp32 = Bitmap.createScaledBitmap(
-            bitmap,
-            bitmap.getWidth() / 2,
-            bitmap.getHeight() / 2,
-            false).copy(Bitmap.Config.RGB_565, true);
+    Bitmap bmp32 =
+        Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false)
+            .copy(Bitmap.Config.RGB_565, true);
     Utils.bitmapToMat(bmp32, mat);
     return mat;
   }

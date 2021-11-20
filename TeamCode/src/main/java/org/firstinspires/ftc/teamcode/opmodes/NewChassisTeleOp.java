@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.hardware.robots.NewChassis;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp(name = "NewChassis")
+@Disabled
 public class NewChassisTeleOp extends EnhancedTeleOp {
   private static double THIRD_MANIPULATION(double in) {
     return Math.pow(in, 3);
