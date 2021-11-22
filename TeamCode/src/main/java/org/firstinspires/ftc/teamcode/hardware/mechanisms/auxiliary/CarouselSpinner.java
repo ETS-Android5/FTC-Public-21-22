@@ -20,7 +20,7 @@ public class CarouselSpinner implements ICarouselSpinner {
   private static final double CAROUSEL_CIRCUMFERENCE_IN = 15.0 * Math.PI;
   private static final double CAROUSEL_SPINNER_WHEEL_CIRCUMFERENCE_IN = 4.0 * Math.PI;
   private static final double MOTOR_TICKS_PER_MOTOR_REVOLUTION = 560.0;
-  private static final double LOSS_FACTOR = 1.2;
+  private static final double LOSS_FACTOR = 1.26;
   private static final int TICKS_PER_CAROUSEL_REVOLUTION =
       (int)
           (((CAROUSEL_CIRCUMFERENCE_IN / CAROUSEL_SPINNER_WHEEL_CIRCUMFERENCE_IN)
