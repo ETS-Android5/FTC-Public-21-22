@@ -51,12 +51,12 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
         markerPositionDetector.calculateTeamMarkerPosition(frame);
 
     Log.d("AUTO", "6");
-    robot.drivetrain.setFrontLeftPower(-0.5);
-    robot.drivetrain.setFrontRightPower(-0.5);
-    robot.drivetrain.setRearLeftPower(0.5);
-    robot.drivetrain.setRearRightPower(0.5);
+    robot.drivetrain.setFrontLeftPower(0.3);
+    robot.drivetrain.setFrontRightPower(-0.3);
+    robot.drivetrain.setRearLeftPower(-0.3);
+    robot.drivetrain.setRearRightPower(0.3);
     processChanges();
-    sleep(1200);
+    sleep(350);
     robot.drivetrain.setAllPower(0);
     processChanges();
     // frontRightTarget -= 250;
@@ -85,7 +85,7 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
       processChanges();
     }
-    int distanceToShippingHubTime = teamMarkerPosition == TeamMarkerPosition.RIGHT ? 900 : 1300;
+    int distanceToShippingHubTime = teamMarkerPosition == TeamMarkerPosition.RIGHT ? 1800 : 1900;
     robot.drivetrain.setAllPower(-.25);
     processChanges();
     sleep(distanceToShippingHubTime);
@@ -136,18 +136,6 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     processChanges();
     sleep(1000);
 
-    robot.fourHeightLift.goToHeight0();
-    start = System.nanoTime();
-    while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
-      processChanges();
-    }
-
-    robot.intake.beginIntaking();
-    processChanges();
-    sleep(4000);
-    robot.intake.beginOuttaking();
-    processChanges();
-    sleep(4000);
     robot.fourHeightLift.goToHeight0();
     start = System.nanoTime();
     while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
