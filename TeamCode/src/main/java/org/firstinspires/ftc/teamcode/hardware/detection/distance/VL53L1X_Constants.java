@@ -51,8 +51,8 @@ public class VL53L1X_Constants {
 
   static final short[] VL51L1X_DEFAULT_CONFIGURATION = {
     0x00, /* 0x2d : set bit 2 and 5 to 1 for fast plus mode (1MHz I2C), else don't touch */
-    0x00, /* 0x2e : bit 0 if I2C pulled up at 1.8V, else set bit 0 to 1 (pull up at AVDD) */
-    0x00, /* 0x2f : bit 0 if GPIO pulled up at 1.8V, else set bit 0 to 1 (pull up at AVDD) */
+    0x01, /* 0x2e : bit 0 if I2C pulled up at 1.8V, else set bit 0 to 1 (pull up at AVDD) */
+    0x01, /* 0x2f : bit 0 if GPIO pulled up at 1.8V, else set bit 0 to 1 (pull up at AVDD) */
     0x01, /* 0x30 : set bit 4 to 0 for active high interrupt and 1 for active low (bits 3:0 must be 0x1), use SetInterruptPolarity() */
     0x02, /* 0x31 : bit 1 = interrupt depending on the polarity, use CheckForDataReady() */
     0x00, /* 0x32 : not user-modifiable */
@@ -140,7 +140,7 @@ public class VL53L1X_Constants {
     0x00, /* 0x84 : not user-modifiable */
     0x01, /* 0x85 : not user-modifiable */
     0x00, /* 0x86 : clear interrupt, use ClearInterrupt() */
-    0x00 /* 0x87 : start ranging, use StartRanging() or StopRanging(), If you want an automatic start after VL53L1X_init() call, put 0x40 in location 0x87 */
+    0x40 /* 0x87 : start ranging, use StartRanging() or StopRanging(), If you want an automatic start after VL53L1X_init() call, put 0x40 in location 0x87 */
   };
 
   static final short[] status_rtn = {
