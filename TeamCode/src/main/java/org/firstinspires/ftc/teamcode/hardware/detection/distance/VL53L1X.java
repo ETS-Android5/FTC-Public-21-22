@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -23,8 +24,14 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     this.deviceClient.engage();
   }
 
+  private boolean calibrated = false;
+
   @Override
   protected boolean doInitialize() {
+    if (!calibrated) {
+      calibrate();
+    }
+    VL53L1X_StartRanging();
     return true;
   }
 
@@ -38,9 +45,64 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     return "STMicroelectronics_VL53L1X_Range_Sensor";
   }
 
+  // INITIALIZE MUST BE CALLED FIRST
+  //
   @Override
   public double getDistance(DistanceUnit unit) {
-    return 0; // TODO: IMPLEMENT THIS
+    Log.d("VL53L1X", "GETTING DISTANCE");
+    byte dataReady = 0;
+    while (dataReady == 0) {
+      dataReady = VL53L1X_CheckForDataReady();
+      Log.d("VL53L1X", "CHECKING FOR DATA READY: " + dataReady);
+    }
+    Log.d("VL53L1X", "CHECKING RANGE STATUS");
+    byte rangeStatus = VL53L1X_GetRangeStatus();
+    Log.d("VL53L1X", "RANGE STATUS: " + rangeStatus);
+    short distance = VL53L1X_GetDistance();
+    Log.d("VL53L1X", "DISTANCE: " + distance);
+    VL53L1X_ClearInterrupt();
+    Log.d("VL53L1X", "INTERRUPT CLEARED");
+    return distance;
+  }
+
+  // MUST BE CALIBRATED USING 17% REFLECTANCE GRAY SHEET AT 140MM
+  @Override
+  public void calibrate() {
+    Log.d("VL53L1X", "CALIBRATION");
+    byte bootState = 0;
+    while (VL53L1X_BootState() == 0) {
+      bootState = VL53L1X_BootState();
+      Log.d("VL53L1X", "BOOT STATE: " + bootState);
+    }
+    Log.d("VL53L1X", "BOOTED");
+    VL53L1X_SensorInit();
+    Log.d("VL53L1X", "INITIALIZED");
+    // This calibrates it to 100mm
+    short offset = VL53L1X_CalibrateOffset((short) 140);
+    Log.d("VL53L1X", "OFFSET CALIBRATED");
+    Log.d("VL53L1X", "OFFSET: " + offset);
+    short xtalk = VL53L1X_CalibrateXtalk((short) 140);
+    Log.d("VL53L1X", "XTALK CALIBRATED");
+    Log.d("VL53L1X", "XTALK: " + xtalk);
+    calibrated = true;
+  }
+
+  /*
+  NOTE: Timing budget options in ms are
+  20, 33, 50, 100, 200, 500
+   */
+  @Override
+  public void setTimingBudget(short budgetMs) {
+    Log.d("VL53L1X", "SETTING TIMING BUDGET");
+    VL53L1X_SetTimingBudgetInMs(budgetMs);
+    Log.d("VL53L1X", "SETTING INTER-MEASUREMENT PERIOD");
+    VL53L1X_SetInterMeasurementInMs(budgetMs * 2);
+  }
+
+  @Override
+  public void onShutdown() {
+    Log.d("VL53L1X", "SHUTTING DOWN");
+    VL53L1X_StopRanging();
   }
 
   public VL53L1X_Version VL53L1X_GetSWVersion() {
@@ -409,8 +471,62 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     deviceClient.write8(0x0B, 0);
   }
 
-  @Override
-  public void calibrate() {
-    // TODO: IMPLEMENT THIS
+  short VL53L1X_CalibrateOffset(short TargetDistInMm) {
+    byte i, tmp;
+    short AverageDistance = 0;
+    short distance;
+
+    deviceClient.write(VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM, TypeConversion.shortToByteArray((short) 0x0));
+    deviceClient.write(VL53L1X_Constants.MM_CONFIG__INNER_OFFSET_MM, TypeConversion.shortToByteArray((short) 0x0));
+    VL53L1X_StartRanging();	/* Enable VL53L1X sensor */
+    for (i = 0; i < 50; i++) {
+      tmp = 0;
+      while (tmp == 0) {
+        tmp = VL53L1X_CheckForDataReady();
+      }
+      distance = VL53L1X_GetDistance();
+      VL53L1X_ClearInterrupt();
+      AverageDistance += distance;
+    }
+    VL53L1X_StopRanging();
+    AverageDistance /= 50;
+	short offset = (short) (TargetDistInMm - AverageDistance);
+	deviceClient.write(VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM, TypeConversion.shortToByteArray((short) (offset * 4)));
+    return offset;
+  }
+
+  short VL53L1X_CalibrateXtalk(short TargetDistInMm) {
+    byte i, tmp;
+    float AverageSignalRate = 0;
+    float AverageDistance = 0;
+    float AverageSpadNb = 0;
+    short distance = 0, spadNum;
+    short sr;
+    int calXtalk;
+
+    deviceClient.write(0x0016, TypeConversion.shortToByteArray((short) 0));
+    VL53L1X_StartRanging();
+    for (i = 0; i < 50; i++) {
+      tmp = 0;
+      while (tmp == 0){
+        tmp = VL53L1X_CheckForDataReady();
+      }
+      sr = VL53L1X_GetSignalRate();
+      distance = VL53L1X_GetDistance();
+      VL53L1X_ClearInterrupt();
+      AverageDistance += distance;
+      spadNum = VL53L1X_GetSpadNb();
+      AverageSpadNb += spadNum;
+      AverageSignalRate += sr;
+    }
+    VL53L1X_StopRanging();
+    AverageDistance /= 50;
+    AverageSpadNb /= 50;
+    AverageSignalRate /= 50;
+    /* Calculate Xtalk value */
+    calXtalk = (short) (512 * (AverageSignalRate * (1 - (AverageDistance / TargetDistInMm))) / AverageSpadNb);
+    if (calXtalk  > (short) 0xffff) calXtalk = 0xffff;
+    deviceClient.write(0x0016, TypeConversion.shortToByteArray((short) calXtalk));
+    return (short) ((calXtalk * 1000) >> 9);
   }
 }
