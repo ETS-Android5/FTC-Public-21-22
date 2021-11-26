@@ -52,7 +52,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     );
   }
 
-  public void VL53L1X_SetI2CAddress(short new_address) {
+  public void VL53L1X_SetI2CAddress(byte new_address) {
     deviceClient.write8(VL53L1X_Constants.VL53L1_I2C_SLAVE__DEVICE_ADDRESS, new_address >> 1);
   }
 
@@ -75,7 +75,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     deviceClient.write8(VL53L1X_Constants.SYSTEM__INTERRUPT_CLEAR, 0x01);
   }
 
-  void VL53L1X_SetInterruptPolarity(short NewPolarity) {
+  void VL53L1X_SetInterruptPolarity(byte NewPolarity) {
       byte temp = deviceClient.read8(VL53L1X_Constants.GPIO_HV_MUX__CTRL);
       temp &= 0xEF;
       deviceClient.write8(VL53L1X_Constants.GPIO_HV_MUX__CTRL, (temp | (((NewPolarity & 1) == 0 ? 1 : 0)) << 4));
@@ -101,8 +101,9 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     return (byte) ((temp & 1) == IntPol ? 1 : 0);
   }
 
-  void VL53L1X_SetTimingBudgetInMs(int TimingBudgetInMs) {
-    byte DM = VL53L1X_GetDistanceMode();
+  void VL53L1X_SetTimingBudgetInMs(short TimingBudgetInMs) {
+    short DM = VL53L1X_GetDistanceMode();
+    if (DM == 0) return;
     if (DM == 1) {
       switch (TimingBudgetInMs) {
         case 15:
@@ -192,7 +193,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     }
   }
 
-  void VL53L1X_SetDistanceMode(int DM) {
+  void VL53L1X_SetDistanceMode(short DM) {
     short TB = VL53L1X_GetTimingBudgetInMs();
     if (DM == 1) {
       deviceClient.write8(VL53L1X_Constants.PHASECAL_CONFIG__TIMEOUT_MACROP, 0x14);
@@ -212,7 +213,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     VL53L1X_SetTimingBudgetInMs(TB);
   }
 
-  byte VL53L1X_GetDistanceMode() {
+  short VL53L1X_GetDistanceMode() {
     switch (deviceClient.read8(VL53L1X_Constants.PHASECAL_CONFIG__TIMEOUT_MACROP)) {
       case 0x14:
         return 1;
@@ -223,18 +224,18 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     }
   }
 
-  void VL53L1X_SetInterMeasurementInMs(long InterMeasMs) {
+  void VL53L1X_SetInterMeasurementInMs(int InterMeasMs) {
     short ClockPLL = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__OSC_CALIBRATE_VAL));
     ClockPLL &= 0x3FF;
     deviceClient.write(VL53L1X_Constants.VL53L1_SYSTEM__INTERMEASUREMENT_PERIOD, TypeConversion.intToByteArray((int) (ClockPLL * InterMeasMs * 1.075)));
   }
 
-  int VL53L1X_GetInterMeasurementInMs() {
+  short VL53L1X_GetInterMeasurementInMs() {
     int tmp = TypeConversion.byteArrayToInt(deviceClient.read(VL53L1X_Constants.VL53L1_SYSTEM__INTERMEASUREMENT_PERIOD));
     short ClockPLL = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__OSC_CALIBRATE_VAL));
     ClockPLL &= 0x3FF;
     tmp /= ClockPLL * 1.065;
-    return tmp;
+    return (short) tmp;
   }
 
   byte VL53L1X_BootState() {
@@ -249,58 +250,58 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     return TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0));
   }
 
-  int VL53L1X_GetSignalPerSpad() {
+  short VL53L1X_GetSignalPerSpad() {
     short signal = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__PEAK_SIGNAL_COUNT_RATE_CROSSTALK_CORRECTED_MCPS_SD0));
     short SpNb = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0));
-    return (int) (200.0 * signal / SpNb);
+    return (short) (200.0 * signal / SpNb);
   }
 
-  int VL53L1X_GetAmbientPerSpad() {
+  short VL53L1X_GetAmbientPerSpad() {
     short AmbientRate = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.RESULT__AMBIENT_COUNT_RATE_MCPS_SD));
     short SpNb = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0));
-    return (int) (200.0 * AmbientRate / SpNb);
+    return (short) (200.0 * AmbientRate / SpNb);
   }
 
-  int VL53L1X_GetSignalRate() {
-    return TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__PEAK_SIGNAL_COUNT_RATE_CROSSTALK_CORRECTED_MCPS_SD0)) * 8;
+  short VL53L1X_GetSignalRate() {
+    return (short) (TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__PEAK_SIGNAL_COUNT_RATE_CROSSTALK_CORRECTED_MCPS_SD0)) * 8);
   }
 
-  int VL53L1X_GetSpadNb() {
+  short VL53L1X_GetSpadNb() {
     short tmp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0));
-    return tmp >> 8;
+    return (short) (tmp >> 8);
   }
 
-  int VL53L1X_GetAmbientRate() {
+  short VL53L1X_GetAmbientRate() {
     short tmp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.RESULT__AMBIENT_COUNT_RATE_MCPS_SD));
-    return tmp * 8;
+    return (short) (tmp * 8);
   }
 
-  short VL53L1X_GetRangeStatus() {
-    short RgSt = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__RANGE_STATUS));
+  byte VL53L1X_GetRangeStatus() {
+    byte RgSt = deviceClient.read8(VL53L1X_Constants.VL53L1_RESULT__RANGE_STATUS);
     RgSt &= 0x1F;
     if (RgSt < 24) {
-      return VL53L1X_Constants.status_rtn[RgSt];
+      return VL53L1X_Constants.status_rtn[(RgSt & 0xFF)];
     } else {
-      return 255;
+      return (byte) 255;
     }
   }
 
   VL53L1X_Result VL53L1X_GetResult() {
     byte[] Temp = deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__RANGE_STATUS, 17);
-    short RgSt = (short) (Temp[0] & 0x1F);
-    if (RgSt < 24) RgSt = VL53L1X_Constants.status_rtn[RgSt];
+    byte RgSt = (byte) (Temp[0] & 0x1F);
+    if (RgSt < 24) RgSt = VL53L1X_Constants.status_rtn[(RgSt & 0xFF)];
     return new VL53L1X_Result(
             RgSt,
-            Temp[13] << 8 | Temp[14],
-            (Temp[7] << 8 | Temp[8]) * 8,
-            (Temp[15] << 8 | Temp[16]) * 8,
+            TypeConversion.byteArrayToShort(new byte[] { Temp[13], Temp[14] }),
+            (short) (TypeConversion.byteArrayToShort(new byte[] { Temp[7], Temp[8] }) * 8),
+            (short) (TypeConversion.byteArrayToShort(new byte[] { Temp[15], Temp[16] }) * 8),
             Temp[3]
     );
   }
 
   void VL53L1X_SetOffset(short OffsetValue) {
-    int Temp = (OffsetValue * 4);
-    deviceClient.write(VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM, TypeConversion.shortToByteArray((short) Temp));
+    short Temp = (short) (OffsetValue * 4);
+    deviceClient.write(VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM, TypeConversion.shortToByteArray(Temp));
     deviceClient.write(VL53L1X_Constants.MM_CONFIG__INNER_OFFSET_MM, TypeConversion.shortToByteArray((short) 0));
     deviceClient.write(VL53L1X_Constants.MM_CONFIG__OUTER_OFFSET_MM, TypeConversion.shortToByteArray((short) 0));
   }
@@ -312,19 +313,18 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     return temp;
   }
 
-  void VL53L1X_SetXtalk(int XtalkValue) {
+  void VL53L1X_SetXtalk(short XtalkValue) {
     deviceClient.write(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_X_PLANE_GRADIENT_KCPS, TypeConversion.shortToByteArray((short) 0));
     deviceClient.write(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_Y_PLANE_GRADIENT_KCPS, TypeConversion.shortToByteArray((short) 0));
     deviceClient.write(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_PLANE_OFFSET_KCPS, TypeConversion.shortToByteArray((short) ((XtalkValue << 9) / 1000)));
   }
 
-  int VL53L1X_GetXtalk() {
-    int xtalk = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_PLANE_OFFSET_KCPS));
-    xtalk = ((xtalk * 1000) >> 9);
-    return xtalk;
+  short VL53L1X_GetXtalk() {
+    short xtalk = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_PLANE_OFFSET_KCPS));
+    return (short) ((xtalk * 1000) >> 9);
   }
 
-  void VL53L1X_SetDistanceThreshold(int ThreshLow, int ThreshHigh, short Window, short IntOnNoTarget) {
+  void VL53L1X_SetDistanceThreshold(short ThreshLow, short ThreshHigh, byte Window, byte IntOnNoTarget) {
     byte temp = deviceClient.read8(VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO);
     temp &= 0x47;
     if (IntOnNoTarget == 0) {
@@ -332,12 +332,12 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     } else {
       deviceClient.write8(VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO, ((temp | (Window & 0x07)) | 0x40));
     }
-    deviceClient.write(VL53L1X_Constants.SYSTEM__THRESH_HIGH, TypeConversion.shortToByteArray((short) ThreshHigh));
-    deviceClient.write(VL53L1X_Constants.SYSTEM__THRESH_LOW, TypeConversion.shortToByteArray((short) ThreshLow));
+    deviceClient.write(VL53L1X_Constants.SYSTEM__THRESH_HIGH, TypeConversion.shortToByteArray(ThreshHigh));
+    deviceClient.write(VL53L1X_Constants.SYSTEM__THRESH_LOW, TypeConversion.shortToByteArray(ThreshLow));
   }
 
-  int VL53L1X_GetDistanceThresholdWindow() {
-    return deviceClient.read8(VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO) & 0x7;
+  short VL53L1X_GetDistanceThresholdWindow() {
+    return (short) (deviceClient.read8(VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO) & 0x7);
   }
 
   short VL53L1X_GetDistanceThresholdLow() {
@@ -348,7 +348,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     return TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.SYSTEM__THRESH_HIGH));
   }
 
-  void VL53L1X_SetROICenter(short ROICenter) {
+  void VL53L1X_SetROICenter(byte ROICenter) {
     deviceClient.write8(VL53L1X_Constants.ROI_CONFIG__USER_ROI_CENTRE_SPAD, ROICenter);
   }
 
@@ -356,7 +356,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     return deviceClient.read8(VL53L1X_Constants.ROI_CONFIG__USER_ROI_CENTRE_SPAD);
   }
 
-  void VL53L1X_SetROI(int X, int Y) {
+  void VL53L1X_SetROI(short X, short Y) {
     byte OpticalCenter = deviceClient.read8(VL53L1X_Constants.VL53L1_ROI_CONFIG__MODE_ROI_CENTRE_SPAD);
     if (X > 16) X = 16;
     if (Y > 16) Y = 16;
@@ -367,32 +367,32 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     deviceClient.write8(VL53L1X_Constants.ROI_CONFIG__USER_ROI_REQUESTED_GLOBAL_XY_SIZE, (Y - 1) << 4 | (X - 1));
   }
 
-  Pair<Integer, Integer> VL53L1X_GetROI_XY() {
+  Pair<Short, Short> VL53L1X_GetROI_XY() {
     byte tmp = deviceClient.read8(VL53L1X_Constants.ROI_CONFIG__USER_ROI_REQUESTED_GLOBAL_XY_SIZE);
-    int ROI_X = ((int) tmp & 0x0F) + 1;
-    int ROI_Y = (((int) tmp & 0xF0) >> 4) + 1;
+    short ROI_X = (short) (((short) tmp & 0x0F) + 1);
+    short ROI_Y = (short) ((((short) tmp & 0xF0) >> 4) + 1);
     return new Pair<>(ROI_X, ROI_Y);
   }
 
-  void VL53L1X_SetSignalThreshold(int Signal) {
-    deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__MIN_COUNT_RATE_RTN_LIMIT_MCPS, TypeConversion.shortToByteArray((short) Signal));
+  void VL53L1X_SetSignalThreshold(short Signal) {
+    deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__MIN_COUNT_RATE_RTN_LIMIT_MCPS, TypeConversion.shortToByteArray(Signal));
   }
 
-  int VL53L1X_GetSignalThreshold() {
+  short VL53L1X_GetSignalThreshold() {
     short tmp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.RANGE_CONFIG__MIN_COUNT_RATE_RTN_LIMIT_MCPS));
-    return tmp << 3;
+    return (short) (tmp << 3);
   }
 
-  void VL53L1X_SetSigmaThreshold(int Sigma) {
+  void VL53L1X_SetSigmaThreshold(short Sigma) {
     if (Sigma > (0xFFFF >> 2)) {
       return;
     }
     deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__SIGMA_THRESH, TypeConversion.shortToByteArray((short) (Sigma << 2)));
   }
 
-  int VL53L1X_GetSigmaThreshold() {
+  short VL53L1X_GetSigmaThreshold() {
     short tmp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.RANGE_CONFIG__SIGMA_THRESH));
-    return tmp >> 2;
+    return (short) (tmp >> 2);
   }
 
   void VL53L1X_StartTemperatureUpdate() {

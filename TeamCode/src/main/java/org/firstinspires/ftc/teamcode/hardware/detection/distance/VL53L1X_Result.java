@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 
 public class VL53L1X_Result {
-  public VL53L1X_Result(short status, int distance, int ambient, int sigPerSPAD, int numSPADS) {
+  public VL53L1X_Result(byte status, short distance, short ambient, short sigPerSPAD, short numSPADS) {
     this.status = status;
     this.distance = distance;
     this.ambient = ambient;
@@ -9,49 +9,49 @@ public class VL53L1X_Result {
     this.numSPADS = numSPADS;
   }
 
-  public short getStatus() {
+  public byte getStatus() {
     return status;
   }
 
-  public void setStatus(short status) {
+  public void setStatus(byte status) {
     this.status = status;
   }
 
-  public int getDistance() {
+  public short getDistance() {
     return distance;
   }
 
-  public void setDistance(int distance) {
+  public void setDistance(short distance) {
     this.distance = distance;
   }
 
-  public int getAmbient() {
+  public short getAmbient() {
     return ambient;
   }
 
-  public void setAmbient(int ambient) {
+  public void setAmbient(short ambient) {
     this.ambient = ambient;
   }
 
-  public int getSigPerSPAD() {
+  public short getSigPerSPAD() {
     return sigPerSPAD;
   }
 
-  public void setSigPerSPAD(int sigPerSPAD) {
+  public void setSigPerSPAD(short sigPerSPAD) {
     this.sigPerSPAD = sigPerSPAD;
   }
 
-  public int getNumSPADS() {
+  public short getNumSPADS() {
     return numSPADS;
   }
 
-  public void setNumSPADS(int numSPADS) {
+  public void setNumSPADS(short numSPADS) {
     this.numSPADS = numSPADS;
   }
 
-  private short status;
-  private int distance;
-  private int ambient;
-  private int sigPerSPAD;
-  private int numSPADS;
+  private byte status;
+  private short distance;
+  private short ambient;
+  private short sigPerSPAD;
+  private short numSPADS;
 }
