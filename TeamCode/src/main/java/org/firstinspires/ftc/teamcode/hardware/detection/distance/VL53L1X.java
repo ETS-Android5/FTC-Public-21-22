@@ -20,11 +20,10 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     protected boolean doInitialize() {
         return true;
     }
-
     @Override
     public Manufacturer getManufacturer() {
         return Manufacturer.STMicroelectronics;
-    }
+        }
 
     @Override
     public String getDeviceName() {
