@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 
-import android.util.Pair;
-
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
-import com.qualcomm.robotcore.util.TypeConversion;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -34,7 +30,6 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     public String getDeviceName() {
         return "STMicroelectronics_VL53L1X_Range_Sensor";
     }
-
     @Override
     public double getDistance(DistanceUnit unit) {
         return 0; // TODO: IMPLEMENT THIS
