@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL53L1X {
   public VL53L1X(I2cDeviceSynch i2cDeviceSynch) {
     super(i2cDeviceSynch, true);
-    this.deviceClient.setI2cAddress(I2cAddr.create8bit(0x29));
+    this.deviceClient.setI2cAddress(I2cAddr.create8bit(0x52));
     super.registerArmingStateCallback(false);
     this.deviceClient.engage();
   }
