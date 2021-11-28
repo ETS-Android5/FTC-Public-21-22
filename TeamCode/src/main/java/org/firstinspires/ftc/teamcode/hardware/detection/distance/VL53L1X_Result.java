@@ -9,6 +9,17 @@ public class VL53L1X_Result {
     this.numSPADS = numSPADS;
   }
 
+  @Override
+  public String toString() {
+    return "/*******VL53L1X_Result********\n" +
+            "STATUS\t" + status + "\n" +
+            "DISTANCE\t" + distance + "\n" +
+            "AMBIENT\t" + ambient + "\n" +
+            "SIGPERSPAD\t" + sigPerSPAD + "\n" +
+            "NUMSPADS\t" + numSPADS + "\n" +
+            "********VL53L1X_Result*******/\n";
+  }
+
   public byte getStatus() {
     return status;
   }
