@@ -19,6 +19,6 @@ public class SensorTest extends LinearOpMode {
             distanceSensor.setTimingBudget((short) 20);
             distanceSensor.getDistance(DistanceUnit.MM);
             distanceSensor.onShutdown();
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
     }
 }
