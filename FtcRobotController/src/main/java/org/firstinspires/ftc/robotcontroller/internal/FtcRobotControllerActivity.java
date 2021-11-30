@@ -128,7 +128,6 @@ import org.threeten.bp.YearMonth;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileNotFoundException;
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
