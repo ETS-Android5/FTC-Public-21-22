@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ResetDcMotorPipe extends HardwarePipeline {
   private final Map<String, ResetState> resetStates = new HashMap<>();
-  boolean allReset = false;
+  private boolean allReset = false;
 
   public ResetDcMotorPipe(String name) {
     super(name);
