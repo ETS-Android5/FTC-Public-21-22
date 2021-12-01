@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 
+import com.qualcomm.hardware.stmicroelectronics.VL53L0X;
+
 public class VL53L1X_Constants {
   static final byte VL53L1X_IMPLEMENTATION_VER_MAJOR = 3;
   static final byte VL53L1X_IMPLEMENTATION_VER_MINOR = 5;

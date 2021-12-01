@@ -63,11 +63,12 @@ public class RunToPositionPipe extends HardwarePipeline {
               && currentState.getTargetPosition() != nextState.getTargetPosition()) {
             motor.mutateTo(currentPosition, nextState.getTargetPosition());
           }
-          double power = motor.getTargetPowerPercentage(currentPosition);
-          if (motor.shouldUpdatePower()) {
+          if (motor.shouldUpdatePower(currentPosition)) {
             Object motorObj = hardware.get(motorName);
             if (motorObj instanceof DcMotor) {
+                double power = motor.getTargetPowerPercentage(currentPosition);
               ((DcMotor) motorObj).setPower(power);
+              motor.setLastPower(power);
             }
           }
         });

@@ -126,9 +126,9 @@ public class Test1 extends EnhancedTeleOp {
     double turnValue = controller1.rightStickX();
     double speed = halfSpeed.get() ? 0.5 : 1;
     robot.drivetrain.driveBySticks(
-        -controller1.leftStickX() * speed,
+        controller1.leftStickX() * speed,
         controller1.leftStickY() * speed,
-        -turnValue * .9 * speed);
+        turnValue * .9 * speed);
   }
 
   @Override

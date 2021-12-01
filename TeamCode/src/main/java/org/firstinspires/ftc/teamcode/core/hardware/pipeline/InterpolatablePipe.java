@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import org.firstinspires.ftc.teamcode.core.hardware.state.DataPoint;
 import org.firstinspires.ftc.teamcode.core.hardware.state.DataPointEstimator;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Interpolatable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class InterpolatablePipe extends HardwarePipeline {
     private static InterpolatablePipe instance;
