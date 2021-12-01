@@ -205,31 +205,21 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
   @Override
   public void driveBySticks(double lateral, double longitudinal, double turn) {
-    double rearWheelPower = Math.hypot(lateral, longitudinal);
-    double rearStickAngleRadians = Math.atan2(longitudinal, lateral) - Math.PI / 4;
+    double wheelPower = Math.hypot(lateral, longitudinal);
+    double stickAngleRadians = Math.atan2(longitudinal, lateral) - Math.PI / 4;
 
-    double rearSinAngleRadians = Math.sin(rearStickAngleRadians);
-    double rearCosAngleRadians = Math.cos(rearStickAngleRadians);
+    double sinAngleRadians = Math.sin(stickAngleRadians);
+    double cosAngleRadians = Math.cos(stickAngleRadians);
 
-    double frontWheelPower = Math.hypot(lateral, -longitudinal);
-    double frontStickAngleRadians = Math.atan2(-longitudinal, lateral) - Math.PI / 4;
-
-    double frontSinAngleRadians = Math.sin(frontStickAngleRadians);
-    double frontCosAngleRadians = Math.cos(frontStickAngleRadians);
-
-    double rearFactor = 1 / Math.max(Math.abs(rearSinAngleRadians), Math.abs(rearCosAngleRadians));
-
-    double frontFactor =
-        1 / Math.max(Math.abs(frontSinAngleRadians), Math.abs(frontCosAngleRadians));
+    double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
 
     frontLeftMotorState =
-        frontLeftMotorState.withPower(frontWheelPower * frontCosAngleRadians * frontFactor + turn);
+            frontLeftMotorState.withPower(wheelPower * cosAngleRadians * factor + turn);
     frontRightMotorState =
-        frontRightMotorState.withPower(frontWheelPower * frontSinAngleRadians * frontFactor - turn);
-    rearLeftMotorState =
-        rearLeftMotorState.withPower(rearWheelPower * rearSinAngleRadians * rearFactor + turn);
+            frontRightMotorState.withPower(wheelPower * sinAngleRadians * factor - turn);
+    rearLeftMotorState = rearLeftMotorState.withPower(wheelPower * sinAngleRadians * factor + turn);
     rearRightMotorState =
-        rearRightMotorState.withPower(rearWheelPower * rearCosAngleRadians * rearFactor - turn);
+            rearRightMotorState.withPower(wheelPower * cosAngleRadians * factor - turn);
   }
 
   @Override

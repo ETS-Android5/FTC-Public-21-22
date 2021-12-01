@@ -81,6 +81,26 @@ public class PowerCurves {
         }
       };
 
+    public static final TriFunction<Integer, Integer, Integer, Double> RUN_TO_POSITION_ANGULAR_LIFT_CURVE =
+            (Integer currentTicks, Integer startingTicks, Integer targetTicks) -> {
+                if (Math.abs(startingTicks - targetTicks) == 0) return 0.0;
+                if (Math.abs(currentTicks - targetTicks) == 0) return 0.0;
+                // We haven't reached our target
+                if (startingTicks < targetTicks) {
+                    // Motor should spin forward
+                    if (currentTicks < startingTicks) return 0.3;
+                    double percentProgress =
+                            ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
+                    return Math.max(Math.min(.3, .2 * (1 - percentProgress)), -.3);
+                } else {
+                    // Motor should spin backward
+                    if (currentTicks > startingTicks) return -0.3;
+                    double percentProgress =
+                            ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
+                    return -Math.max(Math.min(.3, .2 * (1 - percentProgress)), -.3);
+                }
+            };
+
   public static final TriFunction<Integer, Integer, Integer, Double> CAROUSEL_CURVE =
       (Integer currentTicks, Integer startingTicks, Integer targetTicks) -> {
         if (startingTicks.equals(targetTicks)) return 0.0;

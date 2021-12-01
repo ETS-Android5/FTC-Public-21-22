@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 import android.util.Log;
 import android.util.Pair;
 
-import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
+import com.qualcomm.hardware.stmicroelectronics.VL53L0X;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
@@ -67,7 +67,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     Log.d("VL53L1X", "CALIBRATION");
     VL53L1X_SensorInit();
     Log.d("VL53L1X", "INITIALIZED");
-    // This calibrates it to 100mm
+    // This calibrates it to 140mm
     short offset = VL53L1X_CalibrateOffset((short) 140);
     Log.d("VL53L1X", "OFFSET CALIBRATED");
     Log.d("VL53L1X", "OFFSET: " + offset);

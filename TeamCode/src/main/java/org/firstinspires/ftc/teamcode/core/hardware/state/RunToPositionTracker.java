@@ -25,19 +25,24 @@ public class RunToPositionTracker implements Namable {
   private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
   private int startingTicks;
   private int targetTicks;
-  private double currentPower;
-  private double nextPower;
+
+  public double getLastPower() {
+    return lastPower;
+  }
+
+  public void setLastPower(double lastPower) {
+    this.lastPower = lastPower;
+  }
+
+  private double lastPower;
 
   public double getTargetPowerPercentage(int currentTicks) {
     double ret = powerCurve.apply(currentTicks, startingTicks, targetTicks);
-    ret = ret < -1 ? -1 : ret > 1 ? 1 : ret;
-    currentPower = nextPower;
-    nextPower = ret;
-    return ret;
+    return ret < -1 ? -1 : ret > 1 ? 1 : ret;
   }
 
-  public boolean shouldUpdatePower() {
-    return nextPower != currentPower;
+  public boolean shouldUpdatePower(int currentTicks) {
+    return lastPower != getTargetPowerPercentage(currentTicks);
   }
 
   @Override
