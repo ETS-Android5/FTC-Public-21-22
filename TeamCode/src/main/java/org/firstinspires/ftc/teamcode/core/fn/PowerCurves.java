@@ -88,16 +88,16 @@ public class PowerCurves {
                 // We haven't reached our target
                 if (startingTicks < targetTicks) {
                     // Motor should spin forward
-                    if (currentTicks < startingTicks) return 0.3;
+                    if (currentTicks < startingTicks) return 0.8;
                     double percentProgress =
                             ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
-                    return Math.max(Math.min(.3, .2 * (1 - percentProgress)), -.3);
+                    return Math.max(Math.min(.8, .45 * (1 - percentProgress)), -.8);
                 } else {
                     // Motor should spin backward
-                    if (currentTicks > startingTicks) return -0.3;
+                    if (currentTicks > startingTicks) return -0.8;
                     double percentProgress =
                             ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
-                    return -Math.max(Math.min(.3, .2 * (1 - percentProgress)), -.3);
+                    return -Math.max(Math.min(.8, .45 * (1 - percentProgress)), -.8);
                 }
             };
 
