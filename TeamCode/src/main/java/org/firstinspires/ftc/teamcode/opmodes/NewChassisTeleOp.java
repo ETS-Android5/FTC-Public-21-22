@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
+import org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts.FourHeightLiftState;
 import org.firstinspires.ftc.teamcode.hardware.robots.NewChassis;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,10 +34,14 @@ public class NewChassisTeleOp extends EnhancedTeleOp {
   @Override
   public void onStartPressed() {
     controller1.setManipulation(NewChassisTeleOp::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
-    controller1.registerOnPressedCallback(
-        () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
+    controller1.registerOnPressedCallback(() -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
     controller1.registerOnPressedCallback(() -> robot.lift.goToPosition(robot.lift.getState() + 250), true, BooleanSurface.A);
     controller1.registerOnPressedCallback(() -> robot.lift.goToPosition(robot.lift.getState() - 250), true, BooleanSurface.B);
+    controller2.registerOnPressedCallback(robot.intake::beginOuttaking, true, BooleanSurface.LEFT_BUMPER);
+    controller2.registerOnPressedCallback(robot.intake::beginIntaking, true, BooleanSurface.RIGHT_BUMPER);
+    controller2.registerOnPressedCallback(robot.intake::stop, true, BooleanSurface.DPAD_UP);
+    controller2.registerOnPressedCallback(robot.gripper::close, true, BooleanSurface.A);
+    controller2.registerOnPressedCallback(robot.gripper::open, true, BooleanSurface.B);
   }
 
   @Override
