@@ -52,7 +52,7 @@ public class DataPointEstimator {
         // 1, 4, 15, 40, 85, 156
         List<Double> predictions = new LinkedList<>();
         for (DataPoint[] dataPoint : dataPoints) {
-            predictions.add(makePrediction(generateDepthBasedRatesOfChange(dataPoint), dataPoint[0].getData()));
+            predictions.add(makePrediction(generateDepthBasedRatesOfChange(dataPoint), dataPoint[dataPoint.length - 1].getData()));
         }
         return predictions;
     }
@@ -84,6 +84,7 @@ public class DataPointEstimator {
     }
 
     private static double makePrediction(double[][] ratesOfChange, double mostRecent) {
+        if (ratesOfChange == null) return 0;
         double prediction = mostRecent;
         for (int i = 0; i < ratesOfChange.length; i++) {
             prediction += ratesOfChange[ratesOfChange.length - (1 + i)][i];
