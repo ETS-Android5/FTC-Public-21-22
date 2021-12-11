@@ -1,7 +1,14 @@
 package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 
 public class VL53L1X_Result {
-  public VL53L1X_Result(byte status, short distance, short ambient, short sigPerSPAD, short numSPADS) {
+  private byte status;
+  private short distance;
+  private short ambient;
+  private short sigPerSPAD;
+  private short numSPADS;
+
+  public VL53L1X_Result(
+      byte status, short distance, short ambient, short sigPerSPAD, short numSPADS) {
     this.status = status;
     this.distance = distance;
     this.ambient = ambient;
@@ -11,13 +18,23 @@ public class VL53L1X_Result {
 
   @Override
   public String toString() {
-    return "/*******VL53L1X_Result********\n" +
-            "STATUS\t" + status + "\n" +
-            "DISTANCE\t" + distance + "\n" +
-            "AMBIENT\t" + ambient + "\n" +
-            "SIGPERSPAD\t" + sigPerSPAD + "\n" +
-            "NUMSPADS\t" + numSPADS + "\n" +
-            "********VL53L1X_Result*******/\n";
+    return "/*******VL53L1X_Result********\n"
+        + "STATUS\t"
+        + status
+        + "\n"
+        + "DISTANCE\t"
+        + distance
+        + "\n"
+        + "AMBIENT\t"
+        + ambient
+        + "\n"
+        + "SIGPERSPAD\t"
+        + sigPerSPAD
+        + "\n"
+        + "NUMSPADS\t"
+        + numSPADS
+        + "\n"
+        + "********VL53L1X_Result*******/\n";
   }
 
   public byte getStatus() {
@@ -59,10 +76,4 @@ public class VL53L1X_Result {
   public void setNumSPADS(short numSPADS) {
     this.numSPADS = numSPADS;
   }
-
-  private byte status;
-  private short distance;
-  private short ambient;
-  private short sigPerSPAD;
-  private short numSPADS;
 }

@@ -22,9 +22,9 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
 
   protected final ConcurrentHashMap<String, Object> initializedHardware;
   protected final HardwarePipeline hardwarePipeline;
+  protected Component robotObject;
   private HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
   private ReflectionBasedMagicRuntime serviceRuntime;
-  protected Component robotObject;
 
   public EnhancedAutonomous(Component robotObject) {
     State.clear();
@@ -64,7 +64,6 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
     onInitPressed();
     waitForStart();
     onStartPressed();
-    while (opModeIsActive()) {}
     onStop();
     State.clear();
   }

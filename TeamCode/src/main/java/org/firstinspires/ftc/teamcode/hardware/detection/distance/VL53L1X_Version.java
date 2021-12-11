@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 
 public class VL53L1X_Version {
+  private byte major;
+  private byte minor;
+  private byte build;
+  private byte revision;
+
   public VL53L1X_Version(byte major, byte minor, byte build, byte revision) {
     this.major = major;
     this.minor = minor;
@@ -39,9 +44,4 @@ public class VL53L1X_Version {
   public void setRevision(byte revision) {
     this.revision = revision;
   }
-
-  private byte major;
-  private byte minor;
-  private byte build;
-  private byte revision;
 }

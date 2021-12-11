@@ -9,10 +9,7 @@ import java.util.stream.Collectors;
 
 public class InitializedFilterPipe extends HardwarePipeline {
   private static InitializedFilterPipe instance;
-
-  public static InitializedFilterPipe getInstance() {
-    return instance;
-  }
+  private boolean allInitialized = false;
 
   public InitializedFilterPipe(String name) {
     super(name);
@@ -24,7 +21,9 @@ public class InitializedFilterPipe extends HardwarePipeline {
     InitializedFilterPipe.instance = this;
   }
 
-  private boolean allInitialized = false;
+  public static InitializedFilterPipe getInstance() {
+    return instance;
+  }
 
   public boolean everythingIsInitialized() {
     return allInitialized;

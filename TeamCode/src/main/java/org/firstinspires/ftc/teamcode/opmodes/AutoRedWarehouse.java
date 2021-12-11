@@ -16,135 +16,136 @@ import org.opencv.core.Mat;
 @Autonomous(name = "Red")
 public class AutoRedWarehouse extends EnhancedAutonomous {
 
-    private final MecanumBot robot;
+  private final MecanumBot robot;
 
-    public AutoRedWarehouse() {
-        super(new MecanumBot());
-        this.robot = (MecanumBot) robotObject;
+  public AutoRedWarehouse() {
+    super(new MecanumBot());
+    this.robot = (MecanumBot) robotObject;
+  }
+
+  @Override
+  public void onInitPressed() {
+    OpenCVWrapper.load();
+  }
+
+  @Override
+  public void onStartPressed() {
+    Log.d("AUTO", "INIT");
+    robot.webcam.init();
+    Log.d("AUTO", "INITIALIZED");
+    robot.drivetrain.setPowerCurve(
+        (Integer a, Integer b, Integer c) ->
+            (double) Math.round(PowerCurves.RUN_TO_POSITION_QUARTER_POWER.apply(a, b, c) * 100)
+                / 100);
+    robot.drivetrain.setFrontLeftDirection(robot.drivetrain.getFrontLeftDirection().opposite());
+    robot.drivetrain.setFrontRightDirection(robot.drivetrain.getFrontRightDirection().opposite());
+    robot.drivetrain.setRearLeftDirection(robot.drivetrain.getRearLeftDirection().opposite());
+    robot.drivetrain.setRearRightDirection(robot.drivetrain.getRearRightDirection().opposite());
+    Log.d("AUTO", "2");
+    processChanges();
+    ITeamMarkerPositionDetector markerPositionDetector = new TeamMarkerPositionDetector();
+    Log.d("AUTO", "3");
+    Mat frame = robot.webcam.grabFrame();
+    Log.d("AUTO", "4");
+    robot.webcam.deinit();
+    Log.d("AUTO", "5");
+    TeamMarkerPosition teamMarkerPosition =
+        markerPositionDetector.calculateTeamMarkerPosition(frame);
+    Log.d("AUTO", teamMarkerPosition.name());
+    Log.d("AUTO", "6");
+    robot.drivetrain.setFrontLeftPower(-0.3);
+    robot.drivetrain.setFrontRightPower(0.3);
+    robot.drivetrain.setRearLeftPower(-0.3);
+    robot.drivetrain.setRearRightPower(0.3);
+    processChanges();
+    sleep(330);
+    robot.drivetrain.setAllPower(0);
+    processChanges();
+    // frontRightTarget -= 250;
+    // rearRightTarget -= 500;
+    // robot.drivetrain.autoRunToPosition(frontLeftTarget, frontRightTarget, rearLeftTarget,
+    // rearRightTarget, 5, super::opModeIsActive, super::processChanges);
+    // sleep(2000);
+    // front backwards
+    // rear forwards
+    // strafes left
+    // front forwards
+    // rear backwards
+    // strafes right
+    switch (teamMarkerPosition) {
+      case LEFT:
+        robot.fourHeightLift.goToHeight1();
+        break;
+      case CENTER:
+        robot.fourHeightLift.goToHeight2();
+        break;
+      case RIGHT:
+        robot.fourHeightLift.goToHeight3();
+        break;
+    }
+    long start = System.nanoTime();
+    while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
+      processChanges();
+    }
+    int distanceToShippingHubTime = teamMarkerPosition == TeamMarkerPosition.RIGHT ? 1500 : 1800;
+    robot.drivetrain.setAllPower(-.25);
+    processChanges();
+    sleep(distanceToShippingHubTime);
+    robot.drivetrain.setAllPower(0);
+    processChanges();
+    robot.outtakeBucket.dump();
+    processChanges();
+    sleep(750);
+    robot.outtakeBucket.carry();
+    processChanges();
+    sleep(750);
+
+    robot.drivetrain.setAllPower(.25);
+    processChanges();
+    sleep(distanceToShippingHubTime + 1000);
+    robot.drivetrain.setAllPower(0);
+    processChanges();
+
+    robot.fourHeightLift.goToHeight0();
+    start = System.nanoTime();
+    while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
+      processChanges();
     }
 
-    @Override
-    public void onInitPressed() {
-        OpenCVWrapper.load();
+    robot.drivetrain.setFrontLeftPower(-0.25);
+    robot.drivetrain.setFrontRightPower(0.25);
+    robot.drivetrain.setRearLeftPower(-0.25);
+    robot.drivetrain.setRearRightPower(0.25);
+    processChanges();
+    sleep(500);
+    robot.drivetrain.setFrontLeftPower(0.5);
+    robot.drivetrain.setFrontRightPower(-0.5);
+    robot.drivetrain.setRearLeftPower(-0.5);
+    robot.drivetrain.setRearRightPower(0.5);
+    processChanges();
+    sleep(800);
+    robot.drivetrain.setAllPower(0);
+    robot.intake.lower();
+    processChanges();
+    sleep(1000);
+
+    robot.drivetrain.setAllPower(.6);
+
+    processChanges();
+    sleep(1000);
+    robot.drivetrain.setAllPower(0);
+    processChanges();
+    sleep(1000);
+
+    robot.fourHeightLift.goToHeight0();
+    start = System.nanoTime();
+    while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
+      processChanges();
     }
+  }
 
-    @Override
-    public void onStartPressed() {
-        Log.d("AUTO", "INIT");
-        robot.webcam.init();
-        Log.d("AUTO", "INITIALIZED");
-        robot.drivetrain.setFrontLeftDirection(robot.drivetrain.getFrontLeftDirection().opposite());
-        robot.drivetrain.setFrontRightDirection(robot.drivetrain.getFrontRightDirection().opposite());
-        robot.drivetrain.setPowerCurve(
-                (Integer a, Integer b, Integer c) ->
-                        (double) Math.round(PowerCurves.RUN_TO_POSITION_QUARTER_POWER.apply(a, b, c) * 100)
-                                / 100);
-        Log.d("AUTO", "2");
-        processChanges();
-        ITeamMarkerPositionDetector markerPositionDetector = new TeamMarkerPositionDetector();
-        Log.d("AUTO", "3");
-        Mat frame = robot.webcam.grabFrame();
-        Log.d("AUTO", "4");
-        robot.webcam.deinit();
-        Log.d("AUTO", "5");
-        TeamMarkerPosition teamMarkerPosition =
-                markerPositionDetector.calculateTeamMarkerPosition(frame);
-
-        Log.d("AUTO", "6");
-        robot.drivetrain.setFrontLeftPower(-0.3);
-        robot.drivetrain.setFrontRightPower(0.3);
-        robot.drivetrain.setRearLeftPower(0.3);
-        robot.drivetrain.setRearRightPower(-0.3);
-        processChanges();
-        sleep(300);
-        robot.drivetrain.setAllPower(0);
-        processChanges();
-        // frontRightTarget -= 250;
-        // rearRightTarget -= 500;
-        // robot.drivetrain.autoRunToPosition(frontLeftTarget, frontRightTarget, rearLeftTarget,
-        // rearRightTarget, 5, super::opModeIsActive, super::processChanges);
-        // sleep(2000);
-        // front backwards
-        // rear forwards
-        // strafes left
-        // front forwards
-        // rear backwards
-        // strafes right
-        switch (teamMarkerPosition) {
-            case LEFT:
-                robot.fourHeightLift.goToHeight1();
-                break;
-            case CENTER:
-                robot.fourHeightLift.goToHeight2();
-                break;
-            case RIGHT:
-                robot.fourHeightLift.goToHeight3();
-                break;
-        }
-        long start = System.nanoTime();
-        while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
-            processChanges();
-        }
-        int distanceToShippingHubTime = teamMarkerPosition == TeamMarkerPosition.RIGHT ? 1500 : 1800;
-        robot.drivetrain.setAllPower(-.25);
-        processChanges();
-        sleep(distanceToShippingHubTime);
-        robot.drivetrain.setAllPower(0);
-        processChanges();
-
-        robot.outtakeBucket.dump();
-        processChanges();
-        sleep(750);
-        robot.outtakeBucket.carry();
-        processChanges();
-        sleep(750);
-
-        robot.drivetrain.setAllPower(.25);
-        processChanges();
-        sleep(distanceToShippingHubTime + 1000);
-        robot.drivetrain.setAllPower(0);
-        processChanges();
-
-        robot.fourHeightLift.goToHeight0();
-        start = System.nanoTime();
-        while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
-            processChanges();
-        }
-
-        robot.drivetrain.setFrontLeftPower(-0.25);
-        robot.drivetrain.setFrontRightPower(0.25);
-        robot.drivetrain.setRearLeftPower(0.25);
-        robot.drivetrain.setRearRightPower(-0.25);
-        processChanges();
-        sleep(500);
-        robot.drivetrain.setFrontLeftPower(0.5);
-        robot.drivetrain.setFrontRightPower(-0.5);
-        robot.drivetrain.setRearLeftPower(0.5);
-        robot.drivetrain.setRearRightPower(-0.5);
-        processChanges();
-        sleep(800);
-        robot.drivetrain.setAllPower(0);
-        robot.intake.lower();
-        processChanges();
-        sleep(1000);
-
-        robot.drivetrain.setAllPower(.6);
-
-        processChanges();
-        sleep(1000);
-        robot.drivetrain.setAllPower(0);
-        processChanges();
-        sleep(1000);
-
-        robot.fourHeightLift.goToHeight0();
-        start = System.nanoTime();
-        while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
-            processChanges();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        robot.webcam.deinit();
-    }
+  @Override
+  public void onStop() {
+    robot.webcam.deinit();
+  }
 }

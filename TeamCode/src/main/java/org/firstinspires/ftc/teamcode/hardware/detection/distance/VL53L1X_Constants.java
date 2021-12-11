@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 
-import com.qualcomm.hardware.stmicroelectronics.VL53L0X;
-
 public class VL53L1X_Constants {
   static final byte VL53L1X_IMPLEMENTATION_VER_MAJOR = 3;
   static final byte VL53L1X_IMPLEMENTATION_VER_MINOR = 5;
@@ -44,7 +42,8 @@ public class VL53L1X_Constants {
   static final byte VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0 = (byte) 0x008C;
   static final byte RESULT__AMBIENT_COUNT_RATE_MCPS_SD = (byte) 0x0090;
   static final byte VL53L1_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0 = (byte) 0x0096;
-  static final byte VL53L1_RESULT__PEAK_SIGNAL_COUNT_RATE_CROSSTALK_CORRECTED_MCPS_SD0 = (byte) 0x0098;
+  static final byte VL53L1_RESULT__PEAK_SIGNAL_COUNT_RATE_CROSSTALK_CORRECTED_MCPS_SD0 =
+      (byte) 0x0098;
   static final byte VL53L1_RESULT__OSC_CALIBRATE_VAL = (byte) 0x00DE;
   static final byte VL53L1_FIRMWARE__SYSTEM_STATUS = (byte) 0x00E5;
   static final short VL53L1_IDENTIFICATION__MODEL_ID = 0x010F;
@@ -68,7 +67,7 @@ public class VL53L1X_Constants {
     0x00, /* 0x3b : not user-modifiable */
     0x00, /* 0x3c : not user-modifiable */
     0x00, /* 0x3d : not user-modifiable */
-          (byte) 0xff, /* 0x3e : not user-modifiable */
+    (byte) 0xff, /* 0x3e : not user-modifiable */
     0x00, /* 0x3f : not user-modifiable */
     0x0F, /* 0x40 : not user-modifiable */
     0x00, /* 0x41 : not user-modifiable */
@@ -90,34 +89,34 @@ public class VL53L1X_Constants {
     0x00, /* 0x51 : not user-modifiable */
     0x00, /* 0x52 : not user-modifiable */
     0x00, /* 0x53 : not user-modifiable */
-          (byte) 0xc8, /* 0x54 : not user-modifiable */
+    (byte) 0xc8, /* 0x54 : not user-modifiable */
     0x00, /* 0x55 : not user-modifiable */
     0x00, /* 0x56 : not user-modifiable */
     0x38, /* 0x57 : not user-modifiable */
-          (byte) 0xff, /* 0x58 : not user-modifiable */
+    (byte) 0xff, /* 0x58 : not user-modifiable */
     0x01, /* 0x59 : not user-modifiable */
     0x00, /* 0x5a : not user-modifiable */
     0x08, /* 0x5b : not user-modifiable */
     0x00, /* 0x5c : not user-modifiable */
     0x00, /* 0x5d : not user-modifiable */
     0x01, /* 0x5e : not user-modifiable */
-          (byte) 0xcc, /* 0x5f : not user-modifiable */
+    (byte) 0xcc, /* 0x5f : not user-modifiable */
     0x0f, /* 0x60 : not user-modifiable */
     0x01, /* 0x61 : not user-modifiable */
-          (byte) 0xf1, /* 0x62 : not user-modifiable */
+    (byte) 0xf1, /* 0x62 : not user-modifiable */
     0x0d, /* 0x63 : not user-modifiable */
     0x01, /* 0x64 : Sigma threshold MSB (mm in 14.2 format for MSB+LSB), use SetSigmaThreshold(), default value 90 mm  */
     0x68, /* 0x65 : Sigma threshold LSB */
     0x00, /* 0x66 : Min count Rate MSB (MCPS in 9.7 format for MSB+LSB), use SetSignalThreshold() */
-          (byte) 0x80, /* 0x67 : Min count Rate LSB */
+    (byte) 0x80, /* 0x67 : Min count Rate LSB */
     0x08, /* 0x68 : not user-modifiable */
-          (byte) 0xb8, /* 0x69 : not user-modifiable */
+    (byte) 0xb8, /* 0x69 : not user-modifiable */
     0x00, /* 0x6a : not user-modifiable */
     0x00, /* 0x6b : not user-modifiable */
     0x00, /* 0x6c : Intermeasurement period MSB, 32 bits register, use SetIntermeasurementInMs() */
     0x00, /* 0x6d : Intermeasurement period */
     0x0f, /* 0x6e : Intermeasurement period */
-          (byte) 0x89, /* 0x6f : Intermeasurement period LSB */
+    (byte) 0x89, /* 0x6f : Intermeasurement period LSB */
     0x00, /* 0x70 : not user-modifiable */
     0x00, /* 0x71 : not user-modifiable */
     0x00, /* 0x72 : distance threshold high MSB (in mm, MSB+LSB), use SetD:tanceThreshold() */
@@ -133,9 +132,9 @@ public class VL53L1X_Constants {
     0x00, /* 0x7c : not user-modifiable */
     0x00, /* 0x7d : not user-modifiable */
     0x02, /* 0x7e : not user-modifiable */
-          (byte) 0xc7, /* 0x7f : ROI center, use SetROI() */
-          (byte) 0xff, /* 0x80 : XY ROI (X=Width, Y=Height), use SetROI() */
-          (byte) 0x9B, /* 0x81 : not user-modifiable */
+    (byte) 0xc7, /* 0x7f : ROI center, use SetROI() */
+    (byte) 0xff, /* 0x80 : XY ROI (X=Width, Y=Height), use SetROI() */
+    (byte) 0x9B, /* 0x81 : not user-modifiable */
     0x00, /* 0x82 : not user-modifiable */
     0x00, /* 0x83 : not user-modifiable */
     0x00, /* 0x84 : not user-modifiable */
@@ -145,6 +144,29 @@ public class VL53L1X_Constants {
   };
 
   static final byte[] status_rtn = {
-          (byte) 255, (byte) 255, (byte) 255, 5, 2, 4, 1, 7, 3, 0, (byte) 255, (byte) 255, 9, 13, (byte) 255, (byte) 255, (byte) 255, (byte) 255, 10, 6, (byte) 255, (byte) 255, 11, 12
+    (byte) 255,
+    (byte) 255,
+    (byte) 255,
+    5,
+    2,
+    4,
+    1,
+    7,
+    3,
+    0,
+    (byte) 255,
+    (byte) 255,
+    9,
+    13,
+    (byte) 255,
+    (byte) 255,
+    (byte) 255,
+    (byte) 255,
+    10,
+    6,
+    (byte) 255,
+    (byte) 255,
+    11,
+    12
   };
 }

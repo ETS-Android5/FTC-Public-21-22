@@ -2,16 +2,33 @@ package org.firstinspires.ftc.teamcode.core.hardware.state;
 
 import com.google.common.collect.EvictingQueue;
 
-import java.util.List;
+import org.firstinspires.ftc.teamcode.core.controller.Namable;
 
-public interface Interpolatable {
-    @SuppressWarnings("UnstableApiUsage")
-    EvictingQueue<List<DataPoint>> getDataPoints();
-    int getAnalysisSize();
-    void setAnalysisSize(int size);
-    long getSampleRateNs();
-    void setSampleRateNs(long sampleRateNs);
-    long timeToNextSample();
-    void sample();
-    void forceSample();
+public interface Interpolatable extends Namable {
+  @SuppressWarnings("UnstableApiUsage")
+  EvictingQueue<DataPoint> getDataPoints();
+
+  int getAnalysisSize();
+
+  void setAnalysisSize(int size);
+
+  long getSampleRateNs();
+
+  void setSampleRateNs(long sampleRateNs);
+
+  int getPolynomialDegree();
+
+  void setPolynomialDegree(int polynomialDegree);
+
+  long timeToNextSample();
+
+  void sample();
+
+  void initialize();
+
+  boolean isSampling();
+
+  void startSampling();
+
+  void stopSampling();
 }

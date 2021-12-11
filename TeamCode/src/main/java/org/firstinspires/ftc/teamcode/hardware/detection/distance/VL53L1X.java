@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 import android.util.Log;
 import android.util.Pair;
 
-import com.qualcomm.hardware.stmicroelectronics.VL53L0X;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
@@ -16,14 +15,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @I2cDeviceType
 @DeviceProperties(xmlTag = "VL53L1X", name = "VL53L1X", description = "A 4m Distance Sensor")
 public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL53L1X {
+  private boolean calibrated = false;
+
   public VL53L1X(I2cDeviceSynch i2cDeviceSynch) {
     super(i2cDeviceSynch, true);
     this.deviceClient.setI2cAddress(I2cAddr.create8bit(0x52)); // 8 bit 0x52 7 bit 0x29
     super.registerArmingStateCallback(false);
     this.deviceClient.engage();
   }
-
-  private boolean calibrated = false;
 
   @Override
   protected boolean doInitialize() {
@@ -97,11 +96,10 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
 
   public VL53L1X_Version VL53L1X_GetSWVersion() {
     return new VL53L1X_Version(
-            VL53L1X_Constants.VL53L1X_IMPLEMENTATION_VER_MAJOR,
-            VL53L1X_Constants.VL53L1X_IMPLEMENTATION_VER_MINOR,
-            VL53L1X_Constants.VL53L1X_IMPLEMENTATION_VER_SUB,
-            VL53L1X_Constants.VL53L1X_IMPLEMENTATION_VER_REVISION
-    );
+        VL53L1X_Constants.VL53L1X_IMPLEMENTATION_VER_MAJOR,
+        VL53L1X_Constants.VL53L1X_IMPLEMENTATION_VER_MINOR,
+        VL53L1X_Constants.VL53L1X_IMPLEMENTATION_VER_SUB,
+        VL53L1X_Constants.VL53L1X_IMPLEMENTATION_VER_REVISION);
   }
 
   public void VL53L1X_SetI2CAddress(byte new_address) {
@@ -128,9 +126,10 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
   }
 
   void VL53L1X_SetInterruptPolarity(byte NewPolarity) {
-      byte temp = deviceClient.read8(VL53L1X_Constants.GPIO_HV_MUX__CTRL);
-      temp &= 0xEF;
-      deviceClient.write8(VL53L1X_Constants.GPIO_HV_MUX__CTRL, (temp | (((NewPolarity & 1) == 0 ? 1 : 0)) << 4));
+    byte temp = deviceClient.read8(VL53L1X_Constants.GPIO_HV_MUX__CTRL);
+    temp &= 0xEF;
+    deviceClient.write8(
+        VL53L1X_Constants.GPIO_HV_MUX__CTRL, (temp | (((NewPolarity & 1) == 0 ? 1 : 0)) << 4));
   }
 
   byte VL53L1X_GetInterruptPolarity() {
@@ -159,66 +158,120 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     if (DM == 1) {
       switch (TimingBudgetInMs) {
         case 15:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x01D));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x0027));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x01D));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x0027));
           break;
         case 20:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x0051));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x006E));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x0051));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x006E));
           break;
         case 33:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x00D6));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x006E));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x00D6));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x006E));
           break;
         case 50:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x1AE));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x01E8));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x1AE));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x01E8));
           break;
         case 100:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x02E1));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x0388));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x02E1));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x0388));
           break;
         case 200:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x03E1));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x0496));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x03E1));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x0496));
           break;
         case 500:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x0591));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x05C1));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x0591));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x05C1));
           break;
       }
     } else {
       switch (TimingBudgetInMs) {
         case 20:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x001E));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x0022));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x001E));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x0022));
           break;
         case 33:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x0060));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x006E));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x0060));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x006E));
           break;
         case 50:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x00AD));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x00C6));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x00AD));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x00C6));
           break;
         case 100:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x01CC));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x01EA));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x01CC));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x01EA));
           break;
         case 200:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x02D9));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x02F8));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x02D9));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x02F8));
           break;
         case 500:
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, TypeConversion.shortToByteArray((short) 0x048F));
-          deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI, TypeConversion.shortToByteArray((short) 0x04A4));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI,
+              TypeConversion.shortToByteArray((short) 0x048F));
+          deviceClient.write(
+              VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_B_HI,
+              TypeConversion.shortToByteArray((short) 0x04A4));
           break;
       }
     }
   }
 
   short VL53L1X_GetTimingBudgetInMs() {
-    short Temp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, 2));
+    short Temp =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.RANGE_CONFIG__TIMEOUT_MACROP_A_HI, 2));
     switch (Temp) {
       case 0x001D:
         return 15;
@@ -252,15 +305,21 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
       deviceClient.write8(VL53L1X_Constants.RANGE_CONFIG__VCSEL_PERIOD_A, 0x07);
       deviceClient.write8(VL53L1X_Constants.RANGE_CONFIG__VCSEL_PERIOD_B, 0x05);
       deviceClient.write8(VL53L1X_Constants.RANGE_CONFIG__VALID_PHASE_HIGH, 0x38);
-      deviceClient.write(VL53L1X_Constants.SD_CONFIG__WOI_SD0, TypeConversion.shortToByteArray((short) 0x0705));
-      deviceClient.write(VL53L1X_Constants.SD_CONFIG__INITIAL_PHASE_SD0, TypeConversion.shortToByteArray((short) 0x0606));
+      deviceClient.write(
+          VL53L1X_Constants.SD_CONFIG__WOI_SD0, TypeConversion.shortToByteArray((short) 0x0705));
+      deviceClient.write(
+          VL53L1X_Constants.SD_CONFIG__INITIAL_PHASE_SD0,
+          TypeConversion.shortToByteArray((short) 0x0606));
     } else if (DM == 2) {
       deviceClient.write8(VL53L1X_Constants.PHASECAL_CONFIG__TIMEOUT_MACROP, 0x0A);
       deviceClient.write8(VL53L1X_Constants.RANGE_CONFIG__VCSEL_PERIOD_A, 0x0F);
       deviceClient.write8(VL53L1X_Constants.RANGE_CONFIG__VCSEL_PERIOD_B, 0x0D);
       deviceClient.write8(VL53L1X_Constants.RANGE_CONFIG__VALID_PHASE_HIGH, 0xB8);
-      deviceClient.write(VL53L1X_Constants.SD_CONFIG__WOI_SD0, TypeConversion.shortToByteArray((short) 0x0F0D));
-      deviceClient.write(VL53L1X_Constants.SD_CONFIG__INITIAL_PHASE_SD0, TypeConversion.shortToByteArray((short) 0x0E0E));
+      deviceClient.write(
+          VL53L1X_Constants.SD_CONFIG__WOI_SD0, TypeConversion.shortToByteArray((short) 0x0F0D));
+      deviceClient.write(
+          VL53L1X_Constants.SD_CONFIG__INITIAL_PHASE_SD0,
+          TypeConversion.shortToByteArray((short) 0x0E0E));
     }
     VL53L1X_SetTimingBudgetInMs(TB);
   }
@@ -277,50 +336,82 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
   }
 
   void VL53L1X_SetInterMeasurementInMs(int InterMeasMs) {
-    short ClockPLL = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__OSC_CALIBRATE_VAL, 2));
+    short ClockPLL =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__OSC_CALIBRATE_VAL, 2));
     ClockPLL &= 0x3FF;
-    deviceClient.write(VL53L1X_Constants.VL53L1_SYSTEM__INTERMEASUREMENT_PERIOD, TypeConversion.intToByteArray((int) (ClockPLL * InterMeasMs * 1.075)));
+    deviceClient.write(
+        VL53L1X_Constants.VL53L1_SYSTEM__INTERMEASUREMENT_PERIOD,
+        TypeConversion.intToByteArray((int) (ClockPLL * InterMeasMs * 1.075)));
   }
 
   short VL53L1X_GetInterMeasurementInMs() {
-    int tmp = TypeConversion.byteArrayToInt(deviceClient.read(VL53L1X_Constants.VL53L1_SYSTEM__INTERMEASUREMENT_PERIOD, 4));
-    short ClockPLL = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__OSC_CALIBRATE_VAL, 2));
+    int tmp =
+        TypeConversion.byteArrayToInt(
+            deviceClient.read(VL53L1X_Constants.VL53L1_SYSTEM__INTERMEASUREMENT_PERIOD, 4));
+    short ClockPLL =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__OSC_CALIBRATE_VAL, 2));
     ClockPLL &= 0x3FF;
     tmp /= ClockPLL * 1.065;
     return (short) tmp;
   }
 
   short VL53L1X_GetSensorId() {
-    return TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_IDENTIFICATION__MODEL_ID, 2));
+    return TypeConversion.byteArrayToShort(
+        deviceClient.read(VL53L1X_Constants.VL53L1_IDENTIFICATION__MODEL_ID, 2));
   }
 
   short VL53L1X_GetDistance() {
-    return TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0, 2));
+    return TypeConversion.byteArrayToShort(
+        deviceClient.read(
+            VL53L1X_Constants.VL53L1_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0, 2));
   }
 
   short VL53L1X_GetSignalPerSpad() {
-    short signal = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__PEAK_SIGNAL_COUNT_RATE_CROSSTALK_CORRECTED_MCPS_SD0, 2));
-    short SpNb = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0, 2));
+    short signal =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(
+                VL53L1X_Constants
+                    .VL53L1_RESULT__PEAK_SIGNAL_COUNT_RATE_CROSSTALK_CORRECTED_MCPS_SD0,
+                2));
+    short SpNb =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0, 2));
     return (short) (200.0 * signal / SpNb);
   }
 
   short VL53L1X_GetAmbientPerSpad() {
-    short AmbientRate = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.RESULT__AMBIENT_COUNT_RATE_MCPS_SD, 2));
-    short SpNb = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0, 2));
+    short AmbientRate =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.RESULT__AMBIENT_COUNT_RATE_MCPS_SD, 2));
+    short SpNb =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0, 2));
     return (short) (200.0 * AmbientRate / SpNb);
   }
 
   short VL53L1X_GetSignalRate() {
-    return (short) (TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__PEAK_SIGNAL_COUNT_RATE_CROSSTALK_CORRECTED_MCPS_SD0, 2)) * 8);
+    return (short)
+        (TypeConversion.byteArrayToShort(
+                deviceClient.read(
+                    VL53L1X_Constants
+                        .VL53L1_RESULT__PEAK_SIGNAL_COUNT_RATE_CROSSTALK_CORRECTED_MCPS_SD0,
+                    2))
+            * 8);
   }
 
   short VL53L1X_GetSpadNb() {
-    short tmp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0, 2));
+    short tmp =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__DSS_ACTUAL_EFFECTIVE_SPADS_SD0, 2));
     return (short) (tmp >> 8);
   }
 
   short VL53L1X_GetAmbientRate() {
-    short tmp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.RESULT__AMBIENT_COUNT_RATE_MCPS_SD, 2));
+    short tmp =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.RESULT__AMBIENT_COUNT_RATE_MCPS_SD, 2));
     return (short) (tmp * 8);
   }
 
@@ -344,52 +435,71 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     byte[] Temp = deviceClient.read(VL53L1X_Constants.VL53L1_RESULT__RANGE_STATUS, 17);
     byte RgSt = (byte) (Temp[0] & 0x1F);
     if (RgSt < 24) RgSt = VL53L1X_Constants.status_rtn[(RgSt & 0xFF)];
-    VL53L1X_Result ret = new VL53L1X_Result(
+    VL53L1X_Result ret =
+        new VL53L1X_Result(
             RgSt,
-            TypeConversion.byteArrayToShort(new byte[] { Temp[13], Temp[14] }),
-            (short) (TypeConversion.byteArrayToShort(new byte[] { Temp[7], Temp[8] }) * 8),
-            (short) (TypeConversion.byteArrayToShort(new byte[] { Temp[15], Temp[16] }) * 8),
-            Temp[3]
-    );
+            TypeConversion.byteArrayToShort(new byte[] {Temp[13], Temp[14]}),
+            (short) (TypeConversion.byteArrayToShort(new byte[] {Temp[7], Temp[8]}) * 8),
+            (short) (TypeConversion.byteArrayToShort(new byte[] {Temp[15], Temp[16]}) * 8),
+            Temp[3]);
     Log.d("VL53L1X", ret.toString());
     return ret;
   }
 
   void VL53L1X_SetOffset(short OffsetValue) {
     short Temp = (short) (OffsetValue * 4);
-    deviceClient.write(VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM, TypeConversion.shortToByteArray(Temp));
-    deviceClient.write(VL53L1X_Constants.MM_CONFIG__INNER_OFFSET_MM, TypeConversion.shortToByteArray((short) 0));
-    deviceClient.write(VL53L1X_Constants.MM_CONFIG__OUTER_OFFSET_MM, TypeConversion.shortToByteArray((short) 0));
+    deviceClient.write(
+        VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM,
+        TypeConversion.shortToByteArray(Temp));
+    deviceClient.write(
+        VL53L1X_Constants.MM_CONFIG__INNER_OFFSET_MM, TypeConversion.shortToByteArray((short) 0));
+    deviceClient.write(
+        VL53L1X_Constants.MM_CONFIG__OUTER_OFFSET_MM, TypeConversion.shortToByteArray((short) 0));
   }
 
   short VL53L1X_GetOffset() {
-    short temp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM, 2));
+    short temp =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM, 2));
     temp <<= 3;
     temp >>= 5;
     return temp;
   }
 
   void VL53L1X_SetXtalk(short XtalkValue) {
-    deviceClient.write(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_X_PLANE_GRADIENT_KCPS, TypeConversion.shortToByteArray((short) 0));
-    deviceClient.write(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_Y_PLANE_GRADIENT_KCPS, TypeConversion.shortToByteArray((short) 0));
-    deviceClient.write(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_PLANE_OFFSET_KCPS, TypeConversion.shortToByteArray((short) ((XtalkValue << 9) / 1000)));
+    deviceClient.write(
+        VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_X_PLANE_GRADIENT_KCPS,
+        TypeConversion.shortToByteArray((short) 0));
+    deviceClient.write(
+        VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_Y_PLANE_GRADIENT_KCPS,
+        TypeConversion.shortToByteArray((short) 0));
+    deviceClient.write(
+        VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_PLANE_OFFSET_KCPS,
+        TypeConversion.shortToByteArray((short) ((XtalkValue << 9) / 1000)));
   }
 
   short VL53L1X_GetXtalk() {
-    short xtalk = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_PLANE_OFFSET_KCPS, 2));
+    short xtalk =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.ALGO__CROSSTALK_COMPENSATION_PLANE_OFFSET_KCPS, 2));
     return (short) ((xtalk * 1000) >> 9);
   }
 
-  void VL53L1X_SetDistanceThreshold(short ThreshLow, short ThreshHigh, byte Window, byte IntOnNoTarget) {
+  void VL53L1X_SetDistanceThreshold(
+      short ThreshLow, short ThreshHigh, byte Window, byte IntOnNoTarget) {
     byte temp = deviceClient.read8(VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO);
     temp &= 0x47;
     if (IntOnNoTarget == 0) {
-      deviceClient.write8(VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO, (temp | (Window & 0x07)));
+      deviceClient.write8(
+          VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO, (temp | (Window & 0x07)));
     } else {
-      deviceClient.write8(VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO, ((temp | (Window & 0x07)) | 0x40));
+      deviceClient.write8(
+          VL53L1X_Constants.SYSTEM__INTERRUPT_CONFIG_GPIO, ((temp | (Window & 0x07)) | 0x40));
     }
-    deviceClient.write(VL53L1X_Constants.SYSTEM__THRESH_HIGH, TypeConversion.shortToByteArray(ThreshHigh));
-    deviceClient.write(VL53L1X_Constants.SYSTEM__THRESH_LOW, TypeConversion.shortToByteArray(ThreshLow));
+    deviceClient.write(
+        VL53L1X_Constants.SYSTEM__THRESH_HIGH, TypeConversion.shortToByteArray(ThreshHigh));
+    deviceClient.write(
+        VL53L1X_Constants.SYSTEM__THRESH_LOW, TypeConversion.shortToByteArray(ThreshLow));
   }
 
   short VL53L1X_GetDistanceThresholdWindow() {
@@ -397,11 +507,13 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
   }
 
   short VL53L1X_GetDistanceThresholdLow() {
-    return TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.SYSTEM__THRESH_LOW, 2));
+    return TypeConversion.byteArrayToShort(
+        deviceClient.read(VL53L1X_Constants.SYSTEM__THRESH_LOW, 2));
   }
 
   short VL53L1X_GetDistanceThresholdHigh() {
-    return TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.SYSTEM__THRESH_HIGH, 2));
+    return TypeConversion.byteArrayToShort(
+        deviceClient.read(VL53L1X_Constants.SYSTEM__THRESH_HIGH, 2));
   }
 
   void VL53L1X_SetROICenter(byte ROICenter) {
@@ -413,14 +525,16 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
   }
 
   void VL53L1X_SetROI(short X, short Y) {
-    byte OpticalCenter = deviceClient.read8(VL53L1X_Constants.VL53L1_ROI_CONFIG__MODE_ROI_CENTRE_SPAD);
+    byte OpticalCenter =
+        deviceClient.read8(VL53L1X_Constants.VL53L1_ROI_CONFIG__MODE_ROI_CENTRE_SPAD);
     if (X > 16) X = 16;
     if (Y > 16) Y = 16;
     if (X > 10 || Y > 10) {
       OpticalCenter = (byte) 199;
     }
     deviceClient.write8(VL53L1X_Constants.ROI_CONFIG__USER_ROI_CENTRE_SPAD, OpticalCenter);
-    deviceClient.write8(VL53L1X_Constants.ROI_CONFIG__USER_ROI_REQUESTED_GLOBAL_XY_SIZE, (Y - 1) << 4 | (X - 1));
+    deviceClient.write8(
+        VL53L1X_Constants.ROI_CONFIG__USER_ROI_REQUESTED_GLOBAL_XY_SIZE, (Y - 1) << 4 | (X - 1));
   }
 
   Pair<Short, Short> VL53L1X_GetROI_XY() {
@@ -431,11 +545,15 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
   }
 
   void VL53L1X_SetSignalThreshold(short Signal) {
-    deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__MIN_COUNT_RATE_RTN_LIMIT_MCPS, TypeConversion.shortToByteArray(Signal));
+    deviceClient.write(
+        VL53L1X_Constants.RANGE_CONFIG__MIN_COUNT_RATE_RTN_LIMIT_MCPS,
+        TypeConversion.shortToByteArray(Signal));
   }
 
   short VL53L1X_GetSignalThreshold() {
-    short tmp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.RANGE_CONFIG__MIN_COUNT_RATE_RTN_LIMIT_MCPS, 2));
+    short tmp =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.RANGE_CONFIG__MIN_COUNT_RATE_RTN_LIMIT_MCPS, 2));
     return (short) (tmp << 3);
   }
 
@@ -443,11 +561,15 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     if (Sigma > (0xFFFF >> 2)) {
       return;
     }
-    deviceClient.write(VL53L1X_Constants.RANGE_CONFIG__SIGMA_THRESH, TypeConversion.shortToByteArray((short) (Sigma << 2)));
+    deviceClient.write(
+        VL53L1X_Constants.RANGE_CONFIG__SIGMA_THRESH,
+        TypeConversion.shortToByteArray((short) (Sigma << 2)));
   }
 
   short VL53L1X_GetSigmaThreshold() {
-    short tmp = TypeConversion.byteArrayToShort(deviceClient.read(VL53L1X_Constants.RANGE_CONFIG__SIGMA_THRESH, 2));
+    short tmp =
+        TypeConversion.byteArrayToShort(
+            deviceClient.read(VL53L1X_Constants.RANGE_CONFIG__SIGMA_THRESH, 2));
     return (short) (tmp >> 2);
   }
 
@@ -470,9 +592,12 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     short AverageDistance = 0;
     short distance;
 
-    deviceClient.write(VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM, TypeConversion.shortToByteArray((short) 0x0));
-    deviceClient.write(VL53L1X_Constants.MM_CONFIG__INNER_OFFSET_MM, TypeConversion.shortToByteArray((short) 0x0));
-    VL53L1X_StartRanging();	/* Enable VL53L1X sensor */
+    deviceClient.write(
+        VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM,
+        TypeConversion.shortToByteArray((short) 0x0));
+    deviceClient.write(
+        VL53L1X_Constants.MM_CONFIG__INNER_OFFSET_MM, TypeConversion.shortToByteArray((short) 0x0));
+    VL53L1X_StartRanging(); /* Enable VL53L1X sensor */
     for (i = 0; i < 50; i++) {
       tmp = 0;
       while (tmp == 0) {
@@ -484,8 +609,10 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     }
     VL53L1X_StopRanging();
     AverageDistance /= 50;
-	short offset = (short) (TargetDistInMm - AverageDistance);
-	deviceClient.write(VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM, TypeConversion.shortToByteArray((short) (offset * 4)));
+    short offset = (short) (TargetDistInMm - AverageDistance);
+    deviceClient.write(
+        VL53L1X_Constants.ALGO__PART_TO_PART_RANGE_OFFSET_MM,
+        TypeConversion.shortToByteArray((short) (offset * 4)));
     return offset;
   }
 
@@ -502,7 +629,7 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     VL53L1X_StartRanging();
     for (i = 0; i < 50; i++) {
       tmp = 0;
-      while (tmp == 0){
+      while (tmp == 0) {
         tmp = VL53L1X_CheckForDataReady();
       }
       sr = VL53L1X_GetSignalRate();
@@ -518,8 +645,10 @@ public class VL53L1X extends I2cDeviceSynchDevice<I2cDeviceSynch> implements IVL
     AverageSpadNb /= 50;
     AverageSignalRate /= 50;
     /* Calculate Xtalk value */
-    calXtalk = (short) (512 * (AverageSignalRate * (1 - (AverageDistance / TargetDistInMm))) / AverageSpadNb);
-    if (calXtalk  > (short) 0xffff) calXtalk = 0xffff;
+    calXtalk =
+        (short)
+            (512 * (AverageSignalRate * (1 - (AverageDistance / TargetDistInMm))) / AverageSpadNb);
+    if (calXtalk > (short) 0xffff) calXtalk = 0xffff;
     deviceClient.write(0x0016, TypeConversion.shortToByteArray((short) calXtalk));
     return (short) ((calXtalk * 1000) >> 9);
   }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
@@ -28,20 +29,19 @@ public class CarouselSpinner implements ICarouselSpinner {
                   * LOSS_FACTOR)
               + .5);
 
-  public CarouselSpinner() {
-    initialize();
-  }
-
   @Hardware(name = CAROUSEL_SPINNER_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
   public DcMotor spinnerMotor;
 
   private IMotorState spinnerMotorState;
-
   private CarouselSpinnerState carouselSpinnerState = CarouselSpinnerState.STOPPED;
+
+  public CarouselSpinner() {
+    initialize();
+  }
 
   private void initialize() {
     spinnerMotorState =
-        new MotorState(CAROUSEL_SPINNER_MOTOR_NAME, false)
+        new MotorState(CAROUSEL_SPINNER_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
             .withPowerCurve(PowerCurves.CAROUSEL_CURVE);
@@ -58,7 +58,7 @@ public class CarouselSpinner implements ICarouselSpinner {
   }
 
   @Override
-  public void spinForward() {
+  public synchronized void spinForward() {
     spinnerMotorState =
         spinnerMotorState
             .withRunMode(RunMode.RUN_TO_POSITION)
@@ -69,7 +69,7 @@ public class CarouselSpinner implements ICarouselSpinner {
   }
 
   @Override
-  public void spinBackward() {
+  public synchronized void spinBackward() {
     spinnerMotorState =
         spinnerMotorState
             .withRunMode(RunMode.RUN_TO_POSITION)
@@ -80,7 +80,7 @@ public class CarouselSpinner implements ICarouselSpinner {
   }
 
   @Override
-  @Observable(key = "CAROUSELSPINNER")
+  @Observable(key = "CAROUSEL_SPINNER")
   public CarouselSpinnerState getState() {
     return carouselSpinnerState;
   }

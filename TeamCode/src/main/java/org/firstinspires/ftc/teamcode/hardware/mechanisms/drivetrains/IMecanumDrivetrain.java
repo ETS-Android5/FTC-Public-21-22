@@ -8,17 +8,17 @@ import java.util.function.Supplier;
 public interface IMecanumDrivetrain extends IAWDClassicDrivetrain {
   Direction getFrontLeftDirection();
 
-  Direction getFrontRightDirection();
-
-  Direction getRearLeftDirection();
-
-  Direction getRearRightDirection();
-
   void setFrontLeftDirection(Direction direction);
+
+  Direction getFrontRightDirection();
 
   void setFrontRightDirection(Direction direction);
 
+  Direction getRearLeftDirection();
+
   void setRearLeftDirection(Direction direction);
+
+  Direction getRearRightDirection();
 
   void setRearRightDirection(Direction direction);
 

@@ -5,17 +5,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class MotorTrackerPipe extends HardwarePipeline {
   private static MotorTrackerPipe instance;
-
-  public static MotorTrackerPipe getInstance() {
-    return instance;
-  }
+  private final Map<String, Integer> motorPositions = new HashMap<>();
+  private final List<CallbackData<Integer>> motorPositionCallbacks = new LinkedList<>();
 
   public MotorTrackerPipe(String name) {
     super(name);
@@ -27,10 +24,11 @@ public class MotorTrackerPipe extends HardwarePipeline {
     MotorTrackerPipe.instance = this;
   }
 
-  private final Map<String, Integer> motorPositions = new HashMap<>();
-  private final List<CallbackData> motorPositionCallbacks = new LinkedList<>();
+  public static MotorTrackerPipe getInstance() {
+    return instance;
+  }
 
-  public void setCallbackForMotorPosition(CallbackData data) {
+  public void setCallbackForMotorPosition(CallbackData<Integer> data) {
     motorPositionCallbacks.add(data);
   }
 
@@ -54,26 +52,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
                 motorPositions.put(m.getName(), pos);
               }
             });
-    Iterator<CallbackData> iter = motorPositionCallbacks.iterator();
-    while (iter.hasNext()) {
-      CallbackData data = iter.next();
-      if (data == null) {
-        iter.remove();
-      } else {
-        String motorName = data.getMotorName();
-        if (motorPositions.containsKey(motorName)) {
-          Integer motorPosition = motorPositions.get(motorName);
-          int target = data.getMotorTargetPosition();
-          int tolerance = data.getToleranceTicks();
-          int minimum = target - tolerance;
-          int maximum = target + tolerance;
-          if (motorPosition != null && motorPosition >= minimum && motorPosition <= maximum) {
-            data.getCallback().run();
-            iter.remove();
-          }
-        }
-      }
-    }
+    DataTracker.evaluateCallbacks(motorPositionCallbacks, motorPositions);
     return super.process(hardware, r);
   }
 }

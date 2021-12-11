@@ -13,15 +13,8 @@ public class MotorState extends IMotorState {
   private final int targetPosition;
   private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
 
-  public MotorState(String name, boolean reverse) {
-    this(
-        name,
-        reverse ? Direction.REVERSE : Direction.FORWARD,
-        RunMode.RUN_WITHOUT_ENCODER,
-        ZeroPowerBehavior.BRAKE,
-        0.0,
-        0,
-        null);
+  public MotorState(String name, Direction direction) {
+    this(name, direction, RunMode.RUN_WITHOUT_ENCODER, ZeroPowerBehavior.BRAKE, 0.0, 0, null);
   }
 
   public MotorState(

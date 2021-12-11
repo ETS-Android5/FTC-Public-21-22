@@ -6,14 +6,12 @@ import java.util.function.Supplier;
 
 public class Toggle {
   private final Supplier<Boolean> valueRetriever;
-
-  private boolean previousValue;
-  private boolean currentValue;
-
   private final List<Runnable> onPressed = new LinkedList<>();
   private final List<Runnable> onPressedDebounced = new LinkedList<>();
   private final List<Runnable> onReleased = new LinkedList<>();
   private final List<Runnable> onReleasedDebounced = new LinkedList<>();
+  private boolean previousValue;
+  private boolean currentValue;
 
   public Toggle(Supplier<Boolean> valueRetriever) {
     this.valueRetriever = valueRetriever;

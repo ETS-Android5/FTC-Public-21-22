@@ -9,36 +9,36 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class Controller implements Namable {
-  private static double DEFAULT_MANIPULATION(double in) {
-    return in;
-  }
-
   private final String name;
   private final List<Toggle> toggleSurfaces = new LinkedList<>();
-
   private Gamepad gamepad;
-
   private Toggle leftBumper;
   private Toggle rightBumper;
-
   private Toggle leftStick;
   private Toggle rightStick;
-
   private Toggle dpadDown;
   private Toggle dpadRight;
   private Toggle dpadLeft;
   private Toggle dpadUp;
-
   private Toggle a;
   private Toggle b;
   private Toggle x;
   private Toggle y;
-
   private Toggle back;
   private Toggle start;
+  private Function<Double, Double> leftTriggerManipulation = null;
+  private Function<Double, Double> rightTriggerManipulation = null;
+  private Function<Double, Double> leftStickXManipulation = null;
+  private Function<Double, Double> rightStickXManipulation = null;
+  private Function<Double, Double> leftStickYManipulation = null;
+  private Function<Double, Double> rightStickYManipulation = null;
 
   public Controller(String name) {
     this.name = name;
+  }
+
+  private static double DEFAULT_MANIPULATION(double in) {
+    return in;
   }
 
   public void initialize(Gamepad gamepad) {
@@ -111,15 +111,11 @@ public class Controller implements Namable {
         .apply((double) gamepad.left_trigger);
   }
 
-  private Function<Double, Double> leftTriggerManipulation = null;
-
   public double rightTrigger() {
     return Optional.ofNullable(rightTriggerManipulation)
         .orElse(Controller::DEFAULT_MANIPULATION)
         .apply((double) gamepad.right_trigger);
   }
-
-  private Function<Double, Double> rightTriggerManipulation = null;
 
   public double leftStickX() {
     return Optional.ofNullable(leftStickXManipulation)
@@ -127,15 +123,11 @@ public class Controller implements Namable {
         .apply((double) gamepad.left_stick_x);
   }
 
-  private Function<Double, Double> leftStickXManipulation = null;
-
   public double rightStickX() {
     return Optional.ofNullable(rightStickXManipulation)
         .orElse(Controller::DEFAULT_MANIPULATION)
         .apply((double) gamepad.right_stick_x);
   }
-
-  private Function<Double, Double> rightStickXManipulation = null;
 
   public double leftStickY() {
     return Optional.ofNullable(leftStickYManipulation)
@@ -143,15 +135,11 @@ public class Controller implements Namable {
         .apply((double) gamepad.left_stick_y * -1);
   }
 
-  private Function<Double, Double> leftStickYManipulation = null;
-
   public double rightStickY() {
     return Optional.ofNullable(rightStickYManipulation)
         .orElse(Controller::DEFAULT_MANIPULATION)
         .apply((double) gamepad.right_stick_y * -1);
   }
-
-  private Function<Double, Double> rightStickYManipulation = null;
 
   public boolean leftBumper() {
     return leftBumper.currentValue();

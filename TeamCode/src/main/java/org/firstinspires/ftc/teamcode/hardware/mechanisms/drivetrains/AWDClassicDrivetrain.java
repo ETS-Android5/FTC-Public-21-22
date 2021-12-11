@@ -18,10 +18,6 @@ public class AWDClassicDrivetrain implements IAWDClassicDrivetrain {
   private static final String REAR_LEFT_MOTOR_NAME = "REAR_LEFT_MOTOR";
   private static final String REAR_RIGHT_MOTOR_NAME = "REAR_RIGHT_MOTOR";
 
-  public AWDClassicDrivetrain() {
-    initialize();
-  }
-
   @Hardware(name = FRONT_LEFT_MOTOR_NAME, direction = Direction.REVERSE)
   public DcMotor frontLeftMotor;
 
@@ -39,15 +35,19 @@ public class AWDClassicDrivetrain implements IAWDClassicDrivetrain {
   private IMotorState rearLeftMotorState;
   private IMotorState rearRightMotorState;
 
+  public AWDClassicDrivetrain() {
+    initialize();
+  }
+
   private void initialize() {
-    frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, true);
-    frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, false);
-    rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, true);
-    rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, false);
+    frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, Direction.REVERSE);
+    frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, Direction.FORWARD);
+    rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, Direction.REVERSE);
+    rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, Direction.FORWARD);
   }
 
   @Override
-  public void setAllPower(double power) {
+  public synchronized void setAllPower(double power) {
     frontLeftMotorState = frontLeftMotorState.withPower(power);
     frontRightMotorState = frontRightMotorState.withPower(power);
     rearLeftMotorState = rearLeftMotorState.withPower(power);
@@ -55,19 +55,19 @@ public class AWDClassicDrivetrain implements IAWDClassicDrivetrain {
   }
 
   @Override
-  public void setLeftPower(double power) {
+  public synchronized void setLeftPower(double power) {
     frontLeftMotorState = frontLeftMotorState.withPower(power);
     rearLeftMotorState = rearLeftMotorState.withPower(power);
   }
 
   @Override
-  public void setRightPower(double power) {
+  public synchronized void setRightPower(double power) {
     frontRightMotorState = frontRightMotorState.withPower(power);
     rearRightMotorState = rearRightMotorState.withPower(power);
   }
 
   @Override
-  public void setAllTarget(int ticks) {
+  public synchronized void setAllTarget(int ticks) {
     frontLeftMotorState = frontLeftMotorState.withTargetPosition(ticks);
     frontRightMotorState = frontRightMotorState.withTargetPosition(ticks);
     rearLeftMotorState = rearLeftMotorState.withTargetPosition(ticks);
@@ -75,13 +75,13 @@ public class AWDClassicDrivetrain implements IAWDClassicDrivetrain {
   }
 
   @Override
-  public void setLeftTarget(int ticks) {
+  public synchronized void setLeftTarget(int ticks) {
     frontLeftMotorState = frontLeftMotorState.withTargetPosition(ticks);
     rearLeftMotorState = rearLeftMotorState.withTargetPosition(ticks);
   }
 
   @Override
-  public void setRightTarget(int ticks) {
+  public synchronized void setRightTarget(int ticks) {
     frontRightMotorState = frontRightMotorState.withTargetPosition(ticks);
     rearRightMotorState = rearRightMotorState.withTargetPosition(ticks);
   }
@@ -92,7 +92,7 @@ public class AWDClassicDrivetrain implements IAWDClassicDrivetrain {
   }
 
   @Override
-  public void setRunMode(RunMode runMode) {
+  public synchronized void setRunMode(RunMode runMode) {
     frontLeftMotorState = frontLeftMotorState.withRunMode(runMode);
     frontRightMotorState = frontRightMotorState.withRunMode(runMode);
     rearLeftMotorState = rearLeftMotorState.withRunMode(runMode);
