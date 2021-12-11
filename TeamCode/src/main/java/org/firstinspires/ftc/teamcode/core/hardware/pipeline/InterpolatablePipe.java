@@ -1,60 +1,85 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
+import org.firstinspires.ftc.teamcode.core.hardware.state.CachedValue;
 import org.firstinspires.ftc.teamcode.core.hardware.state.DataPointEstimator;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Interpolatable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class InterpolatablePipe extends HardwarePipeline {
-    private static InterpolatablePipe instance;
+  private static InterpolatablePipe instance;
+  private final Map<String, Interpolatable> trackedDataSources = new HashMap<>();
+  private final Map<String, CachedValue<Double>> cachedValues = new HashMap<>();
+  private final List<CallbackData<Double>> dataSourceCallbacks = new LinkedList<>();
+  private boolean allDataSourcesDiscovered = false;
+  private long pipelineIteration = 0;
 
-    public static InterpolatablePipe getInstance() {
-        return instance;
+  public InterpolatablePipe(String name) {
+    super(name);
+    InterpolatablePipe.instance = this;
+  }
+
+  public InterpolatablePipe(String name, HardwarePipeline nextElement) {
+    super(name, nextElement);
+    InterpolatablePipe.instance = this;
+  }
+
+  public static InterpolatablePipe getInstance() {
+    return instance;
+  }
+
+  public void setCallbackForInterpolatable(CallbackData<Double> data) {
+    dataSourceCallbacks.add(data);
+  }
+
+  @SuppressWarnings("All")
+  public Double currentDataPointOf(String hardwareDeviceName) {
+    if (!trackedDataSources.containsKey(hardwareDeviceName)) {
+      return null;
     }
-
-    public InterpolatablePipe(String name) {
-        super(name);
-        InterpolatablePipe.instance = this;
+    CachedValue<Double> cachedValue = cachedValues.get(hardwareDeviceName);
+    if (cachedValue == null || cachedValue.getId() != pipelineIteration) {
+      Interpolatable dataTracker = trackedDataSources.get(hardwareDeviceName);
+      double val =
+          DataPointEstimator.predictData(
+              new LinkedList<>(dataTracker.getDataPoints()),
+              System.nanoTime(),
+              dataTracker.getPolynomialDegree());
+      cachedValues.put(hardwareDeviceName, new CachedValue<>(val, pipelineIteration));
+      return val;
     }
+    return cachedValue.getValue();
+  }
 
-    public InterpolatablePipe(String name, HardwarePipeline nextElement) {
-        super(name, nextElement);
-        InterpolatablePipe.instance = this;
-    }
-
-    private boolean allDataSourcesDiscovered = false;
-
-    Map<String, Interpolatable> trackedDataSources = new HashMap<>();
-
-    @SuppressWarnings("All")
-    public List<Double> currentDataPointOf(String hardwareDeviceName) {
-        if (!trackedDataSources.containsKey(hardwareDeviceName)) {
-            return null;
-        }
-        Interpolatable dataTracker = trackedDataSources.get(hardwareDeviceName);
-        return DataPointEstimator.predictData(new ArrayList<>(dataTracker.getDataPoints()));
-    }
-
-    @Override
-    public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
-        if (!allDataSourcesDiscovered) {
-            hardware.forEach((k, v) -> {
-                if (!trackedDataSources.containsKey(k) && v instanceof Interpolatable) {
-                    trackedDataSources.put(k, (Interpolatable) v);
-                }
-            });
-            if (InitializedFilterPipe.getInstance().everythingIsInitialized()) {
-                allDataSourcesDiscovered = true;
+  @Override
+  public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
+    pipelineIteration++;
+    if (!allDataSourcesDiscovered) {
+      hardware.forEach(
+          (k, v) -> {
+            if (!trackedDataSources.containsKey(k) && v instanceof Interpolatable) {
+              trackedDataSources.put(k, (Interpolatable) v);
             }
-        }
-        trackedDataSources.values().forEach(d -> {
-            if (d.timeToNextSample() < 0) {
+          });
+      if (InitializedFilterPipe.getInstance().everythingIsInitialized()) {
+        allDataSourcesDiscovered = true;
+      }
+    }
+    trackedDataSources
+        .values()
+        .forEach(
+            d -> {
+              if (d.timeToNextSample() <= 0 && d.isSampling()) {
                 d.sample();
-            }
-        });
-        return super.process(hardware, r);
-    }
+              }
+            });
+    DataTracker.evaluateCallbacks(
+        dataSourceCallbacks,
+        trackedDataSources,
+        (Interpolatable i) -> currentDataPointOf(i.getName()));
+    return super.process(hardware, r);
+  }
 }

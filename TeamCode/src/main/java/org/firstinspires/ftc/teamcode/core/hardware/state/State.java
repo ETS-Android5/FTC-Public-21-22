@@ -8,12 +8,6 @@ import java.util.Map;
 public class State implements Namable {
   private static final Map<String, State> currentStates = new HashMap<>();
   private static final Map<String, State> nextStates = new HashMap<>();
-
-  public static void clear() {
-    currentStates.clear();
-    nextStates.clear();
-  }
-
   String name;
 
   State(String name) {
@@ -25,18 +19,9 @@ public class State implements Namable {
     }
   }
 
-  public void makeCurrent() {
-    nextStates.remove(name);
-    if (currentStates.containsKey(name)) {
-      currentStates.replace(name, this);
-    } else {
-      currentStates.put(name, this);
-    }
-  }
-
-  @Override
-  public String getName() {
-    return name;
+  public static void clear() {
+    currentStates.clear();
+    nextStates.clear();
   }
 
   public static <T> T currentStateOf(String key) {
@@ -54,5 +39,19 @@ public class State implements Namable {
     } catch (ClassCastException e) {
       return null;
     }
+  }
+
+  public void makeCurrent() {
+    nextStates.remove(name);
+    if (currentStates.containsKey(name)) {
+      currentStates.replace(name, this);
+    } else {
+      currentStates.put(name, this);
+    }
+  }
+
+  @Override
+  public String getName() {
+    return name;
   }
 }

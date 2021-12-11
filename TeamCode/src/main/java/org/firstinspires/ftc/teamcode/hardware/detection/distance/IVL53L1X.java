@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 public interface IVL53L1X extends DistanceSensor {
   void calibrate();
+
   void setTimingBudget(short budgetMs);
+
   void onShutdown();
 }

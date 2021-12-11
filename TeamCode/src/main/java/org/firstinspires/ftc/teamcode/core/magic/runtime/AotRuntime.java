@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.magic.runtime;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -7,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
+import org.firstinspires.ftc.teamcode.core.controller.Namable;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -18,7 +21,9 @@ import java.util.stream.Collectors;
 
 public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRuntime {
   private static final Class<?>[] KNOWN_INJECTABLE_HARDWARE =
-      new Class<?>[] {DcMotor.class, Servo.class, WebcamName.class};
+      new Class<?>[] {
+        DcMotor.class, Servo.class, WebcamName.class, Rev2mDistanceSensor.class, BNO055IMU.class
+      };
 
   private static final Class<?>[][] HARDWARE_PRIORITY_GROUPS =
       new Class<?>[][] {
@@ -28,14 +33,16 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
         {
           Servo.class,
         },
-        {WebcamName.class}
+        {
+          WebcamName.class, Rev2mDistanceSensor.class, BNO055IMU.class,
+        },
       };
 
   private final Object robotObject;
-  private HardwareMap hardwareMap;
   private final ConcurrentHashMap<String, Object> initializedObjects;
   private final List<AnnotationPair> hardwareFields;
   private final boolean isAutonomous;
+  private HardwareMap hardwareMap;
 
   public AotRuntime(
       Object robotObject,
@@ -129,6 +136,25 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
       WebcamName webcamName = hardwareMap.get(WebcamName.class, annotation.name());
       try {
         field.getAnnotationTargetField().set(field.getAnnotationContainer(), webcamName);
+      } catch (IllegalAccessException ignored) {
+      }
+    } else if (hardwareObj == Rev2mDistanceSensor.class
+        && field.getAnnotationContainer() instanceof Namable) {
+      try {
+        String name = ((Namable) field.getAnnotationContainer()).getName();
+        Rev2mDistanceSensor sensor = hardwareMap.get(Rev2mDistanceSensor.class, name);
+        field.getAnnotationTargetField().set(field.getAnnotationContainer(), sensor);
+        initializedObjects.put(name, field.getAnnotationContainer());
+      } catch (IllegalAccessException ignored) {
+      }
+    } else if (hardwareObj == BNO055IMU.class) {
+      try {
+        field
+            .getAnnotationTargetField()
+            .set(
+                field.getAnnotationContainer(),
+                hardwareMap.get(BNO055IMU.class, annotation.name()));
+        initializedObjects.put(annotation.name(), field.getAnnotationContainer());
       } catch (IllegalAccessException ignored) {
       }
     }

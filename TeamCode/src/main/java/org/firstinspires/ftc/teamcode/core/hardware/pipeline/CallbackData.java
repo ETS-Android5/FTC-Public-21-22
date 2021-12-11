@@ -1,29 +1,24 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-public class CallbackData {
-  private final String motorName;
-  private final int motorTargetPosition;
-  private final int toleranceTicks;
+import java.util.function.Predicate;
+
+public class CallbackData<T> {
+  private final String hardwareName;
+  private final Predicate<T> conditionsMet;
   private final Runnable callback;
 
-  public CallbackData(
-      String motorName, int motorTargetPosition, int toleranceTicks, Runnable callback) {
-    this.motorName = motorName;
-    this.motorTargetPosition = motorTargetPosition;
-    this.toleranceTicks = toleranceTicks;
+  public CallbackData(String motorName, Predicate<T> conditionsMet, Runnable callback) {
+    this.hardwareName = motorName;
+    this.conditionsMet = conditionsMet;
     this.callback = callback;
   }
 
-  public String getMotorName() {
-    return motorName;
+  public String getHardwareName() {
+    return hardwareName;
   }
 
-  public int getMotorTargetPosition() {
-    return motorTargetPosition;
-  }
-
-  public int getToleranceTicks() {
-    return toleranceTicks;
+  public boolean conditionsMet(T in) {
+    return conditionsMet.test(in);
   }
 
   public Runnable getCallback() {

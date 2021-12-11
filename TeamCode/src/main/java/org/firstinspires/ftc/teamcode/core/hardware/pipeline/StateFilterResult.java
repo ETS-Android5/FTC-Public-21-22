@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class StateFilterResult {
+  private final List<IMotorState> nextMotorStates;
+  private final List<IServoState> nextServoStates;
+
   public StateFilterResult(Component component) {
     nextMotorStates =
         component.getNextState().stream()
@@ -25,9 +28,6 @@ public class StateFilterResult {
     this.nextMotorStates = motorStates;
     this.nextServoStates = servoStates;
   }
-
-  private final List<IMotorState> nextMotorStates;
-  private final List<IServoState> nextServoStates;
 
   public List<IMotorState> getNextMotorStates() {
     return nextMotorStates;

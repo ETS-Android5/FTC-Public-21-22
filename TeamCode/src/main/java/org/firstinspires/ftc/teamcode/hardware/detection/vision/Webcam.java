@@ -28,13 +28,13 @@ import java.util.concurrent.TimeUnit;
 public class Webcam implements FtcCamera {
   private static final int secondsPermissionTimeout = Integer.MAX_VALUE;
   private static final String CAMERA_NAME = "Webcam 1";
+  private final Handler callbackHandler = CallbackLooper.getDefault().getHandler();
 
   @Hardware(name = CAMERA_NAME)
   public WebcamName cameraName;
 
   private CameraManager cameraManager;
   private Camera camera;
-  private final Handler callbackHandler = CallbackLooper.getDefault().getHandler();
   private Bitmap bitmap;
   private CameraCaptureSession session;
 

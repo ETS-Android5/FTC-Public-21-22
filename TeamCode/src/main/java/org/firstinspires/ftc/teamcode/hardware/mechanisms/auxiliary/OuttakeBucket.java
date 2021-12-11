@@ -18,14 +18,14 @@ public class OuttakeBucket implements IOuttakeBucket {
   private static final double CARRY_POSITION = .25;
   private static final double DUMP_POSITION = .9;
 
-  public OuttakeBucket() {
-    initialize();
-  }
-
   @Hardware(name = OUTTAKE_BUCKET_SERVO_NAME)
   public Servo outtakeServo;
 
   private IServoState outtakeServoState;
+
+  public OuttakeBucket() {
+    initialize();
+  }
 
   private void initialize() {
     outtakeServoState =
@@ -33,12 +33,12 @@ public class OuttakeBucket implements IOuttakeBucket {
   }
 
   @Override
-  public void dump() {
+  public synchronized void dump() {
     outtakeServoState = outtakeServoState.withPosition(DUMP_POSITION);
   }
 
   @Override
-  public void carry() {
+  public synchronized void carry() {
     outtakeServoState = outtakeServoState.withPosition(CARRY_POSITION);
   }
 
@@ -53,7 +53,7 @@ public class OuttakeBucket implements IOuttakeBucket {
   }
 
   @Override
-  @Observable(key = "OUTTAKEBUCKET")
+  @Observable(key = "OUTTAKE_BUCKET")
   public OuttakeBucketState getState() {
     return outtakeServoState.getPosition() == CARRY_POSITION
         ? OuttakeBucketState.CARRY_POSITION

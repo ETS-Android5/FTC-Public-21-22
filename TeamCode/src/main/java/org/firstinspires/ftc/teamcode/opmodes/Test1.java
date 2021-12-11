@@ -14,17 +14,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp(name = "Test1")
 public class Test1 extends EnhancedTeleOp {
-  private static double THIRD_MANIPULATION(double in) {
-    return Math.pow(in, 3);
-  }
-
   private final MecanumBot robot;
-
   private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
 
   public Test1() {
     super(new MecanumBot());
     this.robot = (MecanumBot) robotObject;
+  }
+
+  private static double THIRD_MANIPULATION(double in) {
+    return Math.pow(in, 3);
   }
 
   @Override
@@ -126,9 +125,7 @@ public class Test1 extends EnhancedTeleOp {
     double turnValue = controller1.rightStickX();
     double speed = halfSpeed.get() ? 0.5 : 1;
     robot.drivetrain.driveBySticks(
-        controller1.leftStickX() * speed,
-        controller1.leftStickY() * speed,
-        turnValue * .9 * speed);
+        controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * .9 * speed);
   }
 
   @Override

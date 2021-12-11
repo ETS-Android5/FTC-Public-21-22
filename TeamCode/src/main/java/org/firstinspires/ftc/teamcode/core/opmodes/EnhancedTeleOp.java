@@ -21,13 +21,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class EnhancedTeleOp extends OpMode {
 
-  protected Controller controller1;
-  protected Controller controller2;
   protected final ConcurrentHashMap<String, Object> initializedHardware;
   protected final HardwarePipeline hardwarePipeline;
+  protected Controller controller1;
+  protected Controller controller2;
+  protected Component robotObject;
   private HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
   private ReflectionBasedMagicRuntime serviceRuntime;
-  protected Component robotObject;
 
   public EnhancedTeleOp(Component robotObject) {
     State.clear();

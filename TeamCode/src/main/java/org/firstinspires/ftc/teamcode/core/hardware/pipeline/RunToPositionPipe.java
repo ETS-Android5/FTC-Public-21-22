@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 public class RunToPositionPipe extends HardwarePipeline {
+  private final List<RunToPositionTracker> trackedMotors = new LinkedList<>();
+
   public RunToPositionPipe(String name) {
     super(name);
   }
@@ -21,8 +23,6 @@ public class RunToPositionPipe extends HardwarePipeline {
   public RunToPositionPipe(String name, HardwarePipeline nextElement) {
     super(name, nextElement);
   }
-
-  private final List<RunToPositionTracker> trackedMotors = new LinkedList<>();
 
   @Override
   public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
@@ -66,7 +66,7 @@ public class RunToPositionPipe extends HardwarePipeline {
           if (motor.shouldUpdatePower(currentPosition)) {
             Object motorObj = hardware.get(motorName);
             if (motorObj instanceof DcMotor) {
-                double power = motor.getTargetPowerPercentage(currentPosition);
+              double power = motor.getTargetPowerPercentage(currentPosition);
               ((DcMotor) motorObj).setPower(power);
               motor.setLastPower(power);
             }

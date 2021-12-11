@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
@@ -21,18 +22,18 @@ public class FourHeightLift implements IFourHeightLift {
   private static final int HEIGHT_2_TICKS = 1260;
   private static final int HEIGHT_3_TICKS = 2300;
 
-  public FourHeightLift() {
-    initialize();
-  }
-
   @Hardware(name = LIFT_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
   public DcMotor liftMotor;
 
   private IMotorState liftMotorState;
 
+  public FourHeightLift() {
+    initialize();
+  }
+
   private void initialize() {
     liftMotorState =
-        new MotorState(LIFT_MOTOR_NAME, false)
+        new MotorState(LIFT_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(HEIGHT_0_TICKS)
             .withPowerCurve(PowerCurves.RUN_TO_POSITION_RAMP);
@@ -49,7 +50,7 @@ public class FourHeightLift implements IFourHeightLift {
   }
 
   @Override
-  @Observable(key = "LIFTSTATE")
+  @Observable(key = "FOUR_HEIGHT_LIFT")
   public FourHeightLiftState getState() {
     switch (liftMotorState.getTargetPosition()) {
       case HEIGHT_1_TICKS:
@@ -64,22 +65,22 @@ public class FourHeightLift implements IFourHeightLift {
   }
 
   @Override
-  public void goToHeight0() {
+  public synchronized void goToHeight0() {
     liftMotorState = liftMotorState.withTargetPosition(HEIGHT_0_TICKS);
   }
 
   @Override
-  public void goToHeight1() {
+  public synchronized void goToHeight1() {
     liftMotorState = liftMotorState.withTargetPosition(HEIGHT_1_TICKS);
   }
 
   @Override
-  public void goToHeight2() {
+  public synchronized void goToHeight2() {
     liftMotorState = liftMotorState.withTargetPosition(HEIGHT_2_TICKS);
   }
 
   @Override
-  public void goToHeight3() {
+  public synchronized void goToHeight3() {
     liftMotorState = liftMotorState.withTargetPosition(HEIGHT_3_TICKS);
   }
 }

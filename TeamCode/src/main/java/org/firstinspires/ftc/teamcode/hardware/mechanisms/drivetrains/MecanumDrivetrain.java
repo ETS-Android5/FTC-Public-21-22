@@ -22,12 +22,6 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   private static final String REAR_LEFT_MOTOR_NAME = "REAR_LEFT_MOTOR";
   private static final String REAR_RIGHT_MOTOR_NAME = "REAR_RIGHT_MOTOR";
 
-  private boolean autoMode = false;
-
-  public MecanumDrivetrain() {
-    initialize();
-  }
-
   @Hardware(name = FRONT_LEFT_MOTOR_NAME)
   public DcMotor frontLeftMotor;
 
@@ -44,12 +38,17 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   protected IMotorState frontRightMotorState;
   protected IMotorState rearLeftMotorState;
   protected IMotorState rearRightMotorState;
+  private boolean autoMode = false;
+
+  public MecanumDrivetrain() {
+    initialize();
+  }
 
   private void initialize() {
-    frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, true);
-    frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, false);
-    rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, true);
-    rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, false);
+    frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, Direction.REVERSE);
+    frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, Direction.FORWARD);
+    rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, Direction.REVERSE);
+    rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, Direction.FORWARD);
   }
 
   @Override
@@ -129,23 +128,13 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public Direction getFrontRightDirection() {
-    return frontRightMotorState.getDirection();
-  }
-
-  @Override
-  public Direction getRearLeftDirection() {
-    return rearLeftMotorState.getDirection();
-  }
-
-  @Override
-  public Direction getRearRightDirection() {
-    return rearRightMotorState.getDirection();
-  }
-
-  @Override
   public void setFrontLeftDirection(Direction direction) {
     frontLeftMotorState = frontLeftMotorState.withDirection(direction);
+  }
+
+  @Override
+  public Direction getFrontRightDirection() {
+    return frontRightMotorState.getDirection();
   }
 
   @Override
@@ -154,8 +143,18 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
+  public Direction getRearLeftDirection() {
+    return rearLeftMotorState.getDirection();
+  }
+
+  @Override
   public void setRearLeftDirection(Direction direction) {
     rearLeftMotorState = rearLeftMotorState.withDirection(direction);
+  }
+
+  @Override
+  public Direction getRearRightDirection() {
+    return rearRightMotorState.getDirection();
   }
 
   @Override
@@ -205,8 +204,8 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
   @Override
   public void driveBySticks(double lateral, double longitudinal, double turn) {
-    double wheelPower = Math.hypot(lateral, longitudinal);
-    double stickAngleRadians = Math.atan2(longitudinal, lateral) - Math.PI / 4;
+    double wheelPower = Math.hypot(-lateral, -longitudinal);
+    double stickAngleRadians = Math.atan2(-longitudinal, -lateral) - Math.PI / 4;
 
     double sinAngleRadians = Math.sin(stickAngleRadians);
     double cosAngleRadians = Math.cos(stickAngleRadians);
@@ -214,12 +213,12 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
     double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
 
     frontLeftMotorState =
-            frontLeftMotorState.withPower(wheelPower * cosAngleRadians * factor + turn);
+        frontLeftMotorState.withPower(wheelPower * cosAngleRadians * factor - turn);
     frontRightMotorState =
-            frontRightMotorState.withPower(wheelPower * sinAngleRadians * factor - turn);
-    rearLeftMotorState = rearLeftMotorState.withPower(wheelPower * sinAngleRadians * factor + turn);
+        frontRightMotorState.withPower(wheelPower * sinAngleRadians * factor + turn);
+    rearLeftMotorState = rearLeftMotorState.withPower(wheelPower * sinAngleRadians * factor - turn);
     rearRightMotorState =
-            rearRightMotorState.withPower(wheelPower * cosAngleRadians * factor - turn);
+        rearRightMotorState.withPower(wheelPower * cosAngleRadians * factor + turn);
   }
 
   @Override
@@ -263,31 +262,39 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
     setRearRightTarget(rearRightTicks);
     MotorTrackerPipe.getInstance()
         .setCallbackForMotorPosition(
-            new CallbackData(
+            new CallbackData<>(
                 getFrontLeftName(),
-                frontLeftTicks,
-                toleranceTicks,
+                (Integer i) ->
+                    i != null
+                        && i >= frontLeftTicks - toleranceTicks
+                        && i <= frontLeftTicks + toleranceTicks,
                 () -> currentTargetsReached[0] = true));
     MotorTrackerPipe.getInstance()
         .setCallbackForMotorPosition(
-            new CallbackData(
+            new CallbackData<>(
                 getFrontRightName(),
-                frontRightTicks,
-                toleranceTicks,
+                (Integer i) ->
+                    i != null
+                        && i >= frontRightTicks - toleranceTicks
+                        && i <= frontLeftTicks + toleranceTicks,
                 () -> currentTargetsReached[1] = true));
     MotorTrackerPipe.getInstance()
         .setCallbackForMotorPosition(
-            new CallbackData(
+            new CallbackData<>(
                 getRearLeftName(),
-                rearLeftTicks,
-                toleranceTicks,
+                (Integer i) ->
+                    i != null
+                        && i >= rearLeftTicks - toleranceTicks
+                        && i <= frontLeftTicks + toleranceTicks,
                 () -> currentTargetsReached[2] = true));
     MotorTrackerPipe.getInstance()
         .setCallbackForMotorPosition(
-            new CallbackData(
+            new CallbackData<>(
                 getRearRightName(),
-                rearRightTicks,
-                toleranceTicks,
+                (Integer i) ->
+                    i != null
+                        && i >= rearRightTicks - toleranceTicks
+                        && i <= frontLeftTicks + toleranceTicks,
                 () -> currentTargetsReached[3] = true));
     update.run();
     while (opModeIsActive.get()
