@@ -8,5 +8,7 @@ public interface ISingleServoGripper extends Component, StatefulMechanism<Single
 
   void close();
 
+  void grabTeamMarker();
+
   void toggle();
 }

@@ -21,7 +21,10 @@ public class Turret implements ITurret {
   private static final int DEGREES_BACK = 180;
   private static final double DEGREES_TO_TICKS = 1 / 1.25; // Rev core hex is 288 ticks / rotation
 
-  @Hardware(name = TURRET_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
+  @Hardware(
+      name = TURRET_MOTOR_NAME,
+      runMode = RunMode.RUN_TO_POSITION,
+      direction = Direction.REVERSE)
   public DcMotor turretMotor;
 
   private IMotorState turretMotorState;
@@ -32,7 +35,7 @@ public class Turret implements ITurret {
 
   private void initialize() {
     turretMotorState =
-        new MotorState(TURRET_MOTOR_NAME, Direction.FORWARD)
+        new MotorState(TURRET_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
             .withPowerCurve(PowerCurves.RUN_TO_POSITION_TENTH_POWER);
