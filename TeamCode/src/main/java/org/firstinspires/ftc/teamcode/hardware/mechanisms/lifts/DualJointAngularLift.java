@@ -23,7 +23,10 @@ public class DualJointAngularLift implements IDualJointAngularLift {
   private static final String LIFT_JOINT_ONE_MOTOR_NAME = "LIFT_JOINT_ONE_MOTOR";
   private static final String LIFT_JOINT_TWO_SERVO_NAME = "LIFT_JOINT_TWO_SERVO";
 
-  @Hardware(name = LIFT_JOINT_ONE_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
+  @Hardware(
+      name = LIFT_JOINT_ONE_MOTOR_NAME,
+      runMode = RunMode.RUN_TO_POSITION,
+      direction = Direction.REVERSE)
   public DcMotor liftJointOneMotor;
 
   @Hardware(name = LIFT_JOINT_TWO_SERVO_NAME)
@@ -38,7 +41,7 @@ public class DualJointAngularLift implements IDualJointAngularLift {
 
   private void initialize() {
     liftJointOneMotorState =
-        new MotorState(LIFT_JOINT_ONE_MOTOR_NAME, Direction.FORWARD)
+        new MotorState(LIFT_JOINT_ONE_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
             .withPowerCurve(PowerCurves.RUN_TO_POSITION_ANGULAR_LIFT_CURVE);

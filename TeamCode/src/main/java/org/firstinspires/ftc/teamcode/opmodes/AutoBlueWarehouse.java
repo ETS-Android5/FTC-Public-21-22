@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.cv.TeamMarkerPositionDetector;
 import org.firstinspires.ftc.teamcode.hardware.robots.MecanumBot;
 import org.opencv.core.Mat;
 
-@Autonomous(name = "Blue")
+@Autonomous(name = "AutoBlue")
 public class AutoBlueWarehouse extends EnhancedAutonomous {
 
   private final MecanumBot robot;

@@ -15,8 +15,9 @@ import java.util.List;
 public class SingleServoGripper implements ISingleServoGripper {
   private static final String SINGLE_SERVO_GRIPPER_SERVO_NAME = "SINGLE_SERVO_GRIPPER_SERVO";
 
-  private static final double OPEN_POSITION = 0.4;
-  private static final double CLOSED_POSITION = 0.2;
+  private static final double OPEN_POSITION = 0.5;
+  private static final double CLOSED_ON_FREIGHT_POSITION = 0.69;
+  private static final double CLOSED_ON_TEAM_MARKER_POSITION = 0.73;
 
   @Hardware(name = SINGLE_SERVO_GRIPPER_SERVO_NAME)
   public Servo singleServoGripperServo;
@@ -45,9 +46,11 @@ public class SingleServoGripper implements ISingleServoGripper {
   @Override
   @Observable(key = "SINGLE_SERVO_GRIPPER")
   public SingleServoGripperState getState() {
-    return singleServoGripperServoState.getPosition() == CLOSED_POSITION
-        ? SingleServoGripperState.CLOSED_POSITION
-        : SingleServoGripperState.OPEN_POSITION;
+    return singleServoGripperServoState.getPosition() == CLOSED_ON_FREIGHT_POSITION
+        ? SingleServoGripperState.CLOSED_ON_FREIGHT_POSITION
+        : singleServoGripperServoState.getPosition() == CLOSED_ON_TEAM_MARKER_POSITION
+            ? SingleServoGripperState.CLOSED_ON_TEAM_MARKER_POSITION
+            : SingleServoGripperState.OPEN_POSITION;
   }
 
   @Override
@@ -57,15 +60,23 @@ public class SingleServoGripper implements ISingleServoGripper {
 
   @Override
   public synchronized void close() {
-    singleServoGripperServoState = singleServoGripperServoState.withPosition(CLOSED_POSITION);
+    singleServoGripperServoState =
+        singleServoGripperServoState.withPosition(CLOSED_ON_FREIGHT_POSITION);
+  }
+
+  @Override
+  public synchronized void grabTeamMarker() {
+    singleServoGripperServoState =
+        singleServoGripperServoState.withPosition(CLOSED_ON_TEAM_MARKER_POSITION);
   }
 
   @Override
   public synchronized void toggle() {
     singleServoGripperServoState =
         singleServoGripperServoState.withPosition(
-            getState() == SingleServoGripperState.CLOSED_POSITION
+            getState() == SingleServoGripperState.CLOSED_ON_FREIGHT_POSITION
+                    || getState() == SingleServoGripperState.CLOSED_ON_TEAM_MARKER_POSITION
                 ? OPEN_POSITION
-                : CLOSED_POSITION);
+                : CLOSED_ON_FREIGHT_POSITION);
   }
 }
