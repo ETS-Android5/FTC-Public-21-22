@@ -45,17 +45,17 @@ public class MecanumBot implements Component {
 
   @AutonomousOnly
   public final Interpolatable frontDistance =
-      new InterpolatableRev2m(64, 25000000, 3, "FRONT_RANGE");
+      new InterpolatableRev2m(64, 25000000, 3, "CB_AUTO_FRONT_RANGE");
 
   @AutonomousOnly
-  public final Interpolatable leftDistance = new InterpolatableRev2m(64, 25000000, 3, "LEFT_RANGE");
+  public final Interpolatable leftDistance = new InterpolatableRev2m(64, 25000000, 3, "CB_AUTO_LEFT_RANGE");
 
   @AutonomousOnly
   public final Interpolatable rightDistance =
-      new InterpolatableRev2m(64, 25000000, 3, "RIGHT_RANGE");
+      new InterpolatableRev2m(64, 25000000, 3, "CB_AUTO_RIGHT_RANGE");
 
   @AutonomousOnly
-  public final Interpolatable rearDistance = new InterpolatableRev2m(64, 25000000, 3, "REAR_RANGE");
+  public final Interpolatable rearDistance = new InterpolatableRev2m(64, 25000000, 3, "CB_AUTO_REAR_RANGE");
 
   @AutonomousOnly public final Interpolatable gyro = new InterpolatableRevGyro(64, 25000000, 3);
 

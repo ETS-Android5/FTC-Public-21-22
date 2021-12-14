@@ -64,7 +64,6 @@ import com.google.blocks.ftcrobotcontroller.ProgrammingWebHandlers;
 import com.google.blocks.ftcrobotcontroller.runtime.BlocksOpMode;
 import com.qualcomm.ftccommon.ClassManagerFactory;
 import com.qualcomm.ftccommon.FtcAboutActivity;
-import com.qualcomm.ftccommon.FtcEventLoop;
 import com.qualcomm.ftccommon.FtcEventLoopIdle;
 import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder;
@@ -178,7 +177,7 @@ public class FtcRobotControllerActivity extends Activity {
   protected FtcRobotControllerService controllerService;
   protected NetworkType networkType;
 
-  protected FtcEventLoop eventLoop;
+  protected CustomEventLoop eventLoop;
   protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
 
   protected WifiMuteStateMachine wifiMuteStateMachine;
@@ -724,7 +723,7 @@ public class FtcRobotControllerActivity extends Activity {
     }
 
     OpModeRegister userOpModeRegister = createOpModeRegister();
-    eventLoop = new FtcEventLoop(hardwareFactory, userOpModeRegister, callback, this);
+    eventLoop = new CustomEventLoop(hardwareFactory, userOpModeRegister, callback, this);
     FtcEventLoopIdle idleLoop = new FtcEventLoopIdle(hardwareFactory, userOpModeRegister, callback, this);
 
     controllerService.setCallback(callback);
@@ -733,7 +732,7 @@ public class FtcRobotControllerActivity extends Activity {
     passReceivedUsbAttachmentsToEventLoop();
     AndroidBoard.showErrorIfUnknownControlHub();
 
-    AnnotatedHooksClassFilter.getInstance().callOnCreateEventLoopMethods(this, eventLoop);
+    CustomAnnotatedHooksClassFilter.getInstance().callOnCreateEventLoopMethods(this, eventLoop);
   }
 
   protected OpModeRegister createOpModeRegister() {
