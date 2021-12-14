@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.hardware.detection.distance.VL53L1X;
 
-@Autonomous(name = "SensorTest")
+@Autonomous(name = "CB_AUTO_SensorTest")
 @Disabled
 public class SensorTest extends LinearOpMode {
   VL53L1X distanceSensor;
