@@ -13,7 +13,7 @@ import java.util.List;
 public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
   @Override
   public TeamMarkerPosition calculateTeamMarkerPosition(Mat frame) {
-    Mat cropped = new Mat(frame, new Rect(0, 0, frame.width(), frame.height() / 2));
+    Mat cropped = new Mat(frame, new Rect(0, (int) Math.round(frame.height() / 2.5), frame.width(), (int) Math.round(frame.height() - (frame.height() / 2.5) - (frame.height() / 4.7))));
     Mat hsvMat = cropped.clone();
     Imgproc.cvtColor(cropped, hsvMat, Imgproc.COLOR_RGB2HSV);
     Mat mask = hsvMat.clone();
