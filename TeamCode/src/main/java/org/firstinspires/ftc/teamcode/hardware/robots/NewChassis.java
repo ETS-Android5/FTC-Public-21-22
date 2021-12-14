@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
+import org.firstinspires.ftc.teamcode.hardware.detection.vision.FtcCamera;
+import org.firstinspires.ftc.teamcode.hardware.detection.vision.Webcam;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.CarouselSpinner;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.ICarouselSpinner;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.ISingleServoGripper;
@@ -27,6 +30,9 @@ public class NewChassis implements Component {
   public final ITurret turret = new Turret();
   public final IDualJointAngularLift lift = new DualJointAngularLift();
   public final ISingleServoGripper gripper = new SingleServoGripper();
+
+  @AutonomousOnly
+  public final FtcCamera webcam = new Webcam();
 
   @Override
   public String getName() {
