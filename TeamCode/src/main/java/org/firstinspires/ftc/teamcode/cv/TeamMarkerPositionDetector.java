@@ -15,7 +15,7 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
   @Override
   public TeamMarkerPosition calculateTeamMarkerPosition(Mat frame) {
     Mat resized = frame.clone();
-    Imgproc.resize(frame, resized, new Size(), .1666, .1666, Imgproc.INTER_AREA);
+    Imgproc.resize(frame, resized, new Size((int) Math.round(frame.width() / 6.0), (int) Math.round(frame.height() / 6.0)), .1666, .1666, Imgproc.INTER_AREA);
     Mat cropped = new Mat(frame, new Rect(0, (int) Math.round(frame.height() / 2.5), frame.width(), (int) Math.round(frame.height() - (frame.height() / 2.5) - (frame.height() / 4.7))));
     Mat hsvMat = cropped.clone();
     Imgproc.cvtColor(cropped, hsvMat, Imgproc.COLOR_RGB2HSV);
