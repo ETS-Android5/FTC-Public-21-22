@@ -110,16 +110,8 @@ public class Webcam implements FtcCamera {
   @Override
   public Mat grabFrame() {
     if (cameraName == null) return null;
-
     Mat mat = new Mat();
-    Bitmap bmp32 =
-        Bitmap.createScaledBitmap(
-                bitmap,
-                (int) Math.round(bitmap.getWidth() / 2.5),
-                (int) Math.round(bitmap.getHeight() / 2.5),
-                false)
-            .copy(Bitmap.Config.RGB_565, true);
-    Utils.bitmapToMat(bmp32, mat);
+    Utils.bitmapToMat(bitmap, mat);
     return mat;
   }
 }
