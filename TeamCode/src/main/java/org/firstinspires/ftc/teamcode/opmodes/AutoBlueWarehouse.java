@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
@@ -30,9 +28,7 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
 
   @Override
   public void onStartPressed() {
-    Log.d("AUTO", "INIT");
     robot.webcam.init();
-    Log.d("AUTO", "INITIALIZED");
     robot.drivetrain.setPowerCurve(
         (Integer a, Integer b, Integer c) ->
             (double) Math.round(PowerCurves.RUN_TO_POSITION_QUARTER_POWER.apply(a, b, c) * 100)
@@ -41,18 +37,13 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     robot.drivetrain.setFrontRightDirection(robot.drivetrain.getFrontRightDirection().opposite());
     robot.drivetrain.setRearLeftDirection(robot.drivetrain.getRearLeftDirection().opposite());
     robot.drivetrain.setRearRightDirection(robot.drivetrain.getRearRightDirection().opposite());
-    Log.d("AUTO", "2");
     processChanges();
     ITeamMarkerPositionDetector markerPositionDetector = new TeamMarkerPositionDetector();
-    Log.d("AUTO", "3");
     Mat frame = robot.webcam.grabFrame();
-    Log.d("AUTO", "4");
     robot.webcam.deinit();
-    Log.d("AUTO", "5");
     TeamMarkerPosition teamMarkerPosition =
         markerPositionDetector.calculateTeamMarkerPosition(frame);
 
-    Log.d("AUTO", "6");
     robot.drivetrain.setFrontLeftPower(0.3);
     robot.drivetrain.setFrontRightPower(-0.3);
     robot.drivetrain.setRearLeftPower(0.3);

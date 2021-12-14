@@ -14,9 +14,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp(name = "Red")
 public class RedTeleOp extends EnhancedTeleOp {
-  private static final double MAX_TURRET_ADJUSTMENT = 12; // 12 ticks or 15 degrees
-  private static final double MAX_FIRST_JOINT_ADJUSTMENT = 50; // 50 ticks
-  private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.055; // 15 degrees
+  private static final double MAX_TURRET_ADJUSTMENT = 1; // 1 tick or 1.25 degrees
+  private static final double MAX_FIRST_JOINT_ADJUSTMENT = 1; // 1 tick
+  private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.0055; // 1.5 degrees
 
   private final NewChassis robot;
 
@@ -275,22 +275,27 @@ public class RedTeleOp extends EnhancedTeleOp {
     double speed = halfSpeed.get() ? 0.5 : 1;
     robot.drivetrain.driveBySticks(
         controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
-    robot.turret.turnToDegrees(
-        (int)
-            Math.round(
-                robot.turret.getState()
-                    + (controller2.rightTrigger() * MAX_TURRET_ADJUSTMENT)
-                    - (controller2.leftTrigger() * MAX_TURRET_ADJUSTMENT)));
-    robot.lift.setArmOnePosition(
-        (int)
-            Math.round(
-                robot.lift.getState().first
-                    + (controller2.leftStickY() * MAX_FIRST_JOINT_ADJUSTMENT)));
-    robot.lift.setArmTwoPosition(
-        (int)
-            Math.round(
-                robot.lift.getState().second
-                    + (controller2.rightStickY() * MAX_SECOND_JOINT_ADJUSTMENT)));
+    if (controller2.leftTrigger() > 0.1 || controller2.rightTrigger() > 0.1) {
+      double leftAdjustment = controller2.leftTrigger() * MAX_TURRET_ADJUSTMENT * 2;
+      double rightAdjustment = controller2.rightTrigger() * MAX_TURRET_ADJUSTMENT;
+      robot.turret.turnToDegrees(
+          (int)
+              Math.round(
+                  robot.turret.getState()
+                      - (controller2.leftTrigger() * MAX_TURRET_ADJUSTMENT * 2)
+                      + (controller2.rightTrigger() * MAX_TURRET_ADJUSTMENT)));
+    }
+    if (controller2.leftStickY() < -0.1 || controller2.leftStickY() > 0.1) {
+      robot.lift.setArmOnePosition(
+          (int)
+              Math.round(
+                  robot.lift.getState().first
+                      + (controller2.leftStickY() * MAX_FIRST_JOINT_ADJUSTMENT)));
+    }
+    if (controller2.rightStickY() < -0.1 || controller2.rightStickY() > 0.1) {
+      robot.lift.setArmTwoPosition(
+          robot.lift.getState().second + (controller2.rightStickY() * MAX_SECOND_JOINT_ADJUSTMENT));
+    }
   }
 
   @Override
