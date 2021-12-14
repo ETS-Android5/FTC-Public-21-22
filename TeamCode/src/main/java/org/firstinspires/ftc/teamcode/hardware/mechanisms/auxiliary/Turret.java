@@ -38,7 +38,7 @@ public class Turret implements ITurret {
         new MotorState(TURRET_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.RUN_TO_POSITION_TENTH_POWER);
+            .withPowerCurve(PowerCurves.RUN_TO_POSITION_QUARTER_POWER);
   }
 
   @Override
@@ -65,7 +65,7 @@ public class Turret implements ITurret {
     }
     synchronized (this) {
       turretMotorState =
-          turretMotorState.withTargetPosition((int) Math.round((degrees % 360) * DEGREES_TO_TICKS));
+          turretMotorState.withTargetPosition((int) Math.round(safeDegrees * DEGREES_TO_TICKS));
     }
   }
 

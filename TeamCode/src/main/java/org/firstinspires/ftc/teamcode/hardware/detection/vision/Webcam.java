@@ -74,18 +74,20 @@ public class Webcam implements FtcCamera {
                         Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));
                     synchronizer.finish(session);
                   } catch (CameraException | RuntimeException e) {
+                    e.printStackTrace();
                     session.close();
                     synchronizer.finish(null);
                   }
                 }
               }));
     } catch (CameraException e) {
+      e.printStackTrace();
       synchronizer.finish(null);
     }
-
     try {
       synchronizer.await();
     } catch (InterruptedException e) {
+      e.printStackTrace();
       Thread.currentThread().interrupt();
     }
     session = synchronizer.getValue();
@@ -94,7 +96,6 @@ public class Webcam implements FtcCamera {
 
   @Override
   public void deinit() {
-    if (cameraName == null) return;
     if (session != null) {
       session.stopCapture();
       session.close();
@@ -112,7 +113,11 @@ public class Webcam implements FtcCamera {
 
     Mat mat = new Mat();
     Bitmap bmp32 =
-        Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false)
+        Bitmap.createScaledBitmap(
+                bitmap,
+                (int) Math.round(bitmap.getWidth() / 2.5),
+                (int) Math.round(bitmap.getHeight() / 2.5),
+                false)
             .copy(Bitmap.Config.RGB_565, true);
     Utils.bitmapToMat(bmp32, mat);
     return mat;
