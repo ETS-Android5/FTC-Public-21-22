@@ -23,8 +23,7 @@ public class Turret implements ITurret {
 
   @Hardware(
       name = TURRET_MOTOR_NAME,
-      runMode = RunMode.RUN_TO_POSITION,
-      direction = Direction.REVERSE)
+      runMode = RunMode.RUN_TO_POSITION)
   public DcMotor turretMotor;
 
   private IMotorState turretMotorState;
@@ -35,7 +34,7 @@ public class Turret implements ITurret {
 
   private void initialize() {
     turretMotorState =
-        new MotorState(TURRET_MOTOR_NAME, Direction.REVERSE)
+        new MotorState(TURRET_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
             .withPowerCurve(PowerCurves.RUN_TO_POSITION_QUARTER_POWER);
