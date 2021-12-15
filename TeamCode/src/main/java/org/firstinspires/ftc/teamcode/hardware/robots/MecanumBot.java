@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
-import static org.firstinspires.ftc.teamcode.core.fn.PowerCurves.RUN_TO_POSITION_QUARTER_POWER;
-
 import android.util.Log;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
+import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
+import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InterpolatablePipe;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Interpolatable;
@@ -48,14 +48,16 @@ public class MecanumBot implements Component {
       new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_FRONT_RANGE");
 
   @AutonomousOnly
-  public final Interpolatable leftDistance = new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_LEFT_RANGE");
+  public final Interpolatable leftDistance =
+      new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_LEFT_RANGE");
 
   @AutonomousOnly
   public final Interpolatable rightDistance =
       new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_RIGHT_RANGE");
 
   @AutonomousOnly
-  public final Interpolatable rearDistance = new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_REAR_RANGE");
+  public final Interpolatable rearDistance =
+      new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_REAR_RANGE");
 
   @AutonomousOnly public final Interpolatable gyro = new InterpolatableRevGyro(48, 25000000, 3);
 
@@ -67,6 +69,8 @@ public class MecanumBot implements Component {
       Supplier<Double> basePower,
       Supplier<Boolean> opModeIsActive,
       Runnable update) {
+    TriFunction<Integer, Integer, Integer, Double> powerCurve =
+        PowerCurves.generatePowerCurve(0.25, 2.33);
     Double currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("IMU");
     double initialHeading = currentHeading;
     Double turnSpeed;
@@ -76,7 +80,7 @@ public class MecanumBot implements Component {
       while (opModeIsActive.get() && Math.abs(target - currentHeading) > tolerance) {
         currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("IMU");
         turnSpeed =
-            RUN_TO_POSITION_QUARTER_POWER.apply(
+            powerCurve.apply(
                 (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
         leftDirection = currentHeading > target ? -1 : 1;
         rightDirection = currentHeading < target ? -1 : 1;
@@ -95,7 +99,7 @@ public class MecanumBot implements Component {
       currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("IMU");
       long mark1 = System.nanoTime();
       turnSpeed =
-          RUN_TO_POSITION_QUARTER_POWER.apply(
+          powerCurve.apply(
               (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
       long mark2 = System.nanoTime();
       leftDiff = turnSpeed * (currentHeading > target ? -1 : 1) * directionAdjustment;

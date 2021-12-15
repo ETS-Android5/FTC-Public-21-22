@@ -72,7 +72,7 @@ public class InterpolatablePipe extends HardwarePipeline {
         .values()
         .forEach(
             d -> {
-              if (d.timeToNextSample() <= 0 && d.isSampling()) {
+              if (d.isSampling() && d.timeToNextSample() <= 0) {
                 d.sample();
               }
             });
