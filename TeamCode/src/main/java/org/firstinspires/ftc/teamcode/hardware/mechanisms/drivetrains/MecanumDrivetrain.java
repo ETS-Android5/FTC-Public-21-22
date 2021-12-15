@@ -45,10 +45,10 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   private void initialize() {
-    frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, Direction.REVERSE);
-    frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, Direction.FORWARD);
-    rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, Direction.REVERSE);
-    rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, Direction.FORWARD);
+    frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, Direction.FORWARD);
+    frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, Direction.REVERSE);
+    rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, Direction.FORWARD);
+    rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, Direction.REVERSE);
   }
 
   @Override
