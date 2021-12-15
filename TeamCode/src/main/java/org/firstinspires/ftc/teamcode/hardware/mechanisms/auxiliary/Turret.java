@@ -19,7 +19,7 @@ public class Turret implements ITurret {
   private static final int DEGREES_FRONT = 0;
   private static final int DEGREES_RIGHT = 90;
   private static final int DEGREES_BACK = 180;
-  private static final double DEGREES_TO_TICKS = 1 / 1.25; // Rev core hex is 288 ticks / rotation
+  private static final double DEGREES_TO_TICKS = 2.1333333; // Rev core hex is 288 ticks / rotation
 
   @Hardware(
       name = TURRET_MOTOR_NAME,
