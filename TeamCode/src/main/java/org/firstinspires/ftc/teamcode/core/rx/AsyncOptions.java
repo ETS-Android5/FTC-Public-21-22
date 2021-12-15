@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.core.rx;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class AsyncOptions<T> {
     private Supplier<T> intenseOperation;
-    private Function<T, AsyncResolution> condition;
-    private long conditionalIntervalMs = 250;
+    private Consumer<T> preCondition;
+    private BlockingQueue<Boolean> condition;
     private Consumer<T> postOp;
     private BiConsumer<T, Exception> catchTask;
     private Consumer<T> finallyTask;
@@ -17,12 +17,12 @@ public class AsyncOptions<T> {
         return intenseOperation;
     }
 
-    public Function<T, AsyncResolution> getCondition() {
-        return condition;
+    public Consumer<T> getPreCondition() {
+        return preCondition;
     }
 
-    public long getConditionalIntervalMs() {
-        return conditionalIntervalMs;
+    public BlockingQueue<Boolean> getCondition() {
+        return condition;
     }
 
     public Consumer<T> getPostOp() {
@@ -42,13 +42,13 @@ public class AsyncOptions<T> {
         return this;
     }
 
-    public AsyncOptions<T> setCondition(Function<T, AsyncResolution> condition) {
-        this.condition = condition;
+    public AsyncOptions<T> setPreCondition(Consumer<T> preCondition) {
+        this.preCondition = preCondition;
         return this;
     }
 
-    public AsyncOptions<T> setConditionalIntervalMs(long conditionalIntervalMs) {
-        this.conditionalIntervalMs = conditionalIntervalMs;
+    public AsyncOptions<T> setCondition(BlockingQueue<Boolean> condition) {
+        this.condition = condition;
         return this;
     }
 
