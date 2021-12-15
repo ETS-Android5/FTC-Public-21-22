@@ -1,30 +1,40 @@
 package org.firstinspires.ftc.teamcode.core.rx;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 public class AsyncOperations {
-    static <T> void await(Supplier<T> func, Function<T, AsyncResolution> condition, long checkIntervalMs, Runnable task) {
+    static <T> void await (AsyncOptions<T> options) {
         new Thread(() -> {
-            T result = func.get();
-            boolean canRunTask = false;
-            while (!canRunTask) {
-                switch (condition.apply(result)) {
-                    case WAIT:
-                        try {
-                            Thread.sleep(checkIntervalMs);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+            T result = null;
+            try {
+                result = options.getIntenseOperation().get();
+                if (options.getCondition() != null) {
+                    boolean canRunTask = false;
+                    while (!canRunTask) {
+                        switch (options.getCondition().apply(result)) {
+                            case WAIT:
+                                try {
+                                    Thread.sleep(options.getConditionalIntervalMs());
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case CONTINUE:
+                                canRunTask = true;
+                                break;
+                            case CANCEL:
+                                return;
                         }
-                        break;
-                    case CONTINUE:
-                        canRunTask = true;
-                        break;
-                    case CANCEL:
-                        return;
+                    }
+                }
+                options.getPostOp().accept(result);
+            } catch (Exception e) {
+                if (options.getCatchTask() != null) {
+                    options.getCatchTask().accept(result, e);
+                }
+            } finally {
+                if (options.getFinallyTask() != null) {
+                    options.getFinallyTask().accept(result);
                 }
             }
-            task.run();
         }).start();
     }
 }
