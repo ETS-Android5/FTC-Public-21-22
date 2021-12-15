@@ -37,6 +37,7 @@ public class Webcam implements FtcCamera {
   private Camera camera;
   private Bitmap bitmap;
   private CameraCaptureSession session;
+  private CameraCharacteristics characteristics;
 
   @Override
   public void init() {
@@ -49,37 +50,41 @@ public class Webcam implements FtcCamera {
           cameraManager.requestPermissionAndOpenCamera(
               new Deadline(secondsPermissionTimeout, TimeUnit.SECONDS), cameraName, null);
     }
-    CameraCharacteristics characteristics = cameraName.getCameraCharacteristics();
+    characteristics = cameraName.getCameraCharacteristics();
+  }
+
+  @Override
+  public void start() {
     Size size = characteristics.getDefaultSize(ImageFormat.YUY2);
     int fps = characteristics.getMaxFramesPerSecond(ImageFormat.YUY2, size);
     final ContinuationSynchronizer<CameraCaptureSession> synchronizer =
-        new ContinuationSynchronizer<>();
+            new ContinuationSynchronizer<>();
     try {
       camera.createCaptureSession(
-          Continuation.create(
-              callbackHandler,
-              new CameraCaptureSession.StateCallbackDefault() {
-                @Override
-                public void onConfigured(@NonNull CameraCaptureSession session) {
-                  try {
-                    final CameraCaptureRequest captureRequest =
-                        camera.createCaptureRequest(ImageFormat.YUY2, size, fps);
-                    session.startCapture(
-                        captureRequest,
-                        (_u, _uu, cameraFrame) -> {
-                          Bitmap bmp = captureRequest.createEmptyBitmap();
-                          cameraFrame.copyToBitmap(bmp);
-                          bitmap = bmp;
-                        },
-                        Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));
-                    synchronizer.finish(session);
-                  } catch (CameraException | RuntimeException e) {
-                    e.printStackTrace();
-                    session.close();
-                    synchronizer.finish(null);
-                  }
-                }
-              }));
+              Continuation.create(
+                      callbackHandler,
+                      new CameraCaptureSession.StateCallbackDefault() {
+                        @Override
+                        public void onConfigured(@NonNull CameraCaptureSession session) {
+                          try {
+                            final CameraCaptureRequest captureRequest =
+                                    camera.createCaptureRequest(ImageFormat.YUY2, size, fps);
+                            session.startCapture(
+                                    captureRequest,
+                                    (_u, _uu, cameraFrame) -> {
+                                      Bitmap bmp = captureRequest.createEmptyBitmap();
+                                      cameraFrame.copyToBitmap(bmp);
+                                      bitmap = bmp;
+                                    },
+                                    Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));
+                            synchronizer.finish(session);
+                          } catch (CameraException | RuntimeException e) {
+                            e.printStackTrace();
+                            session.close();
+                            synchronizer.finish(null);
+                          }
+                        }
+                      }));
     } catch (CameraException e) {
       e.printStackTrace();
       synchronizer.finish(null);

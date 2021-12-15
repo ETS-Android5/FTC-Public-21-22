@@ -28,10 +28,10 @@ public class Test2 extends OpMode {
 
   @Override
   public void init() {
-    fl = hardwareMap.dcMotor.get("FRONT_LEFT_DRIVE");
-    fr = hardwareMap.dcMotor.get("FRONT_RIGHT_DRIVE");
-    rl = hardwareMap.dcMotor.get("REAR_LEFT_DRIVE");
-    rr = hardwareMap.dcMotor.get("REAR_RIGHT_DRIVE");
+    fl = hardwareMap.dcMotor.get("FRONT_LEFT_MOTOR");
+    fr = hardwareMap.dcMotor.get("FRONT_RIGHT_MOTOR");
+    rl = hardwareMap.dcMotor.get("REAR_LEFT_MOTOR");
+    rr = hardwareMap.dcMotor.get("REAR_RIGHT_MOTOR");
 
     turret = hardwareMap.dcMotor.get("TURRET_MOTOR");
     firstJoint = hardwareMap.dcMotor.get("LIFT_JOINT_ONE_MOTOR");

@@ -44,8 +44,8 @@ public class DualJointAngularLift implements IDualJointAngularLift {
         new MotorState(LIFT_JOINT_ONE_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.RUN_TO_POSITION_ANGULAR_LIFT_CURVE);
-    liftJointTwoServoState = new ServoState(LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, 0);
+            .withPowerCurve(PowerCurves.generateDynamicPowerCurve(0.8, 0.45, 100));
+    liftJointTwoServoState = new ServoState(LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, 0.45);
   }
 
   @Override

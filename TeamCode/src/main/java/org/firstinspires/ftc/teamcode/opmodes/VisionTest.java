@@ -25,20 +25,20 @@ public class VisionTest extends EnhancedAutonomous {
     @Override
     public void onInitPressed() {
         OpenCVWrapper.load();
+        robot.webcam.init();
     }
 
     @Override
     public void onStartPressed() {
         long start = System.nanoTime();
-        robot.webcam.init();
-        processChanges();
+        robot.webcam.start();
         ITeamMarkerPositionDetector markerPositionDetector = new TeamMarkerPositionDetector();
         Mat frame = robot.webcam.grabFrame();
-        robot.webcam.deinit();
         TeamMarkerPosition teamMarkerPosition = markerPositionDetector.calculateTeamMarkerPosition(frame);
         long end = System.nanoTime();
-        Log.d("TIME", "" + (start - end));
-        Log.d("MARKER POSITION", teamMarkerPosition.name());
+        Log.d("TIME", "" + (end - start));
+        Log.d("TIME", teamMarkerPosition.name());
+        robot.webcam.deinit();
     }
 
     @Override

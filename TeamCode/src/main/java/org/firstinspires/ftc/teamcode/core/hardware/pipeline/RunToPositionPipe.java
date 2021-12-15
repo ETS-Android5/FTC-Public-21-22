@@ -37,7 +37,7 @@ public class RunToPositionPipe extends HardwarePipeline {
                 TriFunction<Integer, Integer, Integer, Double> powerCurve =
                     nextState.getPowerCurve();
                 if (powerCurve == null) {
-                  powerCurve = PowerCurves.RUN_TO_POSITION_RAMP;
+                  powerCurve = PowerCurves.generatePowerCurve(1, 2.33);
                 }
                 trackedMotors.add(
                     new RunToPositionTracker(

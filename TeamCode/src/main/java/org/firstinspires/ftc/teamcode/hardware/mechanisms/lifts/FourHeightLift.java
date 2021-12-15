@@ -36,7 +36,7 @@ public class FourHeightLift implements IFourHeightLift {
         new MotorState(LIFT_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(HEIGHT_0_TICKS)
-            .withPowerCurve(PowerCurves.RUN_TO_POSITION_RAMP);
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, 2.33));
   }
 
   @Override
