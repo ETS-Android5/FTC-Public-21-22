@@ -81,7 +81,7 @@ public class RedTeleOp extends EnhancedTeleOp {
           // intake position
           robot.gripper.close();
           robot.lift.setArmOnePosition(0);
-          robot.lift.setArmTwoPosition(0.47);
+          robot.lift.setArmTwoPosition(0.45);
           executorService.schedule(
               () -> {
                 robot.turret.turnToFront();
@@ -276,8 +276,6 @@ public class RedTeleOp extends EnhancedTeleOp {
     robot.drivetrain.driveBySticks(
         controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
     if (controller2.leftTrigger() > 0.1 || controller2.rightTrigger() > 0.1) {
-      double leftAdjustment = controller2.leftTrigger() * MAX_TURRET_ADJUSTMENT * 2;
-      double rightAdjustment = controller2.rightTrigger() * MAX_TURRET_ADJUSTMENT;
       robot.turret.turnToDegrees(
           (int)
               Math.round(

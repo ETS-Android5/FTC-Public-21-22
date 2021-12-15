@@ -31,7 +31,7 @@ public class SingleJointAngularLift implements ISingleJointAngularLift {
         new MotorState(LIFT_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.RUN_TO_POSITION_ANGULAR_LIFT_CURVE);
+            .withPowerCurve(PowerCurves.generatePowerCurve(0.8, 0.45));
   }
 
   @Override

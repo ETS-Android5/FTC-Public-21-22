@@ -24,11 +24,12 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
   @Override
   public void onInitPressed() {
     OpenCVWrapper.load();
+    robot.webcam.init();
   }
 
   @Override
   public void onStartPressed() {
-    robot.webcam.init();
+    robot.webcam.start();
     robot.drivetrain.setPowerCurve(
         (Integer a, Integer b, Integer c) ->
             (double) Math.round(PowerCurves.RUN_TO_POSITION_QUARTER_POWER.apply(a, b, c) * 100)

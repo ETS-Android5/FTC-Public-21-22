@@ -14,12 +14,12 @@ import java.util.List;
 public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
   @Override
   public TeamMarkerPosition calculateTeamMarkerPosition(Mat frame) {
-    Mat resized = frame.clone();
-    Imgproc.resize(frame, resized, new Size((int) Math.round(frame.width() / 6.0), (int) Math.round(frame.height() / 6.0)), .1666, .1666, Imgproc.INTER_AREA);
+    Mat resized = new Mat();
+    Imgproc.resize(frame, resized, new Size((int) Math.round(frame.width() / 10.0), (int) Math.round(frame.height() / 10.0)), .1, .1, Imgproc.INTER_AREA);
     Mat cropped = new Mat(frame, new Rect(0, (int) Math.round(frame.height() / 2.5), frame.width(), (int) Math.round(frame.height() - (frame.height() / 2.5) - (frame.height() / 4.7))));
-    Mat hsvMat = cropped.clone();
+    Mat hsvMat = new Mat();
     Imgproc.cvtColor(cropped, hsvMat, Imgproc.COLOR_RGB2HSV);
-    Mat mask = hsvMat.clone();
+    Mat mask = new Mat();
     Mat kernel = Mat.ones(5, 5, CvType.CV_8UC1);
     Core.inRange(hsvMat, new Scalar(15, 35, 0), new Scalar(45, 150, 255), mask);
     Imgproc.erode(mask, mask, kernel);
