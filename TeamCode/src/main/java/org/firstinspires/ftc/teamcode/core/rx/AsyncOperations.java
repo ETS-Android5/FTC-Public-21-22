@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.rx;
 
 public class AsyncOperations {
-    static <T> void await (AsyncOptions<T> options) {
+  public static <T> void startAsyncTask(AsyncTaskDescription<T> options) {
     new Thread(
             () -> {
               T result = null;
@@ -18,7 +18,7 @@ public class AsyncOperations {
                     options.getPostOp().accept(result);
                   }
                 } else if (options.getPostOp() != null) {
-                    options.getPostOp().accept(result);
+                  options.getPostOp().accept(result);
                 }
               } catch (Exception e) {
                 if (options.getCatchTask() != null) {
@@ -31,5 +31,5 @@ public class AsyncOperations {
               }
             })
         .start();
-    }
+  }
 }

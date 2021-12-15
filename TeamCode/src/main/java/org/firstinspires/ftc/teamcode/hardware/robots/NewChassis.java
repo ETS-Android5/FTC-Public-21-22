@@ -31,8 +31,7 @@ public class NewChassis implements Component {
   public final IDualJointAngularLift lift = new DualJointAngularLift();
   public final ISingleServoGripper gripper = new SingleServoGripper();
 
-  @AutonomousOnly
-  public final FtcCamera webcam = new Webcam();
+  @AutonomousOnly public final FtcCamera webcam = new Webcam();
 
   @Override
   public String getName() {

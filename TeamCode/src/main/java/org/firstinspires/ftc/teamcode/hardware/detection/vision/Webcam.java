@@ -31,13 +31,13 @@ public class Webcam implements FtcCamera {
   private static final int secondsPermissionTimeout = Integer.MAX_VALUE;
   private static final String CAMERA_NAME = "CB_AUTO_Webcam 1";
   private final Handler callbackHandler = CallbackLooper.getDefault().getHandler();
+  private final BlockingQueue<Bitmap> frameQueue = new LinkedBlockingQueue<>(1);
 
   @Hardware(name = CAMERA_NAME)
   public WebcamName cameraName;
 
   private CameraManager cameraManager;
   private Camera camera;
-  private final BlockingQueue<Bitmap> frameQueue = new LinkedBlockingQueue<>(1);
   private CameraCaptureSession session;
   private CameraCharacteristics characteristics;
 
@@ -84,7 +84,8 @@ public class Webcam implements FtcCamera {
                               try {
                                 frameQueue.take();
                                 frameQueue.add(bmp);
-                              } catch (InterruptedException ignored) {}
+                              } catch (InterruptedException ignored) {
+                              }
                             }
                           },
                           Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));

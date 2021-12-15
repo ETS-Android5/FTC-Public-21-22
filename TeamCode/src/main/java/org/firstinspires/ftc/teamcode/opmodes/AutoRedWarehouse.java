@@ -30,10 +30,7 @@ public class AutoRedWarehouse extends EnhancedAutonomous {
   @Override
   public void onStartPressed() {
     robot.webcam.start();
-    robot.drivetrain.setPowerCurve(
-        (Integer a, Integer b, Integer c) ->
-            (double) Math.round(PowerCurves.RUN_TO_POSITION_QUARTER_POWER.apply(a, b, c) * 100)
-                / 100);
+    robot.drivetrain.setPowerCurve(PowerCurves.generatePowerCurve(0.25, 2.33));
     robot.drivetrain.setFrontLeftDirection(robot.drivetrain.getFrontLeftDirection().opposite());
     robot.drivetrain.setFrontRightDirection(robot.drivetrain.getFrontRightDirection().opposite());
     robot.drivetrain.setRearLeftDirection(robot.drivetrain.getRearLeftDirection().opposite());
