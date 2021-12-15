@@ -108,11 +108,13 @@ public class InterpolatableRevGyro implements Interpolatable {
 
   @Override
   public void startSampling() {
+    dataPoints.clear();
     isSampling = true;
   }
 
   @Override
   public void stopSampling() {
+    dataPoints.clear();
     isSampling = false;
   }
 
