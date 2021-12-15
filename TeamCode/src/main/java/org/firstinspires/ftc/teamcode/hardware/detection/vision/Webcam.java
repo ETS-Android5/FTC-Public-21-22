@@ -23,6 +23,8 @@ import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class Webcam implements FtcCamera {
@@ -35,7 +37,7 @@ public class Webcam implements FtcCamera {
 
   private CameraManager cameraManager;
   private Camera camera;
-  private Bitmap bitmap;
+  private final BlockingQueue<Bitmap> frameQueue = new LinkedBlockingQueue<>(1);
   private CameraCaptureSession session;
   private CameraCharacteristics characteristics;
 
@@ -78,7 +80,12 @@ public class Webcam implements FtcCamera {
                           (_u, _uu, cameraFrame) -> {
                             Bitmap bmp = captureRequest.createEmptyBitmap();
                             cameraFrame.copyToBitmap(bmp);
-                            bitmap = bmp;
+                            if (frameQueue.size() > 0) {
+                              try {
+                                frameQueue.take();
+                                frameQueue.add(bmp);
+                              } catch (InterruptedException ignored) {}
+                            }
                           },
                           Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));
                       synchronizer.finish(session);
@@ -103,13 +110,6 @@ public class Webcam implements FtcCamera {
     synchronized (this) {
       session = synchronizer.getValue();
     }
-    while (true) {
-      synchronized (this) {
-        if (bitmap != null) {
-          break;
-        }
-      }
-    }
   }
 
   @Override
@@ -129,7 +129,11 @@ public class Webcam implements FtcCamera {
   public synchronized Mat grabFrame() {
     if (cameraName == null) return null;
     Mat mat = new Mat();
-    Utils.bitmapToMat(bitmap, mat);
+    try {
+      Utils.bitmapToMat(frameQueue.take(), mat);
+    } catch (InterruptedException ignored) {
+      return null;
+    }
     return mat;
   }
 }
