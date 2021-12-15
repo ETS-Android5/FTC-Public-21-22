@@ -15,7 +15,7 @@ import java.util.List;
 public class SingleServoGripper implements ISingleServoGripper {
   private static final String SINGLE_SERVO_GRIPPER_SERVO_NAME = "SINGLE_SERVO_GRIPPER_SERVO";
 
-  private static final double OPEN_POSITION = 0.5;
+  private static final double OPEN_POSITION = 0.58;
   private static final double CLOSED_ON_FREIGHT_POSITION = 0.69;
   private static final double CLOSED_ON_TEAM_MARKER_POSITION = 0.73;
 
