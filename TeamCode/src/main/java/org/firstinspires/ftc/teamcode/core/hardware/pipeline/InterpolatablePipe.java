@@ -16,6 +16,7 @@ public class InterpolatablePipe extends HardwarePipeline {
   private final List<CallbackData<Double>> dataSourceCallbacks = new LinkedList<>();
   private boolean allDataSourcesDiscovered = false;
   private long pipelineIteration = 0;
+  private boolean inPipe = false;
 
   public InterpolatablePipe(String name) {
     super(name);
@@ -32,7 +33,11 @@ public class InterpolatablePipe extends HardwarePipeline {
   }
 
   public void setCallbackForInterpolatable(CallbackData<Double> data) {
-    dataSourceCallbacks.add(data);
+    if (!inPipe) {
+      dataSourceCallbacks.add(data);
+    } else {
+      ExitPipe.getInstance().onNextTick(() -> dataSourceCallbacks.add(data));
+    }
   }
 
   @SuppressWarnings("All")
@@ -56,6 +61,7 @@ public class InterpolatablePipe extends HardwarePipeline {
 
   @Override
   public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
+    inPipe = true;
     pipelineIteration++;
     if (!allDataSourcesDiscovered) {
       hardware.forEach(
@@ -80,6 +86,7 @@ public class InterpolatablePipe extends HardwarePipeline {
         dataSourceCallbacks,
         trackedDataSources,
         (Interpolatable i) -> currentDataPointOf(i.getName()));
+    inPipe = false;
     return super.process(hardware, r);
   }
 }

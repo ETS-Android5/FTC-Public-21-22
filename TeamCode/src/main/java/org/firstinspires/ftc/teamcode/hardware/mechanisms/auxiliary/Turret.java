@@ -15,11 +15,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class Turret implements ITurret {
-  private static final String TURRET_MOTOR_NAME = "TURRET_MOTOR";
-  private static final int DEGREES_FRONT = 0;
-  private static final int DEGREES_RIGHT = 90;
-  private static final int DEGREES_BACK = 180;
-  private static final double DEGREES_TO_TICKS = 2.1333333; // Rev core hex is 288 ticks / rotation
+  public static final String TURRET_MOTOR_NAME = "TURRET_MOTOR";
+  public static final int DEGREES_FRONT = 0;
+  public static final int DEGREES_RIGHT = 90;
+  public static final int DEGREES_BACK = 180;
+  public static final double DEGREES_TO_TICKS = 2.1333333; // Rev core hex is 288 ticks / rotation
 
   @Hardware(name = TURRET_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
   public DcMotor turretMotor;
@@ -35,7 +35,7 @@ public class Turret implements ITurret {
         new MotorState(TURRET_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generateDynamicPowerCurve(0.8, 1, 40));
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, 0.5));
   }
 
   @Override
@@ -56,13 +56,12 @@ public class Turret implements ITurret {
 
   @Override
   public void turnToDegrees(int degrees) {
-    int safeDegrees = degrees % 360;
-    if (safeDegrees > 180 || safeDegrees < -180) {
+    if (degrees > 180 || degrees < -180) {
       return;
     }
     synchronized (this) {
       turretMotorState =
-          turretMotorState.withTargetPosition((int) Math.round(safeDegrees * DEGREES_TO_TICKS));
+          turretMotorState.withTargetPosition((int) Math.round(degrees * DEGREES_TO_TICKS));
     }
   }
 

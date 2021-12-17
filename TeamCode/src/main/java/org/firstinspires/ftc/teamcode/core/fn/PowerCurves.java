@@ -27,15 +27,6 @@ public class PowerCurves {
         }
       };
 
-  public static TriFunction<Integer, Integer, Integer, Double> generateDynamicPowerCurve(
-      double maxPower, double rampSlope, int ticksToRampTo) {
-    TriFunction<Integer, Integer, Integer, Double> basePowerCurve =
-        generatePowerCurve(maxPower, rampSlope);
-    return (Integer currentTicks, Integer startingTicks, Integer targetTicks) ->
-        Math.min(Math.abs(currentTicks - targetTicks) / ticksToRampTo, 1)
-            * basePowerCurve.apply(currentTicks, startingTicks, targetTicks);
-  }
-
   public static TriFunction<Integer, Integer, Integer, Double> generatePowerCurve(
       double maxPower, double rampSlope) {
     return (Integer currentTicks, Integer startingTicks, Integer targetTicks) -> {
@@ -52,6 +43,26 @@ public class PowerCurves {
         double percentProgress =
             ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
         return -Math.max(Math.min(maxPower, rampSlope * (1 - percentProgress)), -maxPower);
+      }
+    };
+  }
+
+  public static TriFunction<Integer, Integer, Integer, Double> generatePowerCurve(
+          double maxPower, double rampSlope, double maxAdjustPerTick) {
+    return (Integer currentTicks, Integer startingTicks, Integer targetTicks) -> {
+      if (startingTicks.equals(targetTicks)) return 0.0;
+      if (currentTicks.equals(targetTicks)) return 0.0;
+      double positiveMax = Math.min(maxPower, maxAdjustPerTick * (Math.abs(currentTicks - targetTicks)));
+      double negativeMax = -positiveMax;
+      if (startingTicks < targetTicks) {
+        double percentProgress =
+                ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
+        return Math.max(Math.min(positiveMax, rampSlope * (1 - percentProgress)), negativeMax);
+      } else {
+        // Motor should spin backward
+        double percentProgress =
+                ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
+        return -Math.max(Math.min(positiveMax, rampSlope * (1 - percentProgress)), negativeMax);
       }
     };
   }

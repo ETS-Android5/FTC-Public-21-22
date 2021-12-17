@@ -41,4 +41,9 @@ public abstract class IMotorState extends State implements Duplicatable<IMotorSt
 
   public abstract IMotorState withPowerCurve(
       TriFunction<Integer, Integer, Integer, Double> powerCurve);
+
+  @Observable(key = "MaxAcceleration")
+  public abstract double getMaxAcceleration();
+
+  public abstract IMotorState withMaxAcceleration(double maxAcceleration);
 }
