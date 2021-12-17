@@ -81,6 +81,7 @@ public abstract class EnhancedTeleOp extends OpMode {
     controller1.initialize(gamepad1);
     controller2.initialize(gamepad2);
     onStartPressed();
+    hardwarePipeline.process(initializedHardware, new StateFilterResult(robotObject));
   }
 
   public abstract void onStartPressed();

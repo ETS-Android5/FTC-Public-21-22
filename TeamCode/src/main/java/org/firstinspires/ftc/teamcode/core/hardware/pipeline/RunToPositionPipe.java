@@ -67,6 +67,15 @@ public class RunToPositionPipe extends HardwarePipeline {
             Object motorObj = hardware.get(motorName);
             if (motorObj instanceof DcMotor) {
               double power = motor.getTargetPowerPercentage(currentPosition);
+              if (nextState != null) {
+                  double maxAcceleration = nextState.getMaxAcceleration();
+                  if (maxAcceleration != 0) {
+                      double prevPower = motor.getLastPower();
+                      if (Math.abs(power - prevPower) > maxAcceleration) {
+                          power = power < prevPower ? prevPower - maxAcceleration : prevPower + maxAcceleration;
+                      }
+                  }
+              }
               ((DcMotor) motorObj).setPower(power);
               motor.setLastPower(power);
             }

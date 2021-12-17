@@ -13,6 +13,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
   private static MotorTrackerPipe instance;
   private final Map<String, Integer> motorPositions = new HashMap<>();
   private final List<CallbackData<Integer>> motorPositionCallbacks = new LinkedList<>();
+  private boolean inPipe = false;
 
   public MotorTrackerPipe(String name) {
     super(name);
@@ -29,7 +30,11 @@ public class MotorTrackerPipe extends HardwarePipeline {
   }
 
   public void setCallbackForMotorPosition(CallbackData<Integer> data) {
-    motorPositionCallbacks.add(data);
+    if (!inPipe) {
+      motorPositionCallbacks.add(data);
+    } else {
+      ExitPipe.getInstance().onNextTick(() -> motorPositionCallbacks.add(data));
+    }
   }
 
   public int getPositionOf(String motorName) throws IllegalArgumentException {
@@ -43,6 +48,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
   @Override
   @SuppressWarnings("all")
   public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
+    inPipe = true;
     r.getNextMotorStates()
         .forEach(
             (m) -> {
@@ -53,6 +59,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
               }
             });
     DataTracker.evaluateCallbacks(motorPositionCallbacks, motorPositions);
+    inPipe = false;
     return super.process(hardware, r);
   }
 }

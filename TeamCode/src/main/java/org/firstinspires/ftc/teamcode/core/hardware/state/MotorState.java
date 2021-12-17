@@ -12,9 +12,10 @@ public class MotorState extends IMotorState {
   private final double power;
   private final int targetPosition;
   private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
+  private final double maxAcceleration;
 
   public MotorState(String name, Direction direction) {
-    this(name, direction, RunMode.RUN_WITHOUT_ENCODER, ZeroPowerBehavior.BRAKE, 0.0, 0, null);
+    this(name, direction, RunMode.RUN_WITHOUT_ENCODER, ZeroPowerBehavior.BRAKE, 0.0, 0, null, 0.0);
   }
 
   public MotorState(
@@ -24,7 +25,8 @@ public class MotorState extends IMotorState {
       ZeroPowerBehavior zeroPowerBehavior,
       Double power,
       Integer targetPosition,
-      TriFunction<Integer, Integer, Integer, Double> powerCurve) {
+      TriFunction<Integer, Integer, Integer, Double> powerCurve,
+      Double maxAcceleration) {
     super(name);
     this.direction = direction;
     this.runMode = runMode;
@@ -32,6 +34,7 @@ public class MotorState extends IMotorState {
     this.power = power;
     this.targetPosition = targetPosition;
     this.powerCurve = powerCurve;
+    this.maxAcceleration = maxAcceleration;
   }
 
   @Override
@@ -48,7 +51,8 @@ public class MotorState extends IMotorState {
         this.zeroPowerBehavior,
         this.power,
         this.targetPosition,
-        this.powerCurve);
+        this.powerCurve,
+            this.maxAcceleration);
   }
 
   @Override
@@ -65,7 +69,8 @@ public class MotorState extends IMotorState {
         this.zeroPowerBehavior,
         this.power,
         this.targetPosition,
-        this.powerCurve);
+        this.powerCurve,
+            this.maxAcceleration);
   }
 
   @Override
@@ -82,7 +87,8 @@ public class MotorState extends IMotorState {
         zeroPowerBehavior,
         this.power,
         this.targetPosition,
-        this.powerCurve);
+        this.powerCurve,
+            this.maxAcceleration);
   }
 
   @Override
@@ -99,7 +105,8 @@ public class MotorState extends IMotorState {
         this.zeroPowerBehavior,
         power < -1 ? -1 : power > 1 ? 1 : power,
         this.targetPosition,
-        this.powerCurve);
+        this.powerCurve,
+            this.maxAcceleration);
   }
 
   @Override
@@ -116,7 +123,8 @@ public class MotorState extends IMotorState {
         this.zeroPowerBehavior,
         this.power,
         targetPosition,
-        this.powerCurve);
+        this.powerCurve,
+            this.maxAcceleration);
   }
 
   @Override
@@ -133,12 +141,25 @@ public class MotorState extends IMotorState {
         this.zeroPowerBehavior,
         this.power,
         this.targetPosition,
-        powerCurve);
+        powerCurve,
+            this.maxAcceleration);
+  }
+
+  @Override
+  public double getMaxAcceleration() {
+    return maxAcceleration;
+  }
+
+  @Override
+  public IMotorState withMaxAcceleration(double maxAcceleration) {
+    return new MotorState(
+            name, direction, runMode, zeroPowerBehavior, power, targetPosition, powerCurve, maxAcceleration
+    );
   }
 
   @Override
   public IMotorState duplicate() {
     return new MotorState(
-        name, direction, runMode, zeroPowerBehavior, power, targetPosition, powerCurve);
+        name, direction, runMode, zeroPowerBehavior, power, targetPosition, powerCurve, maxAcceleration);
   }
 }

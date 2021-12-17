@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DualJointAngularLift implements IDualJointAngularLift {
-  private static final String LIFT_JOINT_ONE_MOTOR_NAME = "LIFT_JOINT_ONE_MOTOR";
+  public static final String LIFT_JOINT_ONE_MOTOR_NAME = "LIFT_JOINT_ONE_MOTOR";
   private static final String LIFT_JOINT_TWO_SERVO_NAME = "LIFT_JOINT_TWO_SERVO";
 
   @Hardware(
@@ -44,7 +44,7 @@ public class DualJointAngularLift implements IDualJointAngularLift {
         new MotorState(LIFT_JOINT_ONE_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generateDynamicPowerCurve(0.8, 0.45, 100));
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, .5, .005));
     liftJointTwoServoState = new ServoState(LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, 0.45);
   }
 

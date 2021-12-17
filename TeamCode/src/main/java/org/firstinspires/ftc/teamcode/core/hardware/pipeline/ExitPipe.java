@@ -7,17 +7,35 @@ import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IServoState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ExitPipe extends HardwarePipeline {
+  private static ExitPipe instance;
+
+  public static ExitPipe getInstance() {
+    return instance;
+  }
+
   public ExitPipe(String name) {
     super(name);
+    ExitPipe.instance = this;
+  }
+
+  private List<Runnable> postLoopFunctions = new LinkedList<>();
+
+  public void onNextTick(Runnable r) {
+    postLoopFunctions.add(r);
   }
 
   @Override
   public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
     r.getNextMotorStates().forEach((m) -> processMotor(m, hardware));
     r.getNextServoStates().forEach((s) -> processServo(s, hardware));
+    List<Runnable> functions = postLoopFunctions;
+    postLoopFunctions = new LinkedList<>();
+    functions.forEach(Runnable::run);
     return super.process(hardware, r);
   }
 
