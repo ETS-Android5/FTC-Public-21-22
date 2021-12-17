@@ -71,14 +71,14 @@ public class MecanumBot implements Component {
       Runnable update) {
     TriFunction<Integer, Integer, Integer, Double> powerCurve =
         PowerCurves.generatePowerCurve(0.25, 2.33);
-    Double currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("IMU");
+    Double currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("CB_AUTO_IMU");
     double initialHeading = currentHeading;
     Double turnSpeed;
     int leftDirection;
     int rightDirection;
     if (Math.abs(target - currentHeading) > tolerance) {
       while (opModeIsActive.get() && Math.abs(target - currentHeading) > tolerance) {
-        currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("IMU");
+        currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("CB_AUTO_IMU");
         turnSpeed =
             powerCurve.apply(
                 (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
@@ -96,7 +96,7 @@ public class MecanumBot implements Component {
     double directionAdjustment = direction == Direction.FORWARD ? -1 : 1;
     while (opModeIsActive.get() && !condition.get()) {
       long start = System.nanoTime();
-      currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("IMU");
+      currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("CB_AUTO_IMU");
       long mark1 = System.nanoTime();
       turnSpeed =
           powerCurve.apply(

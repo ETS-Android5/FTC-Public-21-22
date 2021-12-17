@@ -66,30 +66,35 @@ public class RunToPositionPipe extends HardwarePipeline {
           }
           boolean shouldAdjustForRealPower = false;
           if (nextState != null) {
-              Function<Double, Double> encoderPowerToTicksPerSecond = nextState.getPowerAndTickRateRelation();
-              if (encoderPowerToTicksPerSecond != null) {
-                  shouldAdjustForRealPower = true;
-              }
+            Function<Double, Double> encoderPowerToTicksPerSecond =
+                nextState.getPowerAndTickRateRelation();
+            if (encoderPowerToTicksPerSecond != null) {
+              shouldAdjustForRealPower = true;
+            }
           }
           if (motor.shouldUpdatePower(currentPosition) || shouldAdjustForRealPower) {
             Object motorObj = hardware.get(motorName);
             if (motorObj instanceof DcMotor) {
               double power = motor.getTargetPowerPercentage(currentPosition);
               if (nextState != null) {
-                  double maxAcceleration = nextState.getMaxAcceleration();
-                  if (maxAcceleration != 0) {
-                      double prevPower = motor.getLastPower();
-                      if (Math.abs(power - prevPower) > maxAcceleration) {
-                          power = power < prevPower ? prevPower - maxAcceleration : prevPower + maxAcceleration;
-                      }
+                double maxAcceleration = nextState.getMaxAcceleration();
+                if (maxAcceleration != 0) {
+                  double prevPower = motor.getLastPower();
+                  if (Math.abs(power - prevPower) > maxAcceleration) {
+                    power =
+                        power < prevPower
+                            ? prevPower - maxAcceleration
+                            : prevPower + maxAcceleration;
                   }
+                }
               }
-              if (shouldAdjustForRealPower) {
-                  double velocity = MotorTrackerPipe.getInstance().getVelocity(motorName);
-                  double targetVelocity = nextState.getPowerAndTickRateRelation().apply(power);
-                  power /= (velocity/targetVelocity);
+              if (shouldAdjustForRealPower && power != 0) {
+                double velocity = MotorTrackerPipe.getInstance().getVelocity(motorName);
+                double maxVelocity = nextState.getPowerAndTickRateRelation().apply(1.0);
+                double currentPercentPower = velocity / maxVelocity;
+                power -= currentPercentPower - power;
               }
-              ((DcMotor) motorObj).setPower(power);
+              ((DcMotor) motorObj).setPower(power > 1 ? 1 : power < -1 ? -1 : power);
               motor.setLastPower(power);
             }
           }
