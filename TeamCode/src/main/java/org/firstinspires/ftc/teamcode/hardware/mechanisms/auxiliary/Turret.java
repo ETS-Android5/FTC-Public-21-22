@@ -36,7 +36,7 @@ public class Turret implements ITurret {
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
             .withPowerCurve(PowerCurves.generatePowerCurve(1, 0.5))
-            .withPowerAndTickRateRelation((power) -> power * 2394 - 32);
+            .withPowerAndTickRateRelation((power) -> power * 2362);
   }
 
   @Override
