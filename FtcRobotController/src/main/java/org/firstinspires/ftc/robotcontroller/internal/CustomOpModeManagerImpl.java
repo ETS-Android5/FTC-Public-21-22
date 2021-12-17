@@ -26,8 +26,8 @@ public class CustomOpModeManagerImpl extends OpModeManagerImpl {
         }
         for (HardwareDevice device : this.hardwareMap) {
             if (device instanceof OpModeManagerNotifier.Notifications) {
-                if (activeOpModeName.startsWith(AUTO_ONLY_PREFIX)) {
-                    if (device.getDeviceName().startsWith(AUTO_ONLY_PREFIX)) {
+                if (device.getDeviceName().startsWith(AUTO_ONLY_PREFIX)) {
+                    if (activeOpModeName.startsWith(AUTO_ONLY_PREFIX)) {
                         ((OpModeManagerNotifier.Notifications)device).onOpModePreInit(activeOpMode);
                     }
                 } else {
