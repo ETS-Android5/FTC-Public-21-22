@@ -13,17 +13,16 @@ import java.util.Map;
 
 public class ExitPipe extends HardwarePipeline {
   private static ExitPipe instance;
-
-  public static ExitPipe getInstance() {
-    return instance;
-  }
+  private List<Runnable> postLoopFunctions = new LinkedList<>();
 
   public ExitPipe(String name) {
     super(name);
     ExitPipe.instance = this;
   }
 
-  private List<Runnable> postLoopFunctions = new LinkedList<>();
+  public static ExitPipe getInstance() {
+    return instance;
+  }
 
   public void onNextTick(Runnable r) {
     postLoopFunctions.add(r);

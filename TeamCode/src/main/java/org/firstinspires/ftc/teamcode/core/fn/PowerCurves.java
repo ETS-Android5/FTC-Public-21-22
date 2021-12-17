@@ -48,20 +48,21 @@ public class PowerCurves {
   }
 
   public static TriFunction<Integer, Integer, Integer, Double> generatePowerCurve(
-          double maxPower, double rampSlope, double maxAdjustPerTick) {
+      double maxPower, double rampSlope, double maxAdjustPerTick) {
     return (Integer currentTicks, Integer startingTicks, Integer targetTicks) -> {
       if (startingTicks.equals(targetTicks)) return 0.0;
       if (currentTicks.equals(targetTicks)) return 0.0;
-      double positiveMax = Math.min(maxPower, maxAdjustPerTick * (Math.abs(currentTicks - targetTicks)));
+      double positiveMax =
+          Math.min(maxPower, maxAdjustPerTick * (Math.abs(currentTicks - targetTicks)));
       double negativeMax = -positiveMax;
       if (startingTicks < targetTicks) {
         double percentProgress =
-                ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
+            ((double) (currentTicks - startingTicks)) / ((double) (targetTicks - startingTicks));
         return Math.max(Math.min(positiveMax, rampSlope * (1 - percentProgress)), negativeMax);
       } else {
         // Motor should spin backward
         double percentProgress =
-                ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
+            ((double) (startingTicks - currentTicks)) / ((double) (startingTicks - targetTicks));
         return -Math.max(Math.min(positiveMax, rampSlope * (1 - percentProgress)), negativeMax);
       }
     };

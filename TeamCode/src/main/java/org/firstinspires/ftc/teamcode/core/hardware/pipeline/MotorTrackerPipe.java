@@ -72,7 +72,10 @@ public class MotorTrackerPipe extends HardwarePipeline {
                 }
               }
             });
-    DataTracker.evaluateCallbacks(motorPositionCallbacks, motorPositions, (MotorPositionData data) -> (int) data.getCurrentTicks());
+    DataTracker.evaluateCallbacks(
+        motorPositionCallbacks,
+        motorPositions,
+        (MotorPositionData data) -> (int) data.getCurrentTicks());
     inPipe = false;
     return super.process(hardware, r);
   }
