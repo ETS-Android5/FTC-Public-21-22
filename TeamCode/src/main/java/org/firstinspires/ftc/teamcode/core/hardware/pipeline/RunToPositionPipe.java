@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.core.hardware.state.State;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class RunToPositionPipe extends HardwarePipeline {
   private final List<RunToPositionTracker> trackedMotors = new LinkedList<>();
@@ -63,7 +64,14 @@ public class RunToPositionPipe extends HardwarePipeline {
               && currentState.getTargetPosition() != nextState.getTargetPosition()) {
             motor.mutateTo(currentPosition, nextState.getTargetPosition());
           }
-          if (motor.shouldUpdatePower(currentPosition)) {
+          boolean shouldAdjustForRealPower = false;
+          if (nextState != null) {
+              Function<Double, Double> encoderPowerToTicksPerSecond = nextState.getPowerAndTickRateRelation();
+              if (encoderPowerToTicksPerSecond != null) {
+                  shouldAdjustForRealPower = true;
+              }
+          }
+          if (motor.shouldUpdatePower(currentPosition) || shouldAdjustForRealPower) {
             Object motorObj = hardware.get(motorName);
             if (motorObj instanceof DcMotor) {
               double power = motor.getTargetPowerPercentage(currentPosition);
@@ -75,6 +83,11 @@ public class RunToPositionPipe extends HardwarePipeline {
                           power = power < prevPower ? prevPower - maxAcceleration : prevPower + maxAcceleration;
                       }
                   }
+              }
+              if (shouldAdjustForRealPower) {
+                  double velocity = MotorTrackerPipe.getInstance().getVelocity(motorName);
+                  double targetVelocity = nextState.getPowerAndTickRateRelation().apply(power);
+                  power /= (velocity/targetVelocity);
               }
               ((DcMotor) motorObj).setPower(power);
               motor.setLastPower(power);

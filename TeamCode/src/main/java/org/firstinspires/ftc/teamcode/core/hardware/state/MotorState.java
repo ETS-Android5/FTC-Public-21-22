@@ -5,6 +5,8 @@ import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.ZeroPowerBehavior;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
+import java.util.function.Function;
+
 public class MotorState extends IMotorState {
   private final Direction direction;
   private final RunMode runMode;
@@ -13,9 +15,19 @@ public class MotorState extends IMotorState {
   private final int targetPosition;
   private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
   private final double maxAcceleration;
+  private final Function<Double, Double> powerAndTickRateRelation;
 
   public MotorState(String name, Direction direction) {
-    this(name, direction, RunMode.RUN_WITHOUT_ENCODER, ZeroPowerBehavior.BRAKE, 0.0, 0, null, 0.0);
+    this(
+        name,
+        direction,
+        RunMode.RUN_WITHOUT_ENCODER,
+        ZeroPowerBehavior.BRAKE,
+        0.0,
+        0,
+        null,
+        0.0,
+        null);
   }
 
   public MotorState(
@@ -26,7 +38,8 @@ public class MotorState extends IMotorState {
       Double power,
       Integer targetPosition,
       TriFunction<Integer, Integer, Integer, Double> powerCurve,
-      Double maxAcceleration) {
+      Double maxAcceleration,
+      Function<Double, Double> powerAndTickRateRelation) {
     super(name);
     this.direction = direction;
     this.runMode = runMode;
@@ -35,6 +48,7 @@ public class MotorState extends IMotorState {
     this.targetPosition = targetPosition;
     this.powerCurve = powerCurve;
     this.maxAcceleration = maxAcceleration;
+    this.powerAndTickRateRelation = powerAndTickRateRelation;
   }
 
   @Override
@@ -52,7 +66,8 @@ public class MotorState extends IMotorState {
         this.power,
         this.targetPosition,
         this.powerCurve,
-            this.maxAcceleration);
+        this.maxAcceleration,
+        this.powerAndTickRateRelation);
   }
 
   @Override
@@ -70,7 +85,8 @@ public class MotorState extends IMotorState {
         this.power,
         this.targetPosition,
         this.powerCurve,
-            this.maxAcceleration);
+        this.maxAcceleration,
+        this.powerAndTickRateRelation);
   }
 
   @Override
@@ -88,7 +104,8 @@ public class MotorState extends IMotorState {
         this.power,
         this.targetPosition,
         this.powerCurve,
-            this.maxAcceleration);
+        this.maxAcceleration,
+        this.powerAndTickRateRelation);
   }
 
   @Override
@@ -106,7 +123,8 @@ public class MotorState extends IMotorState {
         power < -1 ? -1 : power > 1 ? 1 : power,
         this.targetPosition,
         this.powerCurve,
-            this.maxAcceleration);
+        this.maxAcceleration,
+        this.powerAndTickRateRelation);
   }
 
   @Override
@@ -124,7 +142,8 @@ public class MotorState extends IMotorState {
         this.power,
         targetPosition,
         this.powerCurve,
-            this.maxAcceleration);
+        this.maxAcceleration,
+        this.powerAndTickRateRelation);
   }
 
   @Override
@@ -142,7 +161,8 @@ public class MotorState extends IMotorState {
         this.power,
         this.targetPosition,
         powerCurve,
-            this.maxAcceleration);
+        this.maxAcceleration,
+        this.powerAndTickRateRelation);
   }
 
   @Override
@@ -153,13 +173,48 @@ public class MotorState extends IMotorState {
   @Override
   public IMotorState withMaxAcceleration(double maxAcceleration) {
     return new MotorState(
-            name, direction, runMode, zeroPowerBehavior, power, targetPosition, powerCurve, maxAcceleration
-    );
+        name,
+        direction,
+        runMode,
+        zeroPowerBehavior,
+        power,
+        targetPosition,
+        powerCurve,
+        maxAcceleration,
+        powerAndTickRateRelation);
+  }
+
+  @Override
+  public Function<Double, Double> getPowerAndTickRateRelation() {
+    return powerAndTickRateRelation;
+  }
+
+  @Override
+  public IMotorState withPowerAndTickRateRelation(
+      Function<Double, Double> powerAndTickRateRelation) {
+    return new MotorState(
+        name,
+        direction,
+        runMode,
+        zeroPowerBehavior,
+        power,
+        targetPosition,
+        powerCurve,
+        maxAcceleration,
+        powerAndTickRateRelation);
   }
 
   @Override
   public IMotorState duplicate() {
     return new MotorState(
-        name, direction, runMode, zeroPowerBehavior, power, targetPosition, powerCurve, maxAcceleration);
+        name,
+        direction,
+        runMode,
+        zeroPowerBehavior,
+        power,
+        targetPosition,
+        powerCurve,
+        maxAcceleration,
+        powerAndTickRateRelation);
   }
 }
