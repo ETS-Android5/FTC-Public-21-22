@@ -62,30 +62,30 @@ public class Test1 extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         robot.carouselSpinner::spinBackward, true, BooleanSurface.RIGHT_STICK);
 
-      controller2.registerOnPressedCallback(
-              () -> {
-                  if (alreadyIntaking.get()) {
-                      robot.intake.stop();
-                      alreadyIntaking.set(false);
-                  } else if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
-                      robot.intake.beginIntaking();
-                      alreadyIntaking.set(true);
-                  }
-              },
-              true,
-              BooleanSurface.LEFT_BUMPER);
-      controller2.registerOnPressedCallback(
-              () -> {
-                  if (alreadyOuttaking.get()) {
-                      robot.intake.stop();
-                      alreadyOuttaking.set(false);
-                  } else if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
-                      robot.intake.beginOuttaking();
-                      alreadyOuttaking.set(true);
-                  }
-              },
-              true,
-              BooleanSurface.RIGHT_BUMPER);
+    controller2.registerOnPressedCallback(
+        () -> {
+          if (alreadyIntaking.get()) {
+            robot.intake.stop();
+            alreadyIntaking.set(false);
+          } else if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
+            robot.intake.beginIntaking();
+            alreadyIntaking.set(true);
+          }
+        },
+        true,
+        BooleanSurface.RIGHT_BUMPER);
+    controller2.registerOnPressedCallback(
+        () -> {
+          if (alreadyOuttaking.get()) {
+            robot.intake.stop();
+            alreadyOuttaking.set(false);
+          } else if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
+            robot.intake.beginOuttaking();
+            alreadyOuttaking.set(true);
+          }
+        },
+        true,
+        BooleanSurface.LEFT_BUMPER);
 
     controller2.registerOnPressedCallback(
         () -> {
@@ -134,7 +134,9 @@ public class Test1 extends EnhancedTeleOp {
     double turnValue = controller1.rightStickX();
     double speed = halfSpeed.get() ? 0.5 : 1;
     robot.drivetrain.driveBySticks(
-        controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * .9 * speed);
+        -controller1.leftStickX() * speed,
+        -controller1.leftStickY() * speed,
+        -turnValue * .9 * speed);
   }
 
   @Override

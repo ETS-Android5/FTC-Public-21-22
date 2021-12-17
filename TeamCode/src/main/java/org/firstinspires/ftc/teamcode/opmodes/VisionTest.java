@@ -28,11 +28,11 @@ public class VisionTest extends EnhancedAutonomous {
   @Override
   public void onInitPressed() {
     OpenCVWrapper.load();
-    robot.webcam.init();
   }
 
   @Override
   public void onStartPressed() {
+    robot.webcam.init();
     long start = System.nanoTime();
     robot.webcam.start();
     BlockingQueue<TeamMarkerPosition> markerPositionQueue = new LinkedBlockingQueue<>(1);
@@ -56,11 +56,8 @@ public class VisionTest extends EnhancedAutonomous {
     long end = System.nanoTime();
     Log.d("TIME", "" + (end - start));
     Log.d("TIME", teamMarkerPosition == null ? "NULL" : teamMarkerPosition.name());
-    robot.webcam.deinit();
   }
 
   @Override
-  public void onStop() {
-    robot.webcam.deinit();
-  }
+  public void onStop() {}
 }

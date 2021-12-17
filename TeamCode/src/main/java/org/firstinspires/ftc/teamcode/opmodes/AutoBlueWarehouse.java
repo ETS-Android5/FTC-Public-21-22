@@ -24,11 +24,11 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
   @Override
   public void onInitPressed() {
     OpenCVWrapper.load();
-    robot.webcam.init();
   }
 
   @Override
   public void onStartPressed() {
+    robot.webcam.init();
     robot.webcam.start();
     robot.drivetrain.setPowerCurve(PowerCurves.generatePowerCurve(0.25, 2.33));
     robot.drivetrain.setFrontLeftDirection(robot.drivetrain.getFrontLeftDirection().opposite());

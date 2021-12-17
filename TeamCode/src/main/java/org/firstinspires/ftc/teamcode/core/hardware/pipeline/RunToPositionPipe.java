@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
@@ -66,11 +68,7 @@ public class RunToPositionPipe extends HardwarePipeline {
           }
           boolean shouldAdjustForRealPower = false;
           if (nextState != null) {
-            Function<Double, Double> encoderPowerToTicksPerSecond =
-                nextState.getPowerAndTickRateRelation();
-            if (encoderPowerToTicksPerSecond != null) {
-              shouldAdjustForRealPower = true;
-            }
+            shouldAdjustForRealPower = nextState.getPowerAndTickRateRelation() != null;
           }
           if (motor.shouldUpdatePower(currentPosition) || shouldAdjustForRealPower) {
             Object motorObj = hardware.get(motorName);
@@ -89,12 +87,15 @@ public class RunToPositionPipe extends HardwarePipeline {
                 }
               }
               if (shouldAdjustForRealPower && power != 0) {
+                  Log.d("WTF", "REAL POWER ADJUSTMENT");
                 double velocity = MotorTrackerPipe.getInstance().getVelocity(motorName);
                 double maxVelocity = nextState.getPowerAndTickRateRelation().apply(1.0);
                 double currentPercentPower = velocity / maxVelocity;
                 power -= currentPercentPower - power;
               }
-              ((DcMotor) motorObj).setPower(power > 1 ? 1 : power < -1 ? -1 : power);
+              power = power > 1 ? 1 : power < -1 ? -1 : power;
+              ((DcMotor) motorObj).setPower(power);
+              Log.d("WTF", "SET POWER OF " + motorName + " TO " + power);
               motor.setLastPower(power);
             }
           }
