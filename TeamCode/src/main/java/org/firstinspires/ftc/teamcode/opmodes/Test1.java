@@ -34,9 +34,7 @@ public class Test1 extends EnhancedTeleOp {
   }
 
   @Override
-  public void initLoop() {
-    Log.d("STATUS", "INIT LOOP");
-  }
+  public void initLoop() {}
 
   @Override
   public void onStartPressed() {

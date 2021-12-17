@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
+import org.firstinspires.ftc.teamcode.cv.CameraPosition;
 import org.firstinspires.ftc.teamcode.cv.ITeamMarkerPositionDetector;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPosition;
@@ -24,23 +25,20 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
   @Override
   public void onInitPressed() {
     OpenCVWrapper.load();
+    robot.webcam.init();
   }
 
   @Override
   public void onStartPressed() {
-    robot.webcam.init();
-    robot.webcam.start();
+    new Thread(robot.webcam::start).start();
     robot.drivetrain.setPowerCurve(PowerCurves.generatePowerCurve(0.25, 2.33));
     robot.drivetrain.setFrontLeftDirection(robot.drivetrain.getFrontLeftDirection().opposite());
     robot.drivetrain.setFrontRightDirection(robot.drivetrain.getFrontRightDirection().opposite());
     robot.drivetrain.setRearLeftDirection(robot.drivetrain.getRearLeftDirection().opposite());
     robot.drivetrain.setRearRightDirection(robot.drivetrain.getRearRightDirection().opposite());
     processChanges();
-    ITeamMarkerPositionDetector markerPositionDetector = new TeamMarkerPositionDetector();
     Mat frame = robot.webcam.grabFrame();
-    robot.webcam.deinit();
-    TeamMarkerPosition teamMarkerPosition =
-        markerPositionDetector.calculateTeamMarkerPosition(frame);
+    TeamMarkerPosition teamMarkerPosition = new TeamMarkerPositionDetector().calculateTeamMarkerPosition(frame, CameraPosition.REAR_LEFT_FACING_DOWN);
 
     robot.drivetrain.setFrontLeftPower(0.3);
     robot.drivetrain.setFrontRightPower(-0.3);

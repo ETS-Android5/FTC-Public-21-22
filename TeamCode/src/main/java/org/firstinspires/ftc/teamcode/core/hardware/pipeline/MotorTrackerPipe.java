@@ -65,7 +65,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
                   || m.getRunMode() == RunMode.RUN_USING_ENCODER) {
                 int pos = ((DcMotor) hardware.get(m.getName())).getCurrentPosition();
                 MotorPositionData data = motorPositions.get(m.getName());
-                if (data != null) {
+                if (data != null && data.getCurrentTicks() != pos) {
                   data.addDataPoint(System.nanoTime(), pos);
                 } else {
                   motorPositions.put(m.getName(), new MotorPositionData(System.nanoTime(), pos));

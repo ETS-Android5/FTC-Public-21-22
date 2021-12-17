@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
 import org.firstinspires.ftc.teamcode.core.rx.AsyncOperations;
 import org.firstinspires.ftc.teamcode.core.rx.AsyncTaskDescription;
+import org.firstinspires.ftc.teamcode.cv.CameraPosition;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPosition;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPositionDetector;
@@ -28,31 +29,14 @@ public class VisionTest extends EnhancedAutonomous {
   @Override
   public void onInitPressed() {
     OpenCVWrapper.load();
+    robot.webcam.init();
   }
 
   @Override
   public void onStartPressed() {
-    robot.webcam.init();
     long start = System.nanoTime();
-    robot.webcam.start();
-    BlockingQueue<TeamMarkerPosition> markerPositionQueue = new LinkedBlockingQueue<>(1);
-    AsyncTaskDescription<Void> asyncTask =
-        new AsyncTaskDescription<Void>()
-            .setIntenseOperation(
-                () -> {
-                  markerPositionQueue.add(
-                      new TeamMarkerPositionDetector()
-                          .calculateTeamMarkerPosition(robot.webcam.grabFrame()));
-                  return null;
-                })
-            .setCatchTask((u1, u2) -> markerPositionQueue.add(null))
-            .setFinallyTask((unused) -> robot.webcam.deinit());
-    AsyncOperations.startAsyncTask(asyncTask);
-    TeamMarkerPosition teamMarkerPosition = null;
-    try {
-      teamMarkerPosition = markerPositionQueue.take();
-    } catch (InterruptedException ignored) {
-    }
+    new Thread(robot.webcam::start).start();
+    TeamMarkerPosition teamMarkerPosition = new TeamMarkerPositionDetector().calculateTeamMarkerPosition(robot.webcam.grabFrame(), CameraPosition.REAR_LOW_AND_CENTERED);
     long end = System.nanoTime();
     Log.d("TIME", "" + (end - start));
     Log.d("TIME", teamMarkerPosition == null ? "NULL" : teamMarkerPosition.name());
