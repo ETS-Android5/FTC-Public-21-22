@@ -80,12 +80,10 @@ public class Webcam implements FtcCamera {
                           (_u, _uu, cameraFrame) -> {
                             Bitmap bmp = captureRequest.createEmptyBitmap();
                             cameraFrame.copyToBitmap(bmp);
-                            if (frameQueue.size() > 0) {
-                              try {
-                                frameQueue.take();
-                                frameQueue.add(bmp);
-                              } catch (InterruptedException ignored) {
-                              }
+                            try {
+                              frameQueue.put(bmp);
+                              deinit();
+                            } catch (InterruptedException ignored) {
                             }
                           },
                           Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));
@@ -132,7 +130,7 @@ public class Webcam implements FtcCamera {
     Mat mat = new Mat();
     try {
       Utils.bitmapToMat(frameQueue.take(), mat);
-    } catch (InterruptedException ignored) {
+    } catch (InterruptedException e) {
       return null;
     }
     return mat;

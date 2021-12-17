@@ -13,7 +13,7 @@ import java.util.List;
 
 public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
   @Override
-  public TeamMarkerPosition calculateTeamMarkerPosition(Mat frame) {
+  public TeamMarkerPosition calculateTeamMarkerPosition(Mat frame, CameraPosition position) {
     Mat resized = new Mat();
     Imgproc.resize(
         frame,
@@ -22,15 +22,13 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
         .1,
         .1,
         Imgproc.INTER_AREA);
-    Mat cropped =
-        new Mat(
-            frame,
-            new Rect(
-                0,
-                (int) Math.round(frame.height() / 2.5),
-                frame.width(),
-                (int)
-                    Math.round(frame.height() - (frame.height() / 2.5) - (frame.height() / 4.7))));
+    Rect crop;
+    if (position == CameraPosition.REAR_LOW_AND_CENTERED) {
+      crop = new Rect(0, (int) Math.round(frame.height() / 2.5), frame.width(), (int) Math.round(frame.height() - (frame.height() / 2.5) - (frame.height() / 4.7)));
+    } else {
+      crop = new Rect(0, 0, frame.width(), frame.height() / 2);
+    }
+    Mat cropped = new Mat(frame, crop);
     Mat hsvMat = new Mat();
     Imgproc.cvtColor(cropped, hsvMat, Imgproc.COLOR_RGB2HSV);
     Mat mask = new Mat();

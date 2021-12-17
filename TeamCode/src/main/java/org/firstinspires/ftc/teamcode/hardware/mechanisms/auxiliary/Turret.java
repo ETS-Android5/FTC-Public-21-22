@@ -35,8 +35,8 @@ public class Turret implements ITurret {
         new MotorState(TURRET_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generatePowerCurve(1, 0.5))
-            .withPowerAndTickRateRelation((power) -> power * 2362);
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, 1))
+            .withPowerAndTickRateRelation((power) -> power * 600);
   }
 
   @Override
@@ -51,12 +51,12 @@ public class Turret implements ITurret {
 
   @Override
   @Observable(key = "TURRET")
-  public Integer getState() {
-    return (int) Math.round(turretMotorState.getTargetPosition() / DEGREES_TO_TICKS);
+  public Double getState() {
+    return turretMotorState.getTargetPosition() / DEGREES_TO_TICKS;
   }
 
   @Override
-  public void turnToDegrees(int degrees) {
+  public void turnToDegrees(double degrees) {
     if (degrees > 180 || degrees < -180) {
       return;
     }

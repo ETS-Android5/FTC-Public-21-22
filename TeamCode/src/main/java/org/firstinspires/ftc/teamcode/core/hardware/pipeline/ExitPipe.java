@@ -24,7 +24,7 @@ public class ExitPipe extends HardwarePipeline {
     return instance;
   }
 
-  public void onNextTick(Runnable r) {
+  public synchronized void onNextTick(Runnable r) {
     postLoopFunctions.add(r);
   }
 
@@ -32,8 +32,11 @@ public class ExitPipe extends HardwarePipeline {
   public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
     r.getNextMotorStates().forEach((m) -> processMotor(m, hardware));
     r.getNextServoStates().forEach((s) -> processServo(s, hardware));
-    List<Runnable> functions = postLoopFunctions;
-    postLoopFunctions = new LinkedList<>();
+    List<Runnable> functions;
+    synchronized (this) {
+      functions = postLoopFunctions;
+      postLoopFunctions = new LinkedList<>();
+    }
     functions.forEach(Runnable::run);
     return super.process(hardware, r);
   }
