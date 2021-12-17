@@ -16,6 +16,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Test1 extends EnhancedTeleOp {
   private final MecanumBot robot;
   private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
+  private final AtomicBoolean alreadyIntaking = new AtomicBoolean(false);
+  private final AtomicBoolean alreadyOuttaking = new AtomicBoolean(false);
 
   public Test1() {
     super(new MecanumBot());
@@ -60,23 +62,30 @@ public class Test1 extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         robot.carouselSpinner::spinBackward, true, BooleanSurface.RIGHT_STICK);
 
-    controller2.registerOnPressedCallback(
-        () -> {
-          if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
-            robot.intake.beginOuttaking();
-          }
-        },
-        true,
-        BooleanSurface.LEFT_BUMPER);
-    controller2.registerOnPressedCallback(
-        () -> {
-          if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
-            robot.intake.beginIntaking();
-          }
-        },
-        true,
-        BooleanSurface.RIGHT_BUMPER);
-    controller2.registerOnPressedCallback(robot.intake::stop, true, BooleanSurface.DPAD_UP);
+      controller2.registerOnPressedCallback(
+              () -> {
+                  if (alreadyIntaking.get()) {
+                      robot.intake.stop();
+                      alreadyIntaking.set(false);
+                  } else if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
+                      robot.intake.beginIntaking();
+                      alreadyIntaking.set(true);
+                  }
+              },
+              true,
+              BooleanSurface.LEFT_BUMPER);
+      controller2.registerOnPressedCallback(
+              () -> {
+                  if (alreadyOuttaking.get()) {
+                      robot.intake.stop();
+                      alreadyOuttaking.set(false);
+                  } else if (robot.fourHeightLift.getState() == FourHeightLiftState.HEIGHT_0) {
+                      robot.intake.beginOuttaking();
+                      alreadyOuttaking.set(true);
+                  }
+              },
+              true,
+              BooleanSurface.RIGHT_BUMPER);
 
     controller2.registerOnPressedCallback(
         () -> {
