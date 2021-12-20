@@ -38,6 +38,10 @@ public class MotorTrackerPipe extends HardwarePipeline {
     }
   }
 
+  public void clearScheduledCallbacks() {
+    motorPositionCallbacks.clear();
+  }
+
   public int getPositionOf(String motorName) throws IllegalArgumentException {
     MotorPositionData motorPositionData = motorPositions.get(motorName);
     if (motorPositionData != null) {

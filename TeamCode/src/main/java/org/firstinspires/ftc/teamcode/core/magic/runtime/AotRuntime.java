@@ -7,14 +7,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.core.annotations.PostInit;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.controller.Namable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -122,6 +126,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
       try {
         field.getAnnotationTargetField().set(field.getAnnotationContainer(), motor);
         initializedObjects.put(annotation.name(), motor);
+        completePostInit(field, motor, DcMotor.class);
       } catch (IllegalAccessException ignored) {
       }
     } else if (hardwareObj == Servo.class) {
@@ -130,32 +135,52 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
       try {
         field.getAnnotationTargetField().set(field.getAnnotationContainer(), servo);
         initializedObjects.put(annotation.name(), servo);
+        completePostInit(field, servo, Servo.class);
       } catch (IllegalAccessException ignored) {
       }
     } else if (hardwareObj == WebcamName.class) {
       WebcamName webcamName = hardwareMap.get(WebcamName.class, annotation.name());
       try {
         field.getAnnotationTargetField().set(field.getAnnotationContainer(), webcamName);
+        completePostInit(field, webcamName, WebcamName.class);
       } catch (IllegalAccessException ignored) {
       }
     } else if (hardwareObj == Rev2mDistanceSensor.class
         && field.getAnnotationContainer() instanceof Namable) {
+      String name = ((Namable) field.getAnnotationContainer()).getName();
+      Rev2mDistanceSensor sensor = hardwareMap.get(Rev2mDistanceSensor.class, name);
       try {
-        String name = ((Namable) field.getAnnotationContainer()).getName();
-        Rev2mDistanceSensor sensor = hardwareMap.get(Rev2mDistanceSensor.class, name);
         field.getAnnotationTargetField().set(field.getAnnotationContainer(), sensor);
         initializedObjects.put(name, field.getAnnotationContainer());
+        completePostInit(field, sensor, Rev2mDistanceSensor.class);
       } catch (IllegalAccessException ignored) {
       }
     } else if (hardwareObj == BNO055IMU.class) {
+      BNO055IMU sensor = hardwareMap.get(BNO055IMU.class, annotation.name());
       try {
         field
             .getAnnotationTargetField()
-            .set(
-                field.getAnnotationContainer(),
-                hardwareMap.get(BNO055IMU.class, annotation.name()));
+            .set(field.getAnnotationContainer(), sensor);
         initializedObjects.put(annotation.name(), field.getAnnotationContainer());
+        completePostInit(field, sensor, BNO055IMU.class);
       } catch (IllegalAccessException ignored) {
+      }
+    }
+  }
+
+  private void completePostInit(AnnotationPair field, Object initialized, Class<?> argType) {
+    for (Method m : field.getAnnotationContainer().getClass().getMethods()) {
+      if (m.isAnnotationPresent(PostInit.class) && m.getReturnType().equals(Void.TYPE)) {
+        // We should really be checking the parameter number and type but Android API <26 doesn't
+        // support that
+        // And our min API level is 24 and could only move up to 25
+        // So we're going to use the fuck around and find out method and just assume it's safe
+        if (Objects.requireNonNull(m.getAnnotation(PostInit.class)).argType().equals(argType)) {
+          try {
+            m.invoke(field.getAnnotationContainer(), initialized);
+          } catch (IllegalAccessException | InvocationTargetException ignored) {
+          }
+        }
       }
     }
   }

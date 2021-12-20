@@ -5,12 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
 import org.firstinspires.ftc.teamcode.cv.CameraPosition;
-import org.firstinspires.ftc.teamcode.cv.ITeamMarkerPositionDetector;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPosition;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPositionDetector;
 import org.firstinspires.ftc.teamcode.hardware.robots.MecanumBot;
 import org.opencv.core.Mat;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 @Autonomous(name = "CB_AUTO_AutoBlue")
 public class AutoBlueWarehouse extends EnhancedAutonomous {
@@ -25,20 +27,30 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
   @Override
   public void onInitPressed() {
     OpenCVWrapper.load();
-    robot.webcam.init();
   }
 
   @Override
   public void onStartPressed() {
-    new Thread(robot.webcam::start).start();
+    Thread worker =
+        new Thread(
+            () -> {
+              robot.webcam.init();
+              robot.webcam.start();
+            });
+    worker.start();
     robot.drivetrain.setPowerCurve(PowerCurves.generatePowerCurve(0.25, 2.33));
-    robot.drivetrain.setFrontLeftDirection(robot.drivetrain.getFrontLeftDirection().opposite());
-    robot.drivetrain.setFrontRightDirection(robot.drivetrain.getFrontRightDirection().opposite());
-    robot.drivetrain.setRearLeftDirection(robot.drivetrain.getRearLeftDirection().opposite());
-    robot.drivetrain.setRearRightDirection(robot.drivetrain.getRearRightDirection().opposite());
     processChanges();
+    try {
+      worker.join();
+    } catch (InterruptedException e) {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      e.printStackTrace(pw);
+    }
     Mat frame = robot.webcam.grabFrame();
-    TeamMarkerPosition teamMarkerPosition = new TeamMarkerPositionDetector().calculateTeamMarkerPosition(frame, CameraPosition.REAR_LEFT_FACING_DOWN);
+    TeamMarkerPosition teamMarkerPosition =
+        new TeamMarkerPositionDetector()
+            .calculateTeamMarkerPosition(frame, CameraPosition.REAR_LEFT_FACING_DOWN);
 
     robot.drivetrain.setFrontLeftPower(0.3);
     robot.drivetrain.setFrontRightPower(-0.3);

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp(name = "Blue")
+@Disabled
 public class BlueTeleOp extends EnhancedTeleOp {
   private static final double MAX_TURRET_ADJUSTMENT = 12; // 12 ticks or 15 degrees
   private static final double MAX_FIRST_JOINT_ADJUSTMENT = 50; // 50 ticks

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
@@ -29,16 +27,13 @@ public class Test1 extends EnhancedTeleOp {
   }
 
   @Override
-  public void onInitPressed() {
-    Log.d("STATUS", "ON INIT PRESSED");
-  }
+  public void onInitPressed() {}
 
   @Override
   public void initLoop() {}
 
   @Override
   public void onStartPressed() {
-    Log.d("STATUS", "ON START PRESSED");
     controller1.setManipulation(Test1::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
 
     controller1.registerOnPressedCallback(
@@ -138,7 +133,5 @@ public class Test1 extends EnhancedTeleOp {
   }
 
   @Override
-  public void onStop() {
-    Log.d("STATUS", "ON STOP");
-  }
+  public void onStop() {}
 }

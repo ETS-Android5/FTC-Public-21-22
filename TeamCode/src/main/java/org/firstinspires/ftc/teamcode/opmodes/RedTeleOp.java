@@ -15,8 +15,11 @@ import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.Turret;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts.DualJointAngularLift;
 import org.firstinspires.ftc.teamcode.hardware.robots.NewChassis;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -40,6 +43,8 @@ public class RedTeleOp extends EnhancedTeleOp {
 
   private final ScheduledExecutorService executorService =
       Executors.newSingleThreadScheduledExecutor();
+
+  private final List<ScheduledFuture<?>> futures = new LinkedList<>();
 
   private boolean previouslyTrimming = false;
 
@@ -90,27 +95,29 @@ public class RedTeleOp extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
     controller2.registerOnPressedCallback(
         () -> {
+            clearFutureEvents();
           // intake position
           robot.gripper.close();
-          executorService.schedule(
+          futures.add(executorService.schedule(
               () ->
                   ExitPipe.getInstance()
                       .onNextTick(
                           () -> {
+                            robot.lift.setArmTwoPosition(0.47);
                             double currentTurretPos = robot.turret.getState();
                             double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
                             if (Math.abs(currentTurretPos - target) < 5) {
                               robot.lift.setArmOnePosition(0);
-                              robot.lift.setArmTwoPosition(0.47);
                               robot.turret.turnToFront();
                             } else {
                               robot.lift.setArmOnePosition(firstJointOffset);
-                              robot.lift.setArmTwoPosition(0.47);
                               MotorTrackerPipe.getInstance()
                                   .setCallbackForMotorPosition(
                                       new CallbackData<>(
                                           DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                          (Integer ticks) -> ticks < 5 && ticks > -5,
+                                          (Integer ticks) ->
+                                              ticks < (firstJointOffset + 5)
+                                                  && ticks > (firstJointOffset - 5),
                                           () -> {
                                             robot.turret.turnToFront();
                                             ExitPipe.getInstance()
@@ -124,16 +131,14 @@ public class RedTeleOp extends EnhancedTeleOp {
                                                                         ticks < 5 && ticks > -5,
                                                                     () -> {
                                                                       robot.lift.setArmOnePosition(
-                                                                          firstJointOffset + -160);
-                                                                      robot.lift.setArmTwoPosition(
-                                                                          0.47);
+                                                                          0);
                                                                       robot.gripper.open();
                                                                     })));
                                           }));
                             }
                           }),
               100,
-              TimeUnit.MILLISECONDS);
+              TimeUnit.MILLISECONDS));
         },
         true,
         BooleanSurface.A);
@@ -150,13 +155,15 @@ public class RedTeleOp extends EnhancedTeleOp {
     // Mode specific controls
     controller2.registerOnPressedCallback(
         () -> {
+            clearFutureEvents();
+            Log.d("WTF", "" + futures.size());
           robot.gripper.close();
           robot.intake.beginIntaking(); // Actually outtaking
-          executorService.schedule(
+          futures.add(executorService.schedule(
               () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
               750,
-              TimeUnit.MILLISECONDS);
-          executorService.schedule(
+              TimeUnit.MILLISECONDS));
+          futures.add(executorService.schedule(
               () ->
                   ExitPipe.getInstance()
                       .onNextTick(
@@ -175,7 +182,9 @@ public class RedTeleOp extends EnhancedTeleOp {
                                     .setCallbackForMotorPosition(
                                         new CallbackData<>(
                                             DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                            (Integer ticks) -> ticks > -5 && ticks < 5,
+                                            (Integer ticks) ->
+                                                ticks > (firstJointOffset - 5)
+                                                    && ticks < (firstJointOffset + 5),
                                             () -> {
                                               robot.turret.turnCCWToBack();
                                               ExitPipe.getInstance()
@@ -217,7 +226,8 @@ public class RedTeleOp extends EnhancedTeleOp {
                                           new CallbackData<>(
                                               DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
                                               (Integer ticks) ->
-                                                  ticks > (69 - 5) && ticks < (69 + 5),
+                                                  ticks > ((firstJointOffset + 69) - 5)
+                                                      && ticks < ((firstJointOffset + 69) + 5),
                                               () -> {
                                                 robot.turret.turnToRight();
                                                 ExitPipe.getInstance()
@@ -241,19 +251,20 @@ public class RedTeleOp extends EnhancedTeleOp {
                             }
                           }),
               100,
-              TimeUnit.MILLISECONDS);
+              TimeUnit.MILLISECONDS));
         },
         true,
         BooleanSurface.B);
     controller2.registerOnPressedCallback(
         () -> {
+            clearFutureEvents();
           robot.gripper.close();
           robot.intake.beginIntaking(); // Actually outtaking
-          executorService.schedule(
+          futures.add(executorService.schedule(
               () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
               750,
-              TimeUnit.MILLISECONDS);
-          executorService.schedule(
+              TimeUnit.MILLISECONDS));
+          futures.add(executorService.schedule(
               () ->
                   ExitPipe.getInstance()
                       .onNextTick(
@@ -272,7 +283,9 @@ public class RedTeleOp extends EnhancedTeleOp {
                                     .setCallbackForMotorPosition(
                                         new CallbackData<>(
                                             DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                            (Integer ticks) -> ticks > -5 && ticks < 5,
+                                            (Integer ticks) ->
+                                                ticks > (firstJointOffset - 5)
+                                                    && ticks < (firstJointOffset + 5),
                                             () -> {
                                               robot.turret.turnCCWToBack();
                                               ExitPipe.getInstance()
@@ -310,7 +323,8 @@ public class RedTeleOp extends EnhancedTeleOp {
                                           new CallbackData<>(
                                               DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
                                               (Integer ticks) ->
-                                                  ticks > (69 - 5) && ticks < (69 + 5),
+                                                  ticks > ((firstJointOffset + 69) - 5)
+                                                      && ticks < ((firstJointOffset + 69) + 5),
                                               () -> {
                                                 robot.lift.setArmTwoPosition(0.13);
                                                 executorService.schedule(
@@ -331,7 +345,8 @@ public class RedTeleOp extends EnhancedTeleOp {
                                           new CallbackData<>(
                                               DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
                                               (Integer ticks) ->
-                                                  ticks > (69 - 5) && ticks < (69 + 5),
+                                                  ticks > ((firstJointOffset + 69) - 5)
+                                                      && ticks < ((firstJointOffset + 69) + 5),
                                               () -> {
                                                 robot.turret.turnToRight();
                                                 ExitPipe.getInstance()
@@ -370,19 +385,20 @@ public class RedTeleOp extends EnhancedTeleOp {
                             }
                           }),
               100,
-              TimeUnit.MILLISECONDS);
+              TimeUnit.MILLISECONDS));
         },
         true,
         BooleanSurface.X);
     controller2.registerOnPressedCallback(
         () -> {
+            clearFutureEvents();
           robot.gripper.close();
           robot.intake.beginIntaking(); // Actually outtaking
-          executorService.schedule(
+          futures.add(executorService.schedule(
               () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
               750,
-              TimeUnit.MILLISECONDS);
-          executorService.schedule(
+              TimeUnit.MILLISECONDS));
+          futures.add(executorService.schedule(
               () ->
                   ExitPipe.getInstance()
                       .onNextTick(
@@ -401,7 +417,9 @@ public class RedTeleOp extends EnhancedTeleOp {
                                     .setCallbackForMotorPosition(
                                         new CallbackData<>(
                                             DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                            (Integer ticks) -> ticks > -5 && ticks < 5,
+                                            (Integer ticks) ->
+                                                ticks > (firstJointOffset - 5)
+                                                    && ticks < (firstJointOffset + 5),
                                             () -> {
                                               robot.turret.turnCCWToBack();
                                               ExitPipe.getInstance()
@@ -439,7 +457,8 @@ public class RedTeleOp extends EnhancedTeleOp {
                                           new CallbackData<>(
                                               DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
                                               (Integer ticks) ->
-                                                  ticks > (10 - 5) && ticks < (10 + 5),
+                                                  ticks > ((firstJointOffset + 10) - 5)
+                                                      && ticks < ((firstJointOffset + 10) + 5),
                                               () -> {
                                                 robot.turret.turnToRight();
                                                 ExitPipe.getInstance()
@@ -463,15 +482,16 @@ public class RedTeleOp extends EnhancedTeleOp {
                             }
                           }),
               100,
-              TimeUnit.MILLISECONDS);
+              TimeUnit.MILLISECONDS));
         },
         true,
         BooleanSurface.Y);
     controller2.registerOnPressedCallback(
         () -> {
           if (allianceHubMode.get()) {
+              clearFutureEvents();
             robot.gripper.close();
-            executorService.schedule(
+            futures.add(executorService.schedule(
                 () ->
                     ExitPipe.getInstance()
                         .onNextTick(
@@ -490,7 +510,9 @@ public class RedTeleOp extends EnhancedTeleOp {
                                     .setCallbackForMotorPosition(
                                         new CallbackData<>(
                                             DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                            (Integer ticks) -> ticks > -5 && ticks < 5,
+                                            (Integer ticks) ->
+                                                ticks > (firstJointOffset - 5)
+                                                    && ticks < (firstJointOffset + 5),
                                             () -> {
                                               robot.turret.turnToLeft();
                                               ExitPipe.getInstance()
@@ -517,7 +539,7 @@ public class RedTeleOp extends EnhancedTeleOp {
                               }
                             }),
                 100,
-                TimeUnit.MILLISECONDS);
+                TimeUnit.MILLISECONDS));
           }
         },
         true,
@@ -525,8 +547,9 @@ public class RedTeleOp extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> {
           if (allianceHubMode.get()) {
+              clearFutureEvents();
             robot.gripper.grabTeamMarker();
-            executorService.schedule(
+            futures.add(executorService.schedule(
                 () ->
                     ExitPipe.getInstance()
                         .onNextTick(
@@ -537,11 +560,13 @@ public class RedTeleOp extends EnhancedTeleOp {
                                   .setCallbackForMotorPosition(
                                       new CallbackData<>(
                                           DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                          (Integer ticks) -> ticks > (570 - 5) && ticks < (570 + 5),
+                                          (Integer ticks) ->
+                                              ticks > ((firstJointOffset + 570) - 5)
+                                                  && ticks < ((firstJointOffset + 570) + 5),
                                           robot.turret::turnCCWToBack));
                             }),
                 100,
-                TimeUnit.MILLISECONDS);
+                TimeUnit.MILLISECONDS));
           }
         },
         true,
@@ -591,11 +616,15 @@ public class RedTeleOp extends EnhancedTeleOp {
           robot.lift.getState().second
               + (-controller2.rightStickY() * MAX_SECOND_JOINT_ADJUSTMENT));
     }
-
-    Log.d("WTF", "TURRET TARGET: " + robot.turret.getState());
-    Log.d("WTF", "FIRST JOINT TARGET: " + robot.lift.getState().first);
   }
 
   @Override
   public void onStop() {}
+
+  private void clearFutureEvents() {
+      futures.forEach(future -> future.cancel(false));
+      futures.clear();
+      MotorTrackerPipe.getInstance().clearScheduledCallbacks();
+      ExitPipe.getInstance().clearScheduledCallbacks();
+  }
 }

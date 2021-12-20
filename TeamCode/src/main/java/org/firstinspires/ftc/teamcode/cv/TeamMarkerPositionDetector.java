@@ -24,11 +24,16 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
         Imgproc.INTER_AREA);
     Rect crop;
     if (position == CameraPosition.REAR_LOW_AND_CENTERED) {
-      crop = new Rect(0, (int) Math.round(frame.height() / 2.5), frame.width(), (int) Math.round(frame.height() - (frame.height() / 2.5) - (frame.height() / 4.7)));
+      crop =
+          new Rect(
+              0,
+              (int) Math.round(frame.height() / 2.5),
+              frame.width(),
+              (int) Math.round(frame.height() - (frame.height() / 2.5) - (frame.height() / 4.7)));
     } else {
       crop = new Rect(0, 0, frame.width(), frame.height() / 2);
     }
-    Mat cropped = new Mat(frame, crop);
+    Mat cropped = new Mat(frame, crop); // TODO: Resized??
     Mat hsvMat = new Mat();
     Imgproc.cvtColor(cropped, hsvMat, Imgproc.COLOR_RGB2HSV);
     Mat mask = new Mat();
