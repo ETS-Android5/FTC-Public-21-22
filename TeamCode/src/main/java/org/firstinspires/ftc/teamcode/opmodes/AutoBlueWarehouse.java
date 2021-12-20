@@ -13,6 +13,7 @@ import org.opencv.core.Mat;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Autonomous(name = "CB_AUTO_AutoBlue")
 public class AutoBlueWarehouse extends EnhancedAutonomous {
@@ -31,27 +32,33 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
 
   @Override
   public void onStartPressed() {
+    AtomicReference<Mat> img = new AtomicReference<>();
+    AtomicReference<TeamMarkerPosition> teamMarkerPosition =
+        new AtomicReference<>(TeamMarkerPosition.RIGHT);
     Thread worker =
         new Thread(
             () -> {
-              robot.webcam.init();
               robot.webcam.start();
+              img.set(robot.webcam.grabFrame());
             });
     worker.start();
     robot.drivetrain.setPowerCurve(PowerCurves.generatePowerCurve(0.25, 2.33));
     processChanges();
     try {
       worker.join();
+      worker =
+          new Thread(
+              () ->
+                  teamMarkerPosition.set(
+                      new TeamMarkerPositionDetector()
+                          .calculateTeamMarkerPosition(
+                              img.get(), CameraPosition.REAR_LEFT_FACING_DOWN)));
+      worker.start();
     } catch (InterruptedException e) {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       e.printStackTrace(pw);
     }
-    Mat frame = robot.webcam.grabFrame();
-    TeamMarkerPosition teamMarkerPosition =
-        new TeamMarkerPositionDetector()
-            .calculateTeamMarkerPosition(frame, CameraPosition.REAR_LEFT_FACING_DOWN);
-
     robot.drivetrain.setFrontLeftPower(0.3);
     robot.drivetrain.setFrontRightPower(-0.3);
     robot.drivetrain.setRearLeftPower(0.3);
@@ -60,18 +67,14 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     sleep(375);
     robot.drivetrain.setAllPower(0);
     processChanges();
-    // frontRightTarget -= 250;
-    // rearRightTarget -= 500;
-    // robot.drivetrain.autoRunToPosition(frontLeftTarget, frontRightTarget, rearLeftTarget,
-    // rearRightTarget, 5, super::opModeIsActive, super::processChanges);
-    // sleep(2000);
-    // front backwards
-    // rear forwards
-    // strafes left
-    // front forwards
-    // rear backwards
-    // strafes right
-    switch (teamMarkerPosition) {
+    try {
+      worker.join();
+    } catch (InterruptedException e) {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      e.printStackTrace(pw);
+    }
+    switch (teamMarkerPosition.get()) {
       case LEFT:
         robot.fourHeightLift.goToHeight1();
         break;
@@ -86,7 +89,8 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     while (opModeIsActive() && ((System.nanoTime() - start) / 1000000 < 2000)) {
       processChanges();
     }
-    int distanceToShippingHubTime = teamMarkerPosition == TeamMarkerPosition.RIGHT ? 1900 : 2000;
+    int distanceToShippingHubTime =
+        teamMarkerPosition.get() == TeamMarkerPosition.RIGHT ? 1900 : 2000;
     robot.drivetrain.setAllPower(-.25);
     processChanges();
     sleep(distanceToShippingHubTime);

@@ -53,12 +53,12 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
     double avgX = xPositions.stream().reduce(0, Integer::sum) / xLength;
     double third = (double) hsvMat.width() / 3.0;
     double middleThirdTop = third * 2;
-    if (avgX > middleThirdTop) {
-      return TeamMarkerPosition.RIGHT;
+    if (avgX < third) {
+      return TeamMarkerPosition.LEFT;
     }
-    if (avgX <= middleThirdTop && avgX >= third) {
+    if (avgX >= third && avgX <= middleThirdTop) {
       return TeamMarkerPosition.CENTER;
     }
-    return TeamMarkerPosition.LEFT;
+    return TeamMarkerPosition.RIGHT;
   }
 }
