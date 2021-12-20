@@ -159,9 +159,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
     } else if (hardwareObj == BNO055IMU.class) {
       BNO055IMU sensor = hardwareMap.get(BNO055IMU.class, annotation.name());
       try {
-        field
-            .getAnnotationTargetField()
-            .set(field.getAnnotationContainer(), sensor);
+        field.getAnnotationTargetField().set(field.getAnnotationContainer(), sensor);
         initializedObjects.put(annotation.name(), field.getAnnotationContainer());
         completePostInit(field, sensor, BNO055IMU.class);
       } catch (IllegalAccessException ignored) {

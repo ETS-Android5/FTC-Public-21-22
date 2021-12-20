@@ -95,50 +95,51 @@ public class RedTeleOp extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
     controller2.registerOnPressedCallback(
         () -> {
-            clearFutureEvents();
+          clearFutureEvents();
           // intake position
           robot.gripper.close();
-          futures.add(executorService.schedule(
-              () ->
-                  ExitPipe.getInstance()
-                      .onNextTick(
-                          () -> {
-                            robot.lift.setArmTwoPosition(0.47);
-                            double currentTurretPos = robot.turret.getState();
-                            double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
-                            if (Math.abs(currentTurretPos - target) < 5) {
-                              robot.lift.setArmOnePosition(0);
-                              robot.turret.turnToFront();
-                            } else {
-                              robot.lift.setArmOnePosition(firstJointOffset);
-                              MotorTrackerPipe.getInstance()
-                                  .setCallbackForMotorPosition(
-                                      new CallbackData<>(
-                                          DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                          (Integer ticks) ->
-                                              ticks < (firstJointOffset + 5)
-                                                  && ticks > (firstJointOffset - 5),
-                                          () -> {
-                                            robot.turret.turnToFront();
-                                            ExitPipe.getInstance()
-                                                .onNextTick(
-                                                    () ->
-                                                        MotorTrackerPipe.getInstance()
-                                                            .setCallbackForMotorPosition(
-                                                                new CallbackData<>(
-                                                                    Turret.TURRET_MOTOR_NAME,
-                                                                    (Integer ticks) ->
-                                                                        ticks < 5 && ticks > -5,
-                                                                    () -> {
-                                                                      robot.lift.setArmOnePosition(
-                                                                          0);
-                                                                      robot.gripper.open();
-                                                                    })));
-                                          }));
-                            }
-                          }),
-              100,
-              TimeUnit.MILLISECONDS));
+          futures.add(
+              executorService.schedule(
+                  () ->
+                      ExitPipe.getInstance()
+                          .onNextTick(
+                              () -> {
+                                robot.lift.setArmTwoPosition(0.47);
+                                double currentTurretPos = robot.turret.getState();
+                                double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
+                                if (Math.abs(currentTurretPos - target) < 5) {
+                                  robot.lift.setArmOnePosition(0);
+                                  robot.turret.turnToFront();
+                                } else {
+                                  robot.lift.setArmOnePosition(firstJointOffset);
+                                  MotorTrackerPipe.getInstance()
+                                      .setCallbackForMotorPosition(
+                                          new CallbackData<>(
+                                              DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                              (Integer ticks) ->
+                                                  ticks < (firstJointOffset + 5)
+                                                      && ticks > (firstJointOffset - 5),
+                                              () -> {
+                                                robot.turret.turnToFront();
+                                                ExitPipe.getInstance()
+                                                    .onNextTick(
+                                                        () ->
+                                                            MotorTrackerPipe.getInstance()
+                                                                .setCallbackForMotorPosition(
+                                                                    new CallbackData<>(
+                                                                        Turret.TURRET_MOTOR_NAME,
+                                                                        (Integer ticks) ->
+                                                                            ticks < 5 && ticks > -5,
+                                                                        () -> {
+                                                                          robot.lift
+                                                                              .setArmOnePosition(0);
+                                                                          robot.gripper.open();
+                                                                        })));
+                                              }));
+                                }
+                              }),
+                  100,
+                  TimeUnit.MILLISECONDS));
         },
         true,
         BooleanSurface.A);
@@ -155,391 +156,413 @@ public class RedTeleOp extends EnhancedTeleOp {
     // Mode specific controls
     controller2.registerOnPressedCallback(
         () -> {
-            clearFutureEvents();
-            Log.d("WTF", "" + futures.size());
+          clearFutureEvents();
+          Log.d("WTF", "" + futures.size());
           robot.gripper.close();
           robot.intake.beginIntaking(); // Actually outtaking
-          futures.add(executorService.schedule(
-              () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
-              750,
-              TimeUnit.MILLISECONDS));
-          futures.add(executorService.schedule(
-              () ->
-                  ExitPipe.getInstance()
-                      .onNextTick(
-                          () -> {
-                            if (allianceHubMode.get()) {
-                              double currentTurretPos = robot.turret.getState();
-                              double target = -Turret.DEGREES_BACK * Turret.DEGREES_TO_TICKS;
-                              if (Math.abs(currentTurretPos - target) < 5) {
-                                robot.lift.setArmOnePosition(firstJointOffset + -390);
-                                robot.lift.setArmTwoPosition(0);
-                                robot.turret.turnCCWToBack();
-                              } else {
-                                robot.lift.setArmOnePosition(firstJointOffset);
-                                robot.lift.setArmTwoPosition(0.47);
-                                MotorTrackerPipe.getInstance()
-                                    .setCallbackForMotorPosition(
-                                        new CallbackData<>(
-                                            DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                            (Integer ticks) ->
-                                                ticks > (firstJointOffset - 5)
-                                                    && ticks < (firstJointOffset + 5),
-                                            () -> {
-                                              robot.turret.turnCCWToBack();
-                                              ExitPipe.getInstance()
-                                                  .onNextTick(
-                                                      () ->
-                                                          MotorTrackerPipe.getInstance()
-                                                              .setCallbackForMotorPosition(
-                                                                  new CallbackData<>(
-                                                                      Turret.TURRET_MOTOR_NAME,
-                                                                      (Integer ticks) ->
-                                                                          ticks > (target - 5)
-                                                                              && ticks
-                                                                                  < (target + 5),
-                                                                      () -> {
-                                                                        robot.lift
-                                                                            .setArmOnePosition(
-                                                                                firstJointOffset
-                                                                                    + -390);
-                                                                        robot.lift
-                                                                            .setArmTwoPosition(0);
-                                                                      })));
-                                            }));
-                              }
-                            } else {
-                              if (tippedMode.get()) {
-                                // TODO: Tipped mode values
-                              } else {
-                                double currentTurretPos = robot.turret.getState();
-                                double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
-                                if (Math.abs(currentTurretPos - target) < 5) {
-                                  robot.lift.setArmOnePosition(firstJointOffset + 69);
-                                  robot.lift.setArmTwoPosition(0.56);
-                                  robot.turret.turnToRight();
-                                } else {
-                                  robot.lift.setArmOnePosition(firstJointOffset + 69);
-                                  robot.lift.setArmTwoPosition(0.47);
-                                  MotorTrackerPipe.getInstance()
-                                      .setCallbackForMotorPosition(
-                                          new CallbackData<>(
-                                              DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                              (Integer ticks) ->
-                                                  ticks > ((firstJointOffset + 69) - 5)
-                                                      && ticks < ((firstJointOffset + 69) + 5),
-                                              () -> {
-                                                robot.turret.turnToRight();
-                                                ExitPipe.getInstance()
-                                                    .onNextTick(
-                                                        () ->
-                                                            MotorTrackerPipe.getInstance()
-                                                                .setCallbackForMotorPosition(
-                                                                    new CallbackData<>(
-                                                                        Turret.TURRET_MOTOR_NAME,
-                                                                        (Integer ticks) ->
-                                                                            ticks > (target - 5)
-                                                                                && ticks
-                                                                                    < (target + 5),
-                                                                        () ->
+          futures.add(
+              executorService.schedule(
+                  () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
+                  750,
+                  TimeUnit.MILLISECONDS));
+          futures.add(
+              executorService.schedule(
+                  () ->
+                      ExitPipe.getInstance()
+                          .onNextTick(
+                              () -> {
+                                if (allianceHubMode.get()) {
+                                  double currentTurretPos = robot.turret.getState();
+                                  double target = -Turret.DEGREES_BACK * Turret.DEGREES_TO_TICKS;
+                                  if (Math.abs(currentTurretPos - target) < 5) {
+                                    robot.lift.setArmOnePosition(firstJointOffset + -390);
+                                    robot.lift.setArmTwoPosition(0);
+                                    robot.turret.turnCCWToBack();
+                                  } else {
+                                    robot.lift.setArmOnePosition(firstJointOffset);
+                                    robot.lift.setArmTwoPosition(0.47);
+                                    MotorTrackerPipe.getInstance()
+                                        .setCallbackForMotorPosition(
+                                            new CallbackData<>(
+                                                DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                                (Integer ticks) ->
+                                                    ticks > (firstJointOffset - 5)
+                                                        && ticks < (firstJointOffset + 5),
+                                                () -> {
+                                                  robot.turret.turnCCWToBack();
+                                                  ExitPipe.getInstance()
+                                                      .onNextTick(
+                                                          () ->
+                                                              MotorTrackerPipe.getInstance()
+                                                                  .setCallbackForMotorPosition(
+                                                                      new CallbackData<>(
+                                                                          Turret.TURRET_MOTOR_NAME,
+                                                                          (Integer ticks) ->
+                                                                              ticks > (target - 5)
+                                                                                  && ticks
+                                                                                      < (target
+                                                                                          + 5),
+                                                                          () -> {
+                                                                            robot.lift
+                                                                                .setArmOnePosition(
+                                                                                    firstJointOffset
+                                                                                        + -390);
                                                                             robot.lift
                                                                                 .setArmTwoPosition(
-                                                                                    0.56))));
-                                              }));
+                                                                                    0);
+                                                                          })));
+                                                }));
+                                  }
+                                } else {
+                                  if (tippedMode.get()) {
+                                    // TODO: Tipped mode values
+                                  } else {
+                                    double currentTurretPos = robot.turret.getState();
+                                    double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
+                                    if (Math.abs(currentTurretPos - target) < 5) {
+                                      robot.lift.setArmOnePosition(firstJointOffset + 69);
+                                      robot.lift.setArmTwoPosition(0.56);
+                                      robot.turret.turnToRight();
+                                    } else {
+                                      robot.lift.setArmOnePosition(firstJointOffset + 69);
+                                      robot.lift.setArmTwoPosition(0.47);
+                                      MotorTrackerPipe.getInstance()
+                                          .setCallbackForMotorPosition(
+                                              new CallbackData<>(
+                                                  DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                                  (Integer ticks) ->
+                                                      ticks > ((firstJointOffset + 69) - 5)
+                                                          && ticks < ((firstJointOffset + 69) + 5),
+                                                  () -> {
+                                                    robot.turret.turnToRight();
+                                                    ExitPipe.getInstance()
+                                                        .onNextTick(
+                                                            () ->
+                                                                MotorTrackerPipe.getInstance()
+                                                                    .setCallbackForMotorPosition(
+                                                                        new CallbackData<>(
+                                                                            Turret
+                                                                                .TURRET_MOTOR_NAME,
+                                                                            (Integer ticks) ->
+                                                                                ticks > (target - 5)
+                                                                                    && ticks
+                                                                                        < (target
+                                                                                            + 5),
+                                                                            () ->
+                                                                                robot.lift
+                                                                                    .setArmTwoPosition(
+                                                                                        0.56))));
+                                                  }));
+                                    }
+                                  }
                                 }
-                              }
-                            }
-                          }),
-              100,
-              TimeUnit.MILLISECONDS));
+                              }),
+                  100,
+                  TimeUnit.MILLISECONDS));
         },
         true,
         BooleanSurface.B);
     controller2.registerOnPressedCallback(
         () -> {
-            clearFutureEvents();
+          clearFutureEvents();
           robot.gripper.close();
           robot.intake.beginIntaking(); // Actually outtaking
-          futures.add(executorService.schedule(
-              () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
-              750,
-              TimeUnit.MILLISECONDS));
-          futures.add(executorService.schedule(
-              () ->
-                  ExitPipe.getInstance()
-                      .onNextTick(
-                          () -> {
-                            if (allianceHubMode.get()) {
-                              double currentTurretPos = robot.turret.getState();
-                              double target = -Turret.DEGREES_BACK * Turret.DEGREES_TO_TICKS;
-                              if (Math.abs(currentTurretPos - target) < 5) {
-                                robot.lift.setArmOnePosition(firstJointOffset + -22);
-                                robot.lift.setArmTwoPosition(0.13);
-                                robot.turret.turnCCWToBack();
-                              } else {
-                                robot.lift.setArmOnePosition(firstJointOffset);
-                                robot.lift.setArmTwoPosition(0.47);
-                                MotorTrackerPipe.getInstance()
-                                    .setCallbackForMotorPosition(
-                                        new CallbackData<>(
-                                            DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                            (Integer ticks) ->
-                                                ticks > (firstJointOffset - 5)
-                                                    && ticks < (firstJointOffset + 5),
-                                            () -> {
-                                              robot.turret.turnCCWToBack();
-                                              ExitPipe.getInstance()
-                                                  .onNextTick(
-                                                      () ->
-                                                          MotorTrackerPipe.getInstance()
-                                                              .setCallbackForMotorPosition(
-                                                                  new CallbackData<>(
-                                                                      Turret.TURRET_MOTOR_NAME,
-                                                                      (Integer ticks) ->
-                                                                          ticks > target - 5
-                                                                              && ticks < target + 5,
-                                                                      () -> {
+          futures.add(
+              executorService.schedule(
+                  () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
+                  750,
+                  TimeUnit.MILLISECONDS));
+          futures.add(
+              executorService.schedule(
+                  () ->
+                      ExitPipe.getInstance()
+                          .onNextTick(
+                              () -> {
+                                if (allianceHubMode.get()) {
+                                  double currentTurretPos = robot.turret.getState();
+                                  double target = -Turret.DEGREES_BACK * Turret.DEGREES_TO_TICKS;
+                                  if (Math.abs(currentTurretPos - target) < 5) {
+                                    robot.lift.setArmOnePosition(firstJointOffset + -22);
+                                    robot.lift.setArmTwoPosition(0.13);
+                                    robot.turret.turnCCWToBack();
+                                  } else {
+                                    robot.lift.setArmOnePosition(firstJointOffset);
+                                    robot.lift.setArmTwoPosition(0.47);
+                                    MotorTrackerPipe.getInstance()
+                                        .setCallbackForMotorPosition(
+                                            new CallbackData<>(
+                                                DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                                (Integer ticks) ->
+                                                    ticks > (firstJointOffset - 5)
+                                                        && ticks < (firstJointOffset + 5),
+                                                () -> {
+                                                  robot.turret.turnCCWToBack();
+                                                  ExitPipe.getInstance()
+                                                      .onNextTick(
+                                                          () ->
+                                                              MotorTrackerPipe.getInstance()
+                                                                  .setCallbackForMotorPosition(
+                                                                      new CallbackData<>(
+                                                                          Turret.TURRET_MOTOR_NAME,
+                                                                          (Integer ticks) ->
+                                                                              ticks > target - 5
+                                                                                  && ticks
+                                                                                      < target + 5,
+                                                                          () -> {
+                                                                            robot.lift
+                                                                                .setArmOnePosition(
+                                                                                    firstJointOffset
+                                                                                        + -22);
+                                                                            robot.lift
+                                                                                .setArmTwoPosition(
+                                                                                    0.13);
+                                                                          })));
+                                                }));
+                                  }
+                                } else {
+                                  if (tippedMode.get()) {
+                                    // TODO: Tipped mode values
+                                  } else {
+                                    double currentTurretPos = robot.turret.getState();
+                                    double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
+                                    if (Math.abs(currentTurretPos - target) < 5) {
+                                      robot.lift.setArmOnePosition(firstJointOffset + 69);
+                                      robot.turret.turnToRight();
+                                      MotorTrackerPipe.getInstance()
+                                          .setCallbackForMotorPosition(
+                                              new CallbackData<>(
+                                                  DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                                  (Integer ticks) ->
+                                                      ticks > ((firstJointOffset + 69) - 5)
+                                                          && ticks < ((firstJointOffset + 69) + 5),
+                                                  () -> {
+                                                    robot.lift.setArmTwoPosition(0.13);
+                                                    executorService.schedule(
+                                                        () ->
+                                                            ExitPipe.getInstance()
+                                                                .onNextTick(
+                                                                    () ->
                                                                         robot.lift
                                                                             .setArmOnePosition(
                                                                                 firstJointOffset
-                                                                                    + -22);
-                                                                        robot.lift
-                                                                            .setArmTwoPosition(
-                                                                                0.13);
-                                                                      })));
-                                            }));
-                              }
-                            } else {
-                              if (tippedMode.get()) {
-                                // TODO: Tipped mode values
-                              } else {
-                                double currentTurretPos = robot.turret.getState();
-                                double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
-                                if (Math.abs(currentTurretPos - target) < 5) {
-                                  robot.lift.setArmOnePosition(firstJointOffset + 69);
-                                  robot.turret.turnToRight();
-                                  MotorTrackerPipe.getInstance()
-                                      .setCallbackForMotorPosition(
-                                          new CallbackData<>(
-                                              DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                              (Integer ticks) ->
-                                                  ticks > ((firstJointOffset + 69) - 5)
-                                                      && ticks < ((firstJointOffset + 69) + 5),
-                                              () -> {
-                                                robot.lift.setArmTwoPosition(0.13);
-                                                executorService.schedule(
-                                                    () ->
-                                                        ExitPipe.getInstance()
-                                                            .onNextTick(
-                                                                () ->
-                                                                    robot.lift.setArmOnePosition(
-                                                                        firstJointOffset + -230)),
-                                                    100,
-                                                    TimeUnit.MILLISECONDS);
-                                              }));
-                                } else {
-                                  robot.lift.setArmOnePosition(firstJointOffset + 69);
-                                  robot.lift.setArmTwoPosition(0.47);
-                                  MotorTrackerPipe.getInstance()
-                                      .setCallbackForMotorPosition(
-                                          new CallbackData<>(
-                                              DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                              (Integer ticks) ->
-                                                  ticks > ((firstJointOffset + 69) - 5)
-                                                      && ticks < ((firstJointOffset + 69) + 5),
-                                              () -> {
-                                                robot.turret.turnToRight();
-                                                ExitPipe.getInstance()
-                                                    .onNextTick(
-                                                        () ->
-                                                            MotorTrackerPipe.getInstance()
-                                                                .setCallbackForMotorPosition(
-                                                                    new CallbackData<>(
-                                                                        Turret.TURRET_MOTOR_NAME,
-                                                                        (Integer ticks) ->
-                                                                            ticks > (target - 5)
-                                                                                && ticks
-                                                                                    < (target + 5),
-                                                                        () -> {
-                                                                          robot.lift
-                                                                              .setArmTwoPosition(
-                                                                                  0.13);
-                                                                          executorService.schedule(
-                                                                              () ->
-                                                                                  ExitPipe
-                                                                                      .getInstance()
-                                                                                      .onNextTick(
-                                                                                          () ->
-                                                                                              robot
-                                                                                                  .lift
-                                                                                                  .setArmOnePosition(
-                                                                                                      firstJointOffset
-                                                                                                          + -230)),
-                                                                              100,
-                                                                              TimeUnit
-                                                                                  .MILLISECONDS);
-                                                                        })));
-                                              }));
+                                                                                    + -230)),
+                                                        100,
+                                                        TimeUnit.MILLISECONDS);
+                                                  }));
+                                    } else {
+                                      robot.lift.setArmOnePosition(firstJointOffset + 69);
+                                      robot.lift.setArmTwoPosition(0.47);
+                                      MotorTrackerPipe.getInstance()
+                                          .setCallbackForMotorPosition(
+                                              new CallbackData<>(
+                                                  DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                                  (Integer ticks) ->
+                                                      ticks > ((firstJointOffset + 69) - 5)
+                                                          && ticks < ((firstJointOffset + 69) + 5),
+                                                  () -> {
+                                                    robot.turret.turnToRight();
+                                                    ExitPipe.getInstance()
+                                                        .onNextTick(
+                                                            () ->
+                                                                MotorTrackerPipe.getInstance()
+                                                                    .setCallbackForMotorPosition(
+                                                                        new CallbackData<>(
+                                                                            Turret
+                                                                                .TURRET_MOTOR_NAME,
+                                                                            (Integer ticks) ->
+                                                                                ticks > (target - 5)
+                                                                                    && ticks
+                                                                                        < (target
+                                                                                            + 5),
+                                                                            () -> {
+                                                                              robot.lift
+                                                                                  .setArmTwoPosition(
+                                                                                      0.13);
+                                                                              executorService
+                                                                                  .schedule(
+                                                                                      () ->
+                                                                                          ExitPipe
+                                                                                              .getInstance()
+                                                                                              .onNextTick(
+                                                                                                  () ->
+                                                                                                      robot
+                                                                                                          .lift
+                                                                                                          .setArmOnePosition(
+                                                                                                              firstJointOffset
+                                                                                                                  + -230)),
+                                                                                      100,
+                                                                                      TimeUnit
+                                                                                          .MILLISECONDS);
+                                                                            })));
+                                                  }));
+                                    }
+                                  }
                                 }
-                              }
-                            }
-                          }),
-              100,
-              TimeUnit.MILLISECONDS));
+                              }),
+                  100,
+                  TimeUnit.MILLISECONDS));
         },
         true,
         BooleanSurface.X);
     controller2.registerOnPressedCallback(
         () -> {
-            clearFutureEvents();
+          clearFutureEvents();
           robot.gripper.close();
           robot.intake.beginIntaking(); // Actually outtaking
-          futures.add(executorService.schedule(
-              () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
-              750,
-              TimeUnit.MILLISECONDS));
-          futures.add(executorService.schedule(
-              () ->
-                  ExitPipe.getInstance()
-                      .onNextTick(
-                          () -> {
-                            if (allianceHubMode.get()) {
-                              double currentTurretPos = robot.turret.getState();
-                              double target = -Turret.DEGREES_BACK * Turret.DEGREES_TO_TICKS;
-                              if (Math.abs(currentTurretPos - target) < 5) {
-                                robot.lift.setArmOnePosition(firstJointOffset + 550);
-                                robot.lift.setArmTwoPosition(0.43);
-                                robot.turret.turnCCWToBack();
-                              } else {
-                                robot.lift.setArmOnePosition(firstJointOffset + 550);
-                                robot.lift.setArmTwoPosition(0.47);
-                                MotorTrackerPipe.getInstance()
-                                    .setCallbackForMotorPosition(
-                                        new CallbackData<>(
-                                            DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                            (Integer ticks) ->
-                                                ticks > (firstJointOffset - 5)
-                                                    && ticks < (firstJointOffset + 5),
-                                            () -> {
-                                              robot.turret.turnCCWToBack();
-                                              ExitPipe.getInstance()
-                                                  .onNextTick(
-                                                      () ->
-                                                          MotorTrackerPipe.getInstance()
-                                                              .setCallbackForMotorPosition(
-                                                                  new CallbackData<>(
-                                                                      Turret.TURRET_MOTOR_NAME,
-                                                                      (Integer ticks) ->
-                                                                          ticks > (target - 5)
-                                                                              && ticks
-                                                                                  < (target + 5),
-                                                                      () ->
-                                                                          robot.lift
-                                                                              .setArmTwoPosition(
-                                                                                  0.43))));
-                                            }));
-                              }
-                            } else {
-                              if (tippedMode.get()) {
-                                // TODO: Tipped mode values
-                              } else {
-                                double currentTurretPos = robot.turret.getState();
-                                double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
-                                if (Math.abs(currentTurretPos - target) < 5) {
-                                  robot.lift.setArmOnePosition(firstJointOffset + 10);
-                                  robot.lift.setArmTwoPosition(0.39);
-                                  robot.turret.turnToRight();
+          futures.add(
+              executorService.schedule(
+                  () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
+                  750,
+                  TimeUnit.MILLISECONDS));
+          futures.add(
+              executorService.schedule(
+                  () ->
+                      ExitPipe.getInstance()
+                          .onNextTick(
+                              () -> {
+                                if (allianceHubMode.get()) {
+                                  double currentTurretPos = robot.turret.getState();
+                                  double target = -Turret.DEGREES_BACK * Turret.DEGREES_TO_TICKS;
+                                  if (Math.abs(currentTurretPos - target) < 5) {
+                                    robot.lift.setArmOnePosition(firstJointOffset + 550);
+                                    robot.lift.setArmTwoPosition(0.43);
+                                    robot.turret.turnCCWToBack();
+                                  } else {
+                                    robot.lift.setArmOnePosition(firstJointOffset + 550);
+                                    robot.lift.setArmTwoPosition(0.47);
+                                    MotorTrackerPipe.getInstance()
+                                        .setCallbackForMotorPosition(
+                                            new CallbackData<>(
+                                                DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                                (Integer ticks) ->
+                                                    ticks > (firstJointOffset - 5)
+                                                        && ticks < (firstJointOffset + 5),
+                                                () -> {
+                                                  robot.turret.turnCCWToBack();
+                                                  ExitPipe.getInstance()
+                                                      .onNextTick(
+                                                          () ->
+                                                              MotorTrackerPipe.getInstance()
+                                                                  .setCallbackForMotorPosition(
+                                                                      new CallbackData<>(
+                                                                          Turret.TURRET_MOTOR_NAME,
+                                                                          (Integer ticks) ->
+                                                                              ticks > (target - 5)
+                                                                                  && ticks
+                                                                                      < (target
+                                                                                          + 5),
+                                                                          () ->
+                                                                              robot.lift
+                                                                                  .setArmTwoPosition(
+                                                                                      0.43))));
+                                                }));
+                                  }
                                 } else {
-                                  robot.lift.setArmOnePosition(firstJointOffset + 10);
-                                  robot.lift.setArmTwoPosition(0.47);
-                                  MotorTrackerPipe.getInstance()
-                                      .setCallbackForMotorPosition(
-                                          new CallbackData<>(
-                                              DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                              (Integer ticks) ->
-                                                  ticks > ((firstJointOffset + 10) - 5)
-                                                      && ticks < ((firstJointOffset + 10) + 5),
-                                              () -> {
-                                                robot.turret.turnToRight();
-                                                ExitPipe.getInstance()
-                                                    .onNextTick(
-                                                        () ->
-                                                            MotorTrackerPipe.getInstance()
-                                                                .setCallbackForMotorPosition(
-                                                                    new CallbackData<>(
-                                                                        Turret.TURRET_MOTOR_NAME,
-                                                                        (Integer ticks) ->
-                                                                            ticks > (target - 5)
-                                                                                && ticks
-                                                                                    < (target + 5),
-                                                                        () ->
-                                                                            robot.lift
-                                                                                .setArmTwoPosition(
-                                                                                    0.39))));
-                                              }));
+                                  if (tippedMode.get()) {
+                                    // TODO: Tipped mode values
+                                  } else {
+                                    double currentTurretPos = robot.turret.getState();
+                                    double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
+                                    if (Math.abs(currentTurretPos - target) < 5) {
+                                      robot.lift.setArmOnePosition(firstJointOffset + 10);
+                                      robot.lift.setArmTwoPosition(0.39);
+                                      robot.turret.turnToRight();
+                                    } else {
+                                      robot.lift.setArmOnePosition(firstJointOffset + 10);
+                                      robot.lift.setArmTwoPosition(0.47);
+                                      MotorTrackerPipe.getInstance()
+                                          .setCallbackForMotorPosition(
+                                              new CallbackData<>(
+                                                  DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                                  (Integer ticks) ->
+                                                      ticks > ((firstJointOffset + 10) - 5)
+                                                          && ticks < ((firstJointOffset + 10) + 5),
+                                                  () -> {
+                                                    robot.turret.turnToRight();
+                                                    ExitPipe.getInstance()
+                                                        .onNextTick(
+                                                            () ->
+                                                                MotorTrackerPipe.getInstance()
+                                                                    .setCallbackForMotorPosition(
+                                                                        new CallbackData<>(
+                                                                            Turret
+                                                                                .TURRET_MOTOR_NAME,
+                                                                            (Integer ticks) ->
+                                                                                ticks > (target - 5)
+                                                                                    && ticks
+                                                                                        < (target
+                                                                                            + 5),
+                                                                            () ->
+                                                                                robot.lift
+                                                                                    .setArmTwoPosition(
+                                                                                        0.39))));
+                                                  }));
+                                    }
+                                  }
                                 }
-                              }
-                            }
-                          }),
-              100,
-              TimeUnit.MILLISECONDS));
+                              }),
+                  100,
+                  TimeUnit.MILLISECONDS));
         },
         true,
         BooleanSurface.Y);
     controller2.registerOnPressedCallback(
         () -> {
           if (allianceHubMode.get()) {
-              clearFutureEvents();
+            clearFutureEvents();
             robot.gripper.close();
-            futures.add(executorService.schedule(
-                () ->
-                    ExitPipe.getInstance()
-                        .onNextTick(
-                            () -> {
-                              double currentTurretPos = robot.turret.getState();
-                              double target = -Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
-                              if (Math.abs(currentTurretPos - target) < 5) {
-                                robot.lift.setArmOnePosition(firstJointOffset + -540);
-                                robot.lift.setArmTwoPosition(0);
-                                robot.turret.turnToLeft();
-                                robot.gripper.open();
-                              } else {
-                                robot.lift.setArmOnePosition(firstJointOffset);
-                                robot.lift.setArmTwoPosition(0.47);
-                                MotorTrackerPipe.getInstance()
-                                    .setCallbackForMotorPosition(
-                                        new CallbackData<>(
-                                            DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                            (Integer ticks) ->
-                                                ticks > (firstJointOffset - 5)
-                                                    && ticks < (firstJointOffset + 5),
-                                            () -> {
-                                              robot.turret.turnToLeft();
-                                              ExitPipe.getInstance()
-                                                  .onNextTick(
-                                                      () ->
-                                                          MotorTrackerPipe.getInstance()
-                                                              .setCallbackForMotorPosition(
-                                                                  new CallbackData<>(
-                                                                      Turret.TURRET_MOTOR_NAME,
-                                                                      (Integer ticks) ->
-                                                                          ticks > (target - 5)
-                                                                              && ticks
-                                                                                  < (target + 5),
-                                                                      () -> {
-                                                                        robot.lift
-                                                                            .setArmOnePosition(
-                                                                                firstJointOffset
-                                                                                    + -540);
-                                                                        robot.lift
-                                                                            .setArmTwoPosition(0);
-                                                                        robot.gripper.open();
-                                                                      })));
-                                            }));
-                              }
-                            }),
-                100,
-                TimeUnit.MILLISECONDS));
+            futures.add(
+                executorService.schedule(
+                    () ->
+                        ExitPipe.getInstance()
+                            .onNextTick(
+                                () -> {
+                                  double currentTurretPos = robot.turret.getState();
+                                  double target = -Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
+                                  if (Math.abs(currentTurretPos - target) < 5) {
+                                    robot.lift.setArmOnePosition(firstJointOffset + -540);
+                                    robot.lift.setArmTwoPosition(0);
+                                    robot.turret.turnToLeft();
+                                    robot.gripper.open();
+                                  } else {
+                                    robot.lift.setArmOnePosition(firstJointOffset);
+                                    robot.lift.setArmTwoPosition(0.47);
+                                    MotorTrackerPipe.getInstance()
+                                        .setCallbackForMotorPosition(
+                                            new CallbackData<>(
+                                                DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                                (Integer ticks) ->
+                                                    ticks > (firstJointOffset - 5)
+                                                        && ticks < (firstJointOffset + 5),
+                                                () -> {
+                                                  robot.turret.turnToLeft();
+                                                  ExitPipe.getInstance()
+                                                      .onNextTick(
+                                                          () ->
+                                                              MotorTrackerPipe.getInstance()
+                                                                  .setCallbackForMotorPosition(
+                                                                      new CallbackData<>(
+                                                                          Turret.TURRET_MOTOR_NAME,
+                                                                          (Integer ticks) ->
+                                                                              ticks > (target - 5)
+                                                                                  && ticks
+                                                                                      < (target
+                                                                                          + 5),
+                                                                          () -> {
+                                                                            robot.lift
+                                                                                .setArmOnePosition(
+                                                                                    firstJointOffset
+                                                                                        + -540);
+                                                                            robot.lift
+                                                                                .setArmTwoPosition(
+                                                                                    0);
+                                                                            robot.gripper.open();
+                                                                          })));
+                                                }));
+                                  }
+                                }),
+                    100,
+                    TimeUnit.MILLISECONDS));
           }
         },
         true,
@@ -547,26 +570,27 @@ public class RedTeleOp extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> {
           if (allianceHubMode.get()) {
-              clearFutureEvents();
+            clearFutureEvents();
             robot.gripper.grabTeamMarker();
-            futures.add(executorService.schedule(
-                () ->
-                    ExitPipe.getInstance()
-                        .onNextTick(
-                            () -> {
-                              robot.lift.setArmOnePosition(firstJointOffset + 570);
-                              robot.lift.setArmTwoPosition(0.3);
-                              MotorTrackerPipe.getInstance()
-                                  .setCallbackForMotorPosition(
-                                      new CallbackData<>(
-                                          DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                          (Integer ticks) ->
-                                              ticks > ((firstJointOffset + 570) - 5)
-                                                  && ticks < ((firstJointOffset + 570) + 5),
-                                          robot.turret::turnCCWToBack));
-                            }),
-                100,
-                TimeUnit.MILLISECONDS));
+            futures.add(
+                executorService.schedule(
+                    () ->
+                        ExitPipe.getInstance()
+                            .onNextTick(
+                                () -> {
+                                  robot.lift.setArmOnePosition(firstJointOffset + 570);
+                                  robot.lift.setArmTwoPosition(0.3);
+                                  MotorTrackerPipe.getInstance()
+                                      .setCallbackForMotorPosition(
+                                          new CallbackData<>(
+                                              DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+                                              (Integer ticks) ->
+                                                  ticks > ((firstJointOffset + 570) - 5)
+                                                      && ticks < ((firstJointOffset + 570) + 5),
+                                              robot.turret::turnCCWToBack));
+                                }),
+                    100,
+                    TimeUnit.MILLISECONDS));
           }
         },
         true,
@@ -622,9 +646,9 @@ public class RedTeleOp extends EnhancedTeleOp {
   public void onStop() {}
 
   private void clearFutureEvents() {
-      futures.forEach(future -> future.cancel(false));
-      futures.clear();
-      MotorTrackerPipe.getInstance().clearScheduledCallbacks();
-      ExitPipe.getInstance().clearScheduledCallbacks();
+    futures.forEach(future -> future.cancel(false));
+    futures.clear();
+    MotorTrackerPipe.getInstance().clearScheduledCallbacks();
+    ExitPipe.getInstance().clearScheduledCallbacks();
   }
 }

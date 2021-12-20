@@ -33,9 +33,8 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
             Constants.PIPELINE_BASE_NAME,
             new InitializedFilterPipe(
                 "FilterElement",
-                    new MotorTrackerPipe(
-                            "MotorTracker",
-                            new RunToPositionPipe("RunToPosition", new ExitPipe("Exit")))));
+                new MotorTrackerPipe(
+                    "MotorTracker", new RunToPositionPipe("RunToPosition", new ExitPipe("Exit")))));
     this.robotObject = robotObject;
     initialize();
   }
