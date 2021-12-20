@@ -28,6 +28,10 @@ public class ExitPipe extends HardwarePipeline {
     postLoopFunctions.add(r);
   }
 
+  public synchronized void clearScheduledCallbacks() {
+    postLoopFunctions.clear();
+  }
+
   @Override
   public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
     r.getNextMotorStates().forEach((m) -> processMotor(m, hardware));
