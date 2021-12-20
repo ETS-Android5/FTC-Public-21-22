@@ -121,6 +121,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
     if (hardwareObj == DcMotor.class) {
       DcMotor motor = hardwareMap.dcMotor.get(annotation.name());
       motor.setDirection(annotation.direction().primitiveConversion());
+      motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       motor.setMode(annotation.runMode().primitiveConversion());
       motor.setZeroPowerBehavior(annotation.zpBehavior().primitiveConversion());
       try {

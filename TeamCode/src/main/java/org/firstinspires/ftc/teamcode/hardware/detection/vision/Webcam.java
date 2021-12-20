@@ -44,8 +44,13 @@ public class Webcam implements FtcCamera {
   private CameraCaptureSession session;
   private CameraCharacteristics characteristics;
 
-  @Override
   @PostInit(argType = WebcamName.class)
+  @SuppressWarnings("unused")
+  public void init(WebcamName arg) {
+    init();
+  }
+
+  @Override
   public synchronized void init() {
     if (cameraName == null) return;
     if (cameraManager == null) {

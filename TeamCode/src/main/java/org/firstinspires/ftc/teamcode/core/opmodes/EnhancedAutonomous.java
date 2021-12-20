@@ -6,7 +6,6 @@ import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
-import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ResetDcMotorPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.RunToPositionPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
@@ -34,11 +33,9 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
             Constants.PIPELINE_BASE_NAME,
             new InitializedFilterPipe(
                 "FilterElement",
-                new ResetDcMotorPipe(
-                    "MotorReset",
                     new MotorTrackerPipe(
-                        "MotorTracker",
-                        new RunToPositionPipe("RunToPosition", new ExitPipe("Exit"))))));
+                            "MotorTracker",
+                            new RunToPositionPipe("RunToPosition", new ExitPipe("Exit")))));
     this.robotObject = robotObject;
     initialize();
   }
