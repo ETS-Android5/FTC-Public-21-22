@@ -27,12 +27,7 @@ public class MotorPositionReachedCallback {
           .setCallbackForMotorPosition(
               new CallbackData<>(
                   motorName,
-                  (ticks) -> {
-                    Log.d("HERE", "" + ticks);
-                    boolean ret = Math.abs(ticks - motorTarget) <= motorTolerance;
-                    Log.d("HERE", "RET: " + ret);
-                    return ret;
-                  },
+                  (ticks) -> Math.abs(ticks - motorTarget) <= motorTolerance,
                   r));
     }
   }

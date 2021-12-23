@@ -73,7 +73,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
     List<CallbackData<Integer>> functions;
     synchronized (this) {
       functions = motorPositionCallbacks;
-      motorPositionCallbacks = new LinkedList<>();
+      motorPositionCallbacks = new LinkedList<>(functions);
     }
     DataTracker.evaluateCallbacks(
         functions, motorPositions, (MotorPositionData data) -> (int) data.getCurrentTicks());
