@@ -53,9 +53,9 @@ public class RedTeleOp extends EnhancedTeleOp {
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
     controller2.registerOnPressedCallback(
-        robot.intake::toggleIntaking, true, BooleanSurface.LEFT_BUMPER);
+        robot.intake::toggleIntaking, true, BooleanSurface.RIGHT_BUMPER);
     controller2.registerOnPressedCallback(
-        robot.intake::toggleOuttaking, true, BooleanSurface.RIGHT_BUMPER);
+        robot.intake::toggleOuttaking, true, BooleanSurface.LEFT_BUMPER);
 
     controller2.registerOnPressedCallback(
         robot.carouselSpinner::spinBackward, true, BooleanSurface.LEFT_STICK);

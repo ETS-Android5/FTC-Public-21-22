@@ -23,6 +23,7 @@ public class RampedIntake implements IRampedIntake {
   private static final double MOVING_SPEED = 1.0;
   private static final double INTAKING_SPEED = MOVING_SPEED;
   private static final double OUTTAKING_SPEED = MOVING_SPEED * -1;
+  private static final double SLOWLY_OUTTAKING_SPEED = -0.3;
   private static final double LOWERED_POSITION = 0.33;
   private static final double RAISED_POSITION = 0.0;
 
@@ -80,7 +81,7 @@ public class RampedIntake implements IRampedIntake {
     RampedIntakeState state = getState();
     if (state != RampedIntakeState.LOWERED_AND_OUTTAKING
         && state != RampedIntakeState.RAISED_AND_OUTTAKING) {
-      beginIntaking();
+      beginOuttaking();
     } else {
       stop();
     }
@@ -97,6 +98,11 @@ public class RampedIntake implements IRampedIntake {
   }
 
   @Override
+  public void beginOuttakingSlowly() {
+    intakeMotorState = intakeMotorState.withPower(SLOWLY_OUTTAKING_SPEED);
+  }
+
+  @Override
   public synchronized void stop() {
     intakeMotorState = intakeMotorState.withPower(STOPPED_SPEED);
   }
@@ -104,18 +110,23 @@ public class RampedIntake implements IRampedIntake {
   @Override
   @Observable(key = "RAMPED_INTAKE")
   public RampedIntakeState getState() {
+    double power = intakeMotorState.getPower();
     if (intakeServoState.getPosition() == LOWERED_POSITION) {
-      return intakeMotorState.getPower() == INTAKING_SPEED
+      return power == INTAKING_SPEED
           ? RampedIntakeState.LOWERED_AND_INTAKING
-          : intakeMotorState.getPower() == OUTTAKING_SPEED
+          : power == OUTTAKING_SPEED
               ? RampedIntakeState.LOWERED_AND_OUTTAKING
-              : RampedIntakeState.LOWERED_AND_STOPPED;
+              : power == SLOWLY_OUTTAKING_SPEED
+                  ? RampedIntakeState.LOWERED_AND_OUTTAKING_SLOWLY
+                  : RampedIntakeState.LOWERED_AND_STOPPED;
     } else {
-      return intakeMotorState.getPower() == INTAKING_SPEED
+      return power == INTAKING_SPEED
           ? RampedIntakeState.RAISED_AND_INTAKING
-          : intakeMotorState.getPower() == OUTTAKING_SPEED
+          : power == OUTTAKING_SPEED
               ? RampedIntakeState.RAISED_AND_OUTTAKING
-              : RampedIntakeState.RAISED_AND_STOPPED;
+              : power == SLOWLY_OUTTAKING_SPEED
+                  ? RampedIntakeState.RAISED_AND_OUTTAKING_SLOWLY
+                  : RampedIntakeState.RAISED_AND_STOPPED;
     }
   }
 }
