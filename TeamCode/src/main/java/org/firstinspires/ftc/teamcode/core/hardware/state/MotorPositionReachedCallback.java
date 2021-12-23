@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.hardware.state;
 
+import android.util.Log;
+
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.CallbackData;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 
@@ -24,7 +26,14 @@ public class MotorPositionReachedCallback {
       MotorTrackerPipe.getInstance()
           .setCallbackForMotorPosition(
               new CallbackData<>(
-                  motorName, (ticks) -> Math.abs(ticks - motorTarget) <= motorTolerance, r));
+                  motorName,
+                  (ticks) -> {
+                    Log.d("HERE", "" + ticks);
+                    boolean ret = Math.abs(ticks - motorTarget) <= motorTolerance;
+                    Log.d("HERE", "RET: " + ret);
+                    return ret;
+                  },
+                  r));
     }
   }
 }

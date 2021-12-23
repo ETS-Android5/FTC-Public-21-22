@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
@@ -79,9 +77,6 @@ public class RunToPositionPipe extends HardwarePipeline {
                 double currentPercentPower = velocity / maxVelocity;
                 if (currentPercentPower != power) {
                   if (nextState.getPowerCorrection() != null) {
-                    Log.d(
-                        "WTF",
-                        "TARGET POWER IS " + power + " BUT ACTUAL POWER IS " + currentPercentPower);
                     power =
                         nextState
                             .getPowerCorrection()
@@ -90,7 +85,6 @@ public class RunToPositionPipe extends HardwarePipeline {
                                 power,
                                 currentPosition,
                                 motor.getTargetTicks());
-                    Log.d("WTF", "ADJUSTING BY SETTING POWER TO " + power);
                   } else {
                     power -= currentPercentPower - power;
                     power = power > 1 ? 1 : power < -1 ? -1 : power;
