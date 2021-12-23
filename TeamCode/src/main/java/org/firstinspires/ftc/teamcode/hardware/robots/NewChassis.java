@@ -115,29 +115,40 @@ public class NewChassis implements Component {
         });
         break;
       case SHARED_CLOSE_POSITION:
-        ensureTurretIsAt(Turret.TICKS_RIGHT, 5, firstJointOffset + 69, () -> {
-          lift.setArmTwoPosition(0.56);
-        });
+        ensureTurretIsAt(Turret.TICKS_RIGHT, 5, firstJointOffset + 69, () -> lift.setArmTwoPosition(0.56));
         break;
       case SHARED_MIDDLE_POSITION:
+        ensureTurretIsAt(Turret.TICKS_RIGHT, 5, firstJointOffset - 230, () -> lift.setArmTwoPosition(0.13));
         break;
       case SHARED_FAR_POSITION:
+        ensureTurretIsAt(Turret.TICKS_RIGHT, 5, firstJointOffset + 10, () -> lift.setArmTwoPosition(0.39));
         break;
       case TIPPED_CLOSE_POSITION:
+        // TODO: VALUES
         break;
       case TIPPED_MIDDLE_POSITION:
+        // TODO: VALUES
         break;
       case TIPPED_FAR_POSITION:
+        // TODO: VALUES
         break;
       case ALLIANCE_BOTTOM_POSITION:
+        ensureTurretIsAt(Turret.TICKS_CCW_BACK, 5, firstJointOffset - 390, () -> lift.setArmTwoPosition(0));
         break;
       case ALLIANCE_MIDDLE_POSITION:
+        ensureTurretIsAt(Turret.TICKS_CCW_BACK, 5, firstJointOffset - 22, () -> lift.setArmTwoPosition(0.13));
         break;
       case ALLIANCE_TOP_POSITION:
+        ensureTurretIsAt(Turret.TICKS_CCW_BACK, 5, firstJointOffset + 550, () -> lift.setArmTwoPosition(0.43));
         break;
       case TEAM_MARKER_GRAB_POSITION:
+        ensureTurretIsAt(Turret.TICKS_LEFT, 5, firstJointOffset - 540, () -> {
+          lift.setArmTwoPosition(0);
+          gripper.open();
+        });
         break;
       case TEAM_MARKER_DEPOSIT_POSITION:
+        ensureTurretIsAt(Turret.TICKS_CCW_BACK, 5, firstJointOffset + 570, () -> lift.setArmTwoPosition(0.3));
         break;
     }
   }
@@ -154,6 +165,15 @@ public class NewChassis implements Component {
   public int grabFreight() {
     if (gripper.getState() != SingleServoGripperState.CLOSED_ON_FREIGHT_POSITION) {
       gripper.close();
+      return SingleServoGripper.GRIPPER_ACTION_DELAY_MS;
+    } else {
+      return 0;
+    }
+  }
+
+  public int grabTeamMarker() {
+    if (gripper.getState() != SingleServoGripperState.CLOSED_ON_TEAM_MARKER_POSITION) {
+      gripper.grabTeamMarker();
       return SingleServoGripper.GRIPPER_ACTION_DELAY_MS;
     } else {
       return 0;
