@@ -65,6 +65,28 @@ public class RampedIntake implements IRampedIntake {
   }
 
   @Override
+  public void toggleIntaking() {
+    RampedIntakeState state = getState();
+    if (state != RampedIntakeState.LOWERED_AND_INTAKING
+        && state != RampedIntakeState.RAISED_AND_INTAKING) {
+      beginIntaking();
+    } else {
+      stop();
+    }
+  }
+
+  @Override
+  public void toggleOuttaking() {
+    RampedIntakeState state = getState();
+    if (state != RampedIntakeState.LOWERED_AND_OUTTAKING
+        && state != RampedIntakeState.RAISED_AND_OUTTAKING) {
+      beginIntaking();
+    } else {
+      stop();
+    }
+  }
+
+  @Override
   public synchronized void beginIntaking() {
     intakeMotorState = intakeMotorState.withPower(INTAKING_SPEED);
   }

@@ -73,28 +73,30 @@ public class RunToPositionPipe extends HardwarePipeline {
             Object motorObj = hardware.get(motorName);
             if (motorObj instanceof DcMotor) {
               double power = motor.getTargetPowerPercentage(currentPosition);
-              if (nextState != null) {
-                double maxAcceleration = nextState.getMaxAcceleration();
-                if (maxAcceleration != 0) {
-                  double prevPower = motor.getLastPower();
-                  if (Math.abs(power - prevPower) > maxAcceleration) {
-                    power =
-                        power < prevPower
-                            ? prevPower - maxAcceleration
-                            : prevPower + maxAcceleration;
-                  }
-                }
-              }
               if (shouldAdjustForRealPower && power != 0) {
                 double velocity = MotorTrackerPipe.getInstance().getVelocity(motorName);
                 double maxVelocity = nextState.getPowerAndTickRateRelation().apply(1.0);
                 double currentPercentPower = velocity / maxVelocity;
-                Log.d("WTF", "CURRENT PERCENT POWER IS " + currentPercentPower);
-                Log.d("WTF", "TARGET POWER IS " + power);
-                Log.d("WTF", "ADJUSTING POWER TO " + (power - (currentPercentPower - power)));
-                power -= currentPercentPower - power;
+                if (currentPercentPower != power) {
+                  if (nextState.getPowerCorrection() != null) {
+                    Log.d(
+                        "WTF",
+                        "TARGET POWER IS " + power + " BUT ACTUAL POWER IS " + currentPercentPower);
+                    power =
+                        nextState
+                            .getPowerCorrection()
+                            .apply(
+                                currentPercentPower,
+                                power,
+                                currentPosition,
+                                motor.getTargetTicks());
+                    Log.d("WTF", "ADJUSTING BY SETTING POWER TO " + power);
+                  } else {
+                    power -= currentPercentPower - power;
+                    power = power > 1 ? 1 : power < -1 ? -1 : power;
+                  }
+                }
               }
-              power = power > 1 ? 1 : power < -1 ? -1 : power;
               ((DcMotor) motorObj).setPower(power);
               motor.setLastPower(power);
             }

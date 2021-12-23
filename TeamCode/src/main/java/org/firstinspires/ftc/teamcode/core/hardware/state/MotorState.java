@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.core.hardware.state;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.ZeroPowerBehavior;
+import org.firstinspires.ftc.teamcode.core.fn.QuadFunction;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
 import java.util.function.Function;
@@ -14,8 +15,8 @@ public class MotorState extends IMotorState {
   private final double power;
   private final int targetPosition;
   private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
-  private final double maxAcceleration;
   private final Function<Double, Double> powerAndTickRateRelation;
+  private final QuadFunction<Double, Double, Integer, Integer, Double> powerCorrection;
 
   public MotorState(String name, Direction direction) {
     this(
@@ -26,7 +27,7 @@ public class MotorState extends IMotorState {
         0.0,
         0,
         null,
-        0.0,
+        null,
         null);
   }
 
@@ -38,8 +39,8 @@ public class MotorState extends IMotorState {
       Double power,
       Integer targetPosition,
       TriFunction<Integer, Integer, Integer, Double> powerCurve,
-      Double maxAcceleration,
-      Function<Double, Double> powerAndTickRateRelation) {
+      Function<Double, Double> powerAndTickRateRelation,
+      QuadFunction<Double, Double, Integer, Integer, Double> powerCorrection) {
     super(name);
     this.direction = direction;
     this.runMode = runMode;
@@ -47,8 +48,8 @@ public class MotorState extends IMotorState {
     this.power = power;
     this.targetPosition = targetPosition;
     this.powerCurve = powerCurve;
-    this.maxAcceleration = maxAcceleration;
     this.powerAndTickRateRelation = powerAndTickRateRelation;
+    this.powerCorrection = powerCorrection;
   }
 
   @Override
@@ -66,8 +67,8 @@ public class MotorState extends IMotorState {
         this.power,
         this.targetPosition,
         this.powerCurve,
-        this.maxAcceleration,
-        this.powerAndTickRateRelation);
+        this.powerAndTickRateRelation,
+        this.powerCorrection);
   }
 
   @Override
@@ -85,8 +86,8 @@ public class MotorState extends IMotorState {
         this.power,
         this.targetPosition,
         this.powerCurve,
-        this.maxAcceleration,
-        this.powerAndTickRateRelation);
+        this.powerAndTickRateRelation,
+        this.powerCorrection);
   }
 
   @Override
@@ -104,8 +105,8 @@ public class MotorState extends IMotorState {
         this.power,
         this.targetPosition,
         this.powerCurve,
-        this.maxAcceleration,
-        this.powerAndTickRateRelation);
+        this.powerAndTickRateRelation,
+        this.powerCorrection);
   }
 
   @Override
@@ -123,8 +124,8 @@ public class MotorState extends IMotorState {
         power < -1 ? -1 : power > 1 ? 1 : power,
         this.targetPosition,
         this.powerCurve,
-        this.maxAcceleration,
-        this.powerAndTickRateRelation);
+        this.powerAndTickRateRelation,
+        this.powerCorrection);
   }
 
   @Override
@@ -142,13 +143,13 @@ public class MotorState extends IMotorState {
         this.power,
         targetPosition,
         this.powerCurve,
-        this.maxAcceleration,
-        this.powerAndTickRateRelation);
+        this.powerAndTickRateRelation,
+        this.powerCorrection);
   }
 
   @Override
   public TriFunction<Integer, Integer, Integer, Double> getPowerCurve() {
-    return this.powerCurve;
+    return powerCurve;
   }
 
   @Override
@@ -161,27 +162,8 @@ public class MotorState extends IMotorState {
         this.power,
         this.targetPosition,
         powerCurve,
-        this.maxAcceleration,
-        this.powerAndTickRateRelation);
-  }
-
-  @Override
-  public double getMaxAcceleration() {
-    return maxAcceleration;
-  }
-
-  @Override
-  public IMotorState withMaxAcceleration(double maxAcceleration) {
-    return new MotorState(
-        name,
-        direction,
-        runMode,
-        zeroPowerBehavior,
-        power,
-        targetPosition,
-        powerCurve,
-        maxAcceleration,
-        powerAndTickRateRelation);
+        this.powerAndTickRateRelation,
+        this.powerCorrection);
   }
 
   @Override
@@ -193,15 +175,35 @@ public class MotorState extends IMotorState {
   public IMotorState withPowerAndTickRateRelation(
       Function<Double, Double> powerAndTickRateRelation) {
     return new MotorState(
-        name,
-        direction,
-        runMode,
-        zeroPowerBehavior,
-        power,
-        targetPosition,
-        powerCurve,
-        maxAcceleration,
-        powerAndTickRateRelation);
+        this.name,
+        this.direction,
+        this.runMode,
+        this.zeroPowerBehavior,
+        this.power,
+        this.targetPosition,
+        this.powerCurve,
+        powerAndTickRateRelation,
+        this.powerCorrection);
+  }
+
+  @Override
+  public QuadFunction<Double, Double, Integer, Integer, Double> getPowerCorrection() {
+    return powerCorrection;
+  }
+
+  @Override
+  public IMotorState withPowerCorrection(
+      QuadFunction<Double, Double, Integer, Integer, Double> powerCorrection) {
+    return new MotorState(
+        this.name,
+        this.direction,
+        this.runMode,
+        this.zeroPowerBehavior,
+        this.power,
+        this.targetPosition,
+        this.powerCurve,
+        this.powerAndTickRateRelation,
+        powerCorrection);
   }
 
   @Override
@@ -214,7 +216,7 @@ public class MotorState extends IMotorState {
         power,
         targetPosition,
         powerCurve,
-        maxAcceleration,
-        powerAndTickRateRelation);
+        powerAndTickRateRelation,
+        powerCorrection);
   }
 }

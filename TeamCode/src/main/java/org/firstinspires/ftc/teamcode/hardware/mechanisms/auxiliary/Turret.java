@@ -20,6 +20,11 @@ public class Turret implements ITurret {
   public static final int DEGREES_RIGHT = 90;
   public static final int DEGREES_BACK = 180;
   public static final double DEGREES_TO_TICKS = 2.1333333; // Rev core hex is 288 ticks / rotation
+  public static final int TICKS_FRONT = 0;
+  public static final int TICKS_RIGHT = (int) ((DEGREES_RIGHT * DEGREES_TO_TICKS) + 0.5);
+  public static final int TICKS_LEFT = (int) ((-DEGREES_RIGHT * DEGREES_TO_TICKS) - 0.5);
+  public static final int TICKS_CW_BACK = (int) ((DEGREES_BACK * DEGREES_TO_TICKS) + 0.5);
+  public static final int TICKS_CCW_BACK = (int) ((-DEGREES_BACK * DEGREES_TO_TICKS) - 0.5);
 
   @Hardware(name = TURRET_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
   public DcMotor turretMotor;
@@ -35,8 +40,24 @@ public class Turret implements ITurret {
         new MotorState(TURRET_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generatePowerCurve(1, 1))
-            .withPowerAndTickRateRelation((power) -> power * 600);
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, .8))
+            .withPowerAndTickRateRelation((power) -> power * 600)
+            .withPowerCorrection(
+                (Double currentPower,
+                    Double idealPower,
+                    Integer currentTicks,
+                    Integer targetTicks) -> {
+                  if (currentPower.equals(idealPower)) return currentPower;
+                  double diff = Math.abs(currentPower - idealPower);
+                  double adjustment =
+                      Math.min(Math.abs(currentTicks - targetTicks) / 2, 1)
+                          * Math.pow(diff, 1.0 / 4);
+                  double ret = 0;
+                  if (currentPower > idealPower) ret = currentPower - adjustment;
+                  if (currentPower < idealPower) ret = currentPower + adjustment;
+                  ret = Math.round(ret * 100) / 100.0;
+                  return ret > 1 ? 1 : ret < -1 ? -1 : ret;
+                });
   }
 
   @Override
@@ -63,6 +84,16 @@ public class Turret implements ITurret {
     synchronized (this) {
       turretMotorState =
           turretMotorState.withTargetPosition((int) Math.round(degrees * DEGREES_TO_TICKS));
+    }
+  }
+
+  @Override
+  public void turnToPosition(double position) {
+    if (position > TICKS_CW_BACK || position < TICKS_CCW_BACK) {
+      return;
+    }
+    synchronized (this) {
+      turretMotorState = turretMotorState.withTargetPosition((int) Math.round(position));
     }
   }
 
