@@ -12,5 +12,7 @@ public interface IIntake<T> extends Component, StatefulMechanism<T> {
 
   void beginOuttaking();
 
+  void beginOuttakingSlowly();
+
   void stop();
 }

@@ -4,4 +4,5 @@ public enum IntakeState {
   STOPPED,
   INTAKING,
   OUTTAKING,
+  SLOW_OUTTAKING,
 }

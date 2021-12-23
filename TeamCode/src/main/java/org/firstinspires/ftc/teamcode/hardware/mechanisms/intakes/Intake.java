@@ -19,6 +19,7 @@ public class Intake implements IIntake<IntakeState> {
   private static final double MOVING_SPEED = 1.0;
   private static final double INTAKING_SPEED = MOVING_SPEED;
   private static final double OUTTAKING_SPEED = MOVING_SPEED * -1;
+  private static final double SLOW_OUTTAKING_SPEED = -0.2;
 
   @Hardware(name = INTAKE_MOTOR_NAME)
   public DcMotor intakeMotor;
@@ -46,11 +47,14 @@ public class Intake implements IIntake<IntakeState> {
   @Override
   @Observable(key = "INTAKE")
   public IntakeState getState() {
-    return intakeMotorState.getPower() == INTAKING_SPEED
+    double power = intakeMotorState.getPower();
+    return power == INTAKING_SPEED
         ? IntakeState.INTAKING
-        : intakeMotorState.getPower() == OUTTAKING_SPEED
+        : power == OUTTAKING_SPEED
             ? IntakeState.OUTTAKING
-            : IntakeState.STOPPED;
+            : power == SLOW_OUTTAKING_SPEED
+                ? IntakeState.SLOW_OUTTAKING
+                : IntakeState.STOPPED;
   }
 
   @Override
@@ -79,6 +83,11 @@ public class Intake implements IIntake<IntakeState> {
   @Override
   public synchronized void beginOuttaking() {
     intakeMotorState = intakeMotorState.withPower(OUTTAKING_SPEED);
+  }
+
+  @Override
+  public void beginOuttakingSlowly() {
+    intakeMotorState = intakeMotorState.withPower(SLOW_OUTTAKING_SPEED);
   }
 
   @Override

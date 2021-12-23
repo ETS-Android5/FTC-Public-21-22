@@ -182,8 +182,8 @@ public class NewChassis implements Component {
 
   public void outtakeIfNecessary() {
     if (intake.getState() == IntakeState.INTAKING) {
-      intake.beginOuttaking();
-      afterTimedAction(750, intake::stop);
+      intake.beginOuttakingSlowly();
+      afterTimedAction(2500, intake::stop);
     }
   }
 
