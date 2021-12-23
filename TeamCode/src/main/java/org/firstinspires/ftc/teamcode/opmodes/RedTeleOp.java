@@ -58,21 +58,22 @@ public class RedTeleOp extends EnhancedTeleOp {
         robot.intake::toggleOuttaking, true, BooleanSurface.RIGHT_BUMPER);
 
     controller2.registerOnPressedCallback(
-              robot.carouselSpinner::spinBackward, true, BooleanSurface.LEFT_STICK);
+        robot.carouselSpinner::spinBackward, true, BooleanSurface.LEFT_STICK);
     controller2.registerOnPressedCallback(
-              () -> {
-                  boolean allianceHubModeTmp = allianceHubMode.get();
-                  allianceHubMode.set(!allianceHubModeTmp);
-              },
-              true,
-              BooleanSurface.BACK);
+        () -> {
+          boolean allianceHubModeTmp = allianceHubMode.get();
+          allianceHubMode.set(!allianceHubModeTmp);
+        },
+        true,
+        BooleanSurface.BACK);
 
     controller2.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
 
     controller2.registerOnPressedCallback(
         () -> {
           robot.clearFutureEvents();
-          robot.afterTimedAction(robot.dropFreight(), () -> robot.goToPosition(NewChassisPosition.INTAKE_POSITION));
+          robot.afterTimedAction(
+              robot.dropFreight(), () -> robot.goToPosition(NewChassisPosition.INTAKE_POSITION));
         },
         true,
         BooleanSurface.A);
@@ -83,56 +84,68 @@ public class RedTeleOp extends EnhancedTeleOp {
           robot.clearFutureEvents();
           boolean inAllianceHubMode = allianceHubMode.get();
           boolean inTippedMode = tippedMode.get();
-          robot.afterTimedAction(robot.grabFreight(), () -> {
-              robot.outtakeIfNecessary();
-              if (inAllianceHubMode) {
+          robot.afterTimedAction(
+              robot.grabFreight(),
+              () -> {
+                robot.outtakeIfNecessary();
+                if (inAllianceHubMode) {
                   robot.goToPosition(NewChassisPosition.ALLIANCE_BOTTOM_POSITION);
-              } else {
+                } else {
                   if (inTippedMode) {
-                      robot.goToPosition(NewChassisPosition.TIPPED_CLOSE_POSITION);
+                    robot.goToPosition(NewChassisPosition.TIPPED_CLOSE_POSITION);
                   } else {
-                      robot.goToPosition(NewChassisPosition.SHARED_CLOSE_POSITION);
+                    robot.goToPosition(NewChassisPosition.SHARED_CLOSE_POSITION);
                   }
-              }
-          });
+                }
+              });
         },
         true,
         BooleanSurface.B);
-    controller2.registerOnPressedCallback(() -> {
-        robot.clearFutureEvents();
-        boolean inAllianceHubMode = allianceHubMode.get();
-        boolean inTippedMode = tippedMode.get();
-        robot.afterTimedAction(robot.grabFreight(), () -> {
-            robot.outtakeIfNecessary();
-            if (inAllianceHubMode) {
-                robot.goToPosition(NewChassisPosition.ALLIANCE_MIDDLE_POSITION);
-            } else {
-                if (inTippedMode) {
+    controller2.registerOnPressedCallback(
+        () -> {
+          robot.clearFutureEvents();
+          boolean inAllianceHubMode = allianceHubMode.get();
+          boolean inTippedMode = tippedMode.get();
+          robot.afterTimedAction(
+              robot.grabFreight(),
+              () -> {
+                robot.outtakeIfNecessary();
+                if (inAllianceHubMode) {
+                  robot.goToPosition(NewChassisPosition.ALLIANCE_MIDDLE_POSITION);
+                } else {
+                  if (inTippedMode) {
                     robot.goToPosition(NewChassisPosition.TIPPED_MIDDLE_POSITION);
-                } else {
+                  } else {
                     robot.goToPosition(NewChassisPosition.SHARED_MIDDLE_POSITION);
+                  }
                 }
-            }
-        });
-    }, true, BooleanSurface.X);
+              });
+        },
+        true,
+        BooleanSurface.X);
 
-    controller2.registerOnPressedCallback(() -> {
-        robot.clearFutureEvents();
-        boolean inAllianceHubMode = allianceHubMode.get();
-        boolean inTippedMode = tippedMode.get();
-        robot.afterTimedAction(robot.grabFreight(), () -> {
-            robot.outtakeIfNecessary();
-            if (inAllianceHubMode) {
-                robot.goToPosition(NewChassisPosition.ALLIANCE_TOP_POSITION);
-            } else {
-                if (inTippedMode) {
-                    robot.goToPosition(NewChassisPosition.TIPPED_FAR_POSITION);
+    controller2.registerOnPressedCallback(
+        () -> {
+          robot.clearFutureEvents();
+          boolean inAllianceHubMode = allianceHubMode.get();
+          boolean inTippedMode = tippedMode.get();
+          robot.afterTimedAction(
+              robot.grabFreight(),
+              () -> {
+                robot.outtakeIfNecessary();
+                if (inAllianceHubMode) {
+                  robot.goToPosition(NewChassisPosition.ALLIANCE_TOP_POSITION);
                 } else {
+                  if (inTippedMode) {
+                    robot.goToPosition(NewChassisPosition.TIPPED_FAR_POSITION);
+                  } else {
                     robot.goToPosition(NewChassisPosition.SHARED_FAR_POSITION);
+                  }
                 }
-            }
-        });
-    }, true, BooleanSurface.Y);
+              });
+        },
+        true,
+        BooleanSurface.Y);
     controller2.registerOnPressedCallback(
         () -> {
           if (allianceHubMode.get()) {
@@ -143,13 +156,18 @@ public class RedTeleOp extends EnhancedTeleOp {
         },
         true,
         BooleanSurface.DPAD_LEFT);
-    controller2.registerOnPressedCallback(() -> {
-        if (allianceHubMode.get()) {
+    controller2.registerOnPressedCallback(
+        () -> {
+          if (allianceHubMode.get()) {
             robot.clearFutureEvents();
             robot.outtakeIfNecessary();
-            robot.afterTimedAction(robot.grabTeamMarker(), () -> robot.goToPosition(NewChassisPosition.TEAM_MARKER_DEPOSIT_POSITION));
-        }
-    }, true, BooleanSurface.DPAD_UP);
+            robot.afterTimedAction(
+                robot.grabTeamMarker(),
+                () -> robot.goToPosition(NewChassisPosition.TEAM_MARKER_DEPOSIT_POSITION));
+          }
+        },
+        true,
+        BooleanSurface.DPAD_UP);
     controller2.registerOnPressedCallback(
         () -> tippedMode.set(!tippedMode.get()), true, BooleanSurface.DPAD_DOWN);
     robot.turret.turnToFront();
