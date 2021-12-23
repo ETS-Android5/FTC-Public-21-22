@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
-import org.firstinspires.ftc.teamcode.core.hardware.pipeline.CallbackData;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
@@ -73,24 +72,31 @@ public class NewChassis implements Component {
   public MotorPositionReachedCallback setLiftToPosition(int position, int tolerance) {
     lift.setArmOnePosition(position);
     return new MotorPositionReachedCallback(
-            DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-            position,
-            tolerance,
-            Math.abs(position - MotorTrackerPipe.getInstance().getPositionOf(DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME)) <= tolerance
-    );
+        DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
+        position,
+        tolerance,
+        Math.abs(
+                position
+                    - MotorTrackerPipe.getInstance()
+                        .getPositionOf(DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME))
+            <= tolerance);
   }
 
   public MotorPositionReachedCallback setTurretToPosition(int position, int tolerance) {
     turret.turnToPosition(position);
     return new MotorPositionReachedCallback(
-            Turret.TURRET_MOTOR_NAME,
-            position,
-            tolerance,
-            Math.abs(position - MotorTrackerPipe.getInstance().getPositionOf(DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME)) <= tolerance
-    );
+        Turret.TURRET_MOTOR_NAME,
+        position,
+        tolerance,
+        Math.abs(
+                position
+                    - MotorTrackerPipe.getInstance()
+                        .getPositionOf(DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME))
+            <= tolerance);
   }
 
-  public void ensureTurretIsAt(int position, int tolerance, int liftJointOneTarget, Runnable andThen) {
+  public void ensureTurretIsAt(
+      int position, int tolerance, int liftJointOneTarget, Runnable andThen) {
     double currentTurretPosition = turret.getState();
     if (Math.abs(position - currentTurretPosition) <= tolerance) {
       lift.setArmOnePosition(liftJointOneTarget);
@@ -99,9 +105,11 @@ public class NewChassis implements Component {
     } else {
       int liftJointOneMaximizedTarget = Math.max(liftJointOneTarget, firstJointOffset);
       setLiftToPosition(liftJointOneMaximizedTarget, tolerance)
-              .andThen(() -> setTurretToPosition(position, tolerance)
-                      .andThen(() -> setLiftToPosition(liftJointOneTarget, tolerance)
-                              .andThen(andThen)));
+          .andThen(
+              () ->
+                  setTurretToPosition(position, tolerance)
+                      .andThen(
+                          () -> setLiftToPosition(liftJointOneTarget, tolerance).andThen(andThen)));
     }
   }
 
@@ -109,19 +117,26 @@ public class NewChassis implements Component {
     lift.setArmTwoPosition(0.47);
     switch (position) {
       case INTAKE_POSITION:
-        ensureTurretIsAt(Turret.TICKS_FRONT, 5, 0, () -> {
-          gripper.open();
-          intake.beginIntaking();
-        });
+        ensureTurretIsAt(
+            Turret.TICKS_FRONT,
+            5,
+            0,
+            () -> {
+              gripper.open();
+              intake.beginIntaking();
+            });
         break;
       case SHARED_CLOSE_POSITION:
-        ensureTurretIsAt(Turret.TICKS_RIGHT, 5, firstJointOffset + 69, () -> lift.setArmTwoPosition(0.56));
+        ensureTurretIsAt(
+            Turret.TICKS_RIGHT, 5, firstJointOffset + 69, () -> lift.setArmTwoPosition(0.56));
         break;
       case SHARED_MIDDLE_POSITION:
-        ensureTurretIsAt(Turret.TICKS_RIGHT, 5, firstJointOffset - 230, () -> lift.setArmTwoPosition(0.13));
+        ensureTurretIsAt(
+            Turret.TICKS_RIGHT, 5, firstJointOffset - 230, () -> lift.setArmTwoPosition(0.13));
         break;
       case SHARED_FAR_POSITION:
-        ensureTurretIsAt(Turret.TICKS_RIGHT, 5, firstJointOffset + 10, () -> lift.setArmTwoPosition(0.39));
+        ensureTurretIsAt(
+            Turret.TICKS_RIGHT, 5, firstJointOffset + 10, () -> lift.setArmTwoPosition(0.39));
         break;
       case TIPPED_CLOSE_POSITION:
         // TODO: VALUES
@@ -133,22 +148,30 @@ public class NewChassis implements Component {
         // TODO: VALUES
         break;
       case ALLIANCE_BOTTOM_POSITION:
-        ensureTurretIsAt(Turret.TICKS_CCW_BACK, 5, firstJointOffset - 390, () -> lift.setArmTwoPosition(0));
+        ensureTurretIsAt(
+            Turret.TICKS_CCW_BACK, 5, firstJointOffset - 390, () -> lift.setArmTwoPosition(0));
         break;
       case ALLIANCE_MIDDLE_POSITION:
-        ensureTurretIsAt(Turret.TICKS_CCW_BACK, 5, firstJointOffset - 22, () -> lift.setArmTwoPosition(0.13));
+        ensureTurretIsAt(
+            Turret.TICKS_CCW_BACK, 5, firstJointOffset - 22, () -> lift.setArmTwoPosition(0.13));
         break;
       case ALLIANCE_TOP_POSITION:
-        ensureTurretIsAt(Turret.TICKS_CCW_BACK, 5, firstJointOffset + 550, () -> lift.setArmTwoPosition(0.43));
+        ensureTurretIsAt(
+            Turret.TICKS_CCW_BACK, 5, firstJointOffset + 550, () -> lift.setArmTwoPosition(0.43));
         break;
       case TEAM_MARKER_GRAB_POSITION:
-        ensureTurretIsAt(Turret.TICKS_LEFT, 5, firstJointOffset - 540, () -> {
-          lift.setArmTwoPosition(0);
-          gripper.open();
-        });
+        ensureTurretIsAt(
+            Turret.TICKS_LEFT,
+            5,
+            firstJointOffset - 540,
+            () -> {
+              lift.setArmTwoPosition(0);
+              gripper.open();
+            });
         break;
       case TEAM_MARKER_DEPOSIT_POSITION:
-        ensureTurretIsAt(Turret.TICKS_CCW_BACK, 5, firstJointOffset + 570, () -> lift.setArmTwoPosition(0.3));
+        ensureTurretIsAt(
+            Turret.TICKS_CCW_BACK, 5, firstJointOffset + 570, () -> lift.setArmTwoPosition(0.3));
         break;
     }
   }

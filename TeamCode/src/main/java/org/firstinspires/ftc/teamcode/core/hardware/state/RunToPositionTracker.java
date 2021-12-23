@@ -9,6 +9,7 @@ public class RunToPositionTracker implements Namable {
   private int startingTicks;
   private int targetTicks;
   private double lastPower;
+
   public RunToPositionTracker(
       String name,
       TriFunction<Integer, Integer, Integer, Double> powerCurve,

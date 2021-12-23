@@ -52,9 +52,7 @@ public class Intake implements IIntake<IntakeState> {
         ? IntakeState.INTAKING
         : power == OUTTAKING_SPEED
             ? IntakeState.OUTTAKING
-            : power == SLOW_OUTTAKING_SPEED
-                ? IntakeState.SLOW_OUTTAKING
-                : IntakeState.STOPPED;
+            : power == SLOW_OUTTAKING_SPEED ? IntakeState.SLOW_OUTTAKING : IntakeState.STOPPED;
   }
 
   @Override

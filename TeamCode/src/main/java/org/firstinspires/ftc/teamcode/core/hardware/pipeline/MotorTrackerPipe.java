@@ -76,9 +76,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
       motorPositionCallbacks = new LinkedList<>();
     }
     DataTracker.evaluateCallbacks(
-        functions,
-        motorPositions,
-        (MotorPositionData data) -> (int) data.getCurrentTicks());
+        functions, motorPositions, (MotorPositionData data) -> (int) data.getCurrentTicks());
     return super.process(hardware, r);
   }
 }
