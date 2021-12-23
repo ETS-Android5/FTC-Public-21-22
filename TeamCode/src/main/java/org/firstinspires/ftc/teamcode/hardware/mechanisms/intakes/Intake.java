@@ -16,10 +16,10 @@ public class Intake implements IIntake<IntakeState> {
   private static final String INTAKE_MOTOR_NAME = "INTAKE_MOTOR";
 
   private static final double STOPPED_SPEED = 0.0;
-  private static final double MOVING_SPEED = 1.0;
+  private static final double MOVING_SPEED = 0.8;
   private static final double INTAKING_SPEED = MOVING_SPEED;
   private static final double OUTTAKING_SPEED = MOVING_SPEED * -1;
-  private static final double SLOW_OUTTAKING_SPEED = -0.3;
+  private static final double SLOW_OUTTAKING_SPEED = -0.35;
 
   @Hardware(name = INTAKE_MOTOR_NAME)
   public DcMotor intakeMotor;
