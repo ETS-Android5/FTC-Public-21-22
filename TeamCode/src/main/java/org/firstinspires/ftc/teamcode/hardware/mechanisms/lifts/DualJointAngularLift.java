@@ -44,7 +44,24 @@ public class DualJointAngularLift implements IDualJointAngularLift {
         new MotorState(LIFT_JOINT_ONE_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generatePowerCurve(1, .5, .005));
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, .75, 0.005))
+            .withPowerAndTickRateRelation((power) -> power * 2800)
+            .withPowerCorrection(
+                (Double currentPower,
+                    Double idealPower,
+                    Integer currentTicks,
+                    Integer targetTicks) -> {
+                  if (currentPower.equals(idealPower)) return currentPower;
+                  double diff = Math.abs(currentPower - idealPower);
+                  double adjustment =
+                      Math.min(Math.abs(currentTicks - targetTicks) / 5, 1)
+                          * Math.pow(diff, 1.0 / 1.3);
+                  double ret = 0;
+                  if (currentPower > idealPower) ret = currentPower - adjustment;
+                  if (currentPower < idealPower) ret = currentPower + adjustment;
+                  ret = Math.round(ret * 100) / 100.0;
+                  return ret > 1 ? 1 : ret < -1 ? -1 : ret;
+                });
     liftJointTwoServoState = new ServoState(LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, 0.45);
   }
 

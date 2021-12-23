@@ -30,7 +30,7 @@ public class Intake implements IIntake<IntakeState> {
   }
 
   private void initialize() {
-    intakeMotorState = new MotorState(INTAKE_MOTOR_NAME, Direction.FORWARD);
+    intakeMotorState = new MotorState(INTAKE_MOTOR_NAME, Direction.REVERSE);
   }
 
   @Override
@@ -51,6 +51,24 @@ public class Intake implements IIntake<IntakeState> {
         : intakeMotorState.getPower() == OUTTAKING_SPEED
             ? IntakeState.OUTTAKING
             : IntakeState.STOPPED;
+  }
+
+  @Override
+  public void toggleIntaking() {
+    if (getState() != IntakeState.INTAKING) {
+      beginIntaking();
+    } else {
+      stop();
+    }
+  }
+
+  @Override
+  public void toggleOuttaking() {
+    if (getState() != IntakeState.OUTTAKING) {
+      beginOuttaking();
+    } else {
+      stop();
+    }
   }
 
   @Override

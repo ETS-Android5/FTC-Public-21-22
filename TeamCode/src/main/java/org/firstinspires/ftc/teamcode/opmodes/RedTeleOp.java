@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
@@ -12,8 +10,10 @@ import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.Turret;
+import org.firstinspires.ftc.teamcode.hardware.mechanisms.intakes.IntakeState;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts.DualJointAngularLift;
 import org.firstinspires.ftc.teamcode.hardware.robots.NewChassis;
+import org.firstinspires.ftc.teamcode.hardware.robots.NewChassisPosition;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,9 +34,6 @@ public class RedTeleOp extends EnhancedTeleOp {
   private final NewChassis robot;
 
   private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
-
-  private final AtomicBoolean alreadyIntaking = new AtomicBoolean(false);
-  private final AtomicBoolean alreadyOuttaking = new AtomicBoolean(false);
 
   private final AtomicBoolean allianceHubMode = new AtomicBoolean(false);
   private final AtomicBoolean tippedMode = new AtomicBoolean(false);
@@ -66,105 +63,57 @@ public class RedTeleOp extends EnhancedTeleOp {
   @Override
   public void onStartPressed() {
     controller1.setManipulation(RedTeleOp::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
+
     controller1.registerOnPressedCallback(
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
+
     controller2.registerOnPressedCallback(
-        () -> {
-          if (alreadyIntaking.get()) {
-            robot.intake.stop();
-            alreadyIntaking.set(false);
-          } else {
-            robot.intake.beginIntaking();
-            alreadyIntaking.set(true);
-          }
-        },
-        true,
-        BooleanSurface.LEFT_BUMPER);
+        robot.intake::toggleIntaking, true, BooleanSurface.LEFT_BUMPER);
     controller2.registerOnPressedCallback(
-        () -> {
-          if (alreadyOuttaking.get()) {
-            robot.intake.stop();
-            alreadyOuttaking.set(false);
-          } else {
-            robot.intake.beginOuttaking();
-            alreadyOuttaking.set(true);
-          }
-        },
-        true,
-        BooleanSurface.RIGHT_BUMPER);
+        robot.intake::toggleOuttaking, true, BooleanSurface.RIGHT_BUMPER);
+
+    controller2.registerOnPressedCallback(
+              robot.carouselSpinner::spinBackward, true, BooleanSurface.LEFT_STICK);
+    controller2.registerOnPressedCallback(
+              () -> {
+                  boolean allianceHubModeTmp = allianceHubMode.get();
+                  allianceHubMode.set(!allianceHubModeTmp);
+              },
+              true,
+              BooleanSurface.BACK);
+
     controller2.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
+
     controller2.registerOnPressedCallback(
         () -> {
-          clearFutureEvents();
-          // intake position
-          robot.gripper.close();
-          futures.add(
-              executorService.schedule(
-                  () ->
-                      ExitPipe.getInstance()
-                          .onNextTick(
-                              () -> {
-                                robot.lift.setArmTwoPosition(0.47);
-                                double currentTurretPos = robot.turret.getState();
-                                double target = Turret.DEGREES_RIGHT * Turret.DEGREES_TO_TICKS;
-                                if (Math.abs(currentTurretPos - target) < 5) {
-                                  robot.lift.setArmOnePosition(0);
-                                  robot.turret.turnToFront();
-                                } else {
-                                  robot.lift.setArmOnePosition(firstJointOffset);
-                                  MotorTrackerPipe.getInstance()
-                                      .setCallbackForMotorPosition(
-                                          new CallbackData<>(
-                                              DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
-                                              (Integer ticks) ->
-                                                  ticks < (firstJointOffset + 5)
-                                                      && ticks > (firstJointOffset - 5),
-                                              () -> {
-                                                robot.turret.turnToFront();
-                                                ExitPipe.getInstance()
-                                                    .onNextTick(
-                                                        () ->
-                                                            MotorTrackerPipe.getInstance()
-                                                                .setCallbackForMotorPosition(
-                                                                    new CallbackData<>(
-                                                                        Turret.TURRET_MOTOR_NAME,
-                                                                        (Integer ticks) ->
-                                                                            ticks < 5 && ticks > -5,
-                                                                        () -> {
-                                                                          robot.lift
-                                                                              .setArmOnePosition(0);
-                                                                          robot.gripper.open();
-                                                                        })));
-                                              }));
-                                }
-                              }),
-                  100,
-                  TimeUnit.MILLISECONDS));
+          robot.clearFutureEvents();
+          robot.afterTimedAction(robot.dropFreight(), () -> robot.goToPosition(NewChassisPosition.INTAKE_POSITION));
         },
         true,
         BooleanSurface.A);
-    controller2.registerOnPressedCallback(
-        robot.carouselSpinner::spinBackward, true, BooleanSurface.LEFT_STICK);
-    controller2.registerOnPressedCallback(
-        () -> {
-          boolean allianceHubModeTmp = allianceHubMode.get();
-          allianceHubMode.set(!allianceHubModeTmp);
-        },
-        true,
-        BooleanSurface.BACK);
 
     // Mode specific controls
     controller2.registerOnPressedCallback(
         () -> {
           clearFutureEvents();
-          Log.d("WTF", "" + futures.size());
+          boolean inAllianceHubMode = allianceHubMode.get();
+          boolean inTippedMode = tippedMode.get();
+          robot.afterTimedAction(robot.grabFreight(), () -> {
+              robot.outtakeIfNecessary();
+              if (inAllianceHubMode) {
+                  robot.goToPosition(NewChassisPosition.ALLIANCE_BOTTOM_POSITION);
+              } else {
+                  if (inTippedMode) {
+                      robot.goToPosition(NewChassisPosition.TIPPED_CLOSE_POSITION);
+                  } else {
+                      robot.goToPosition(NewChassisPosition.SHARED_CLOSE_POSITION);
+                  }
+              }
+          });
+          ///
+
           robot.gripper.close();
-          robot.intake.beginIntaking(); // Actually outtaking
-          futures.add(
-              executorService.schedule(
-                  () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
-                  750,
-                  TimeUnit.MILLISECONDS));
+          robot.outtakeIfNecessary();
           futures.add(
               executorService.schedule(
                   () ->
@@ -266,12 +215,14 @@ public class RedTeleOp extends EnhancedTeleOp {
         () -> {
           clearFutureEvents();
           robot.gripper.close();
-          robot.intake.beginIntaking(); // Actually outtaking
-          futures.add(
-              executorService.schedule(
-                  () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
-                  750,
-                  TimeUnit.MILLISECONDS));
+          if (robot.intake.getState() == IntakeState.INTAKING) {
+            robot.intake.beginOuttaking();
+            futures.add(
+                executorService.schedule(
+                    () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
+                    750,
+                    TimeUnit.MILLISECONDS));
+          }
           futures.add(
               executorService.schedule(
                   () ->
@@ -408,12 +359,14 @@ public class RedTeleOp extends EnhancedTeleOp {
         () -> {
           clearFutureEvents();
           robot.gripper.close();
-          robot.intake.beginIntaking(); // Actually outtaking
-          futures.add(
-              executorService.schedule(
-                  () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
-                  750,
-                  TimeUnit.MILLISECONDS));
+          if (robot.intake.getState() == IntakeState.INTAKING) {
+            robot.intake.beginOuttaking();
+            futures.add(
+                executorService.schedule(
+                    () -> ExitPipe.getInstance().onNextTick(robot.intake::stop),
+                    750,
+                    TimeUnit.MILLISECONDS));
+          }
           futures.add(
               executorService.schedule(
                   () ->
@@ -629,11 +582,10 @@ public class RedTeleOp extends EnhancedTeleOp {
     }
     if (controller2.leftStickY() < -0.02 || controller2.leftStickY() > 0.02) {
       robot.lift.setArmOnePosition(
-          firstJointOffset
-              + (int)
-                  Math.round(
-                      robot.lift.getState().first
-                          + (controller2.leftStickY() * MAX_FIRST_JOINT_ADJUSTMENT)));
+          (int)
+              Math.round(
+                  robot.lift.getState().first
+                      + (controller2.leftStickY() * MAX_FIRST_JOINT_ADJUSTMENT)));
     }
     if (controller2.rightStickY() < -0.02 || controller2.rightStickY() > 0.02) {
       robot.lift.setArmTwoPosition(

@@ -13,8 +13,7 @@ import java.util.Map;
 public class MotorTrackerPipe extends HardwarePipeline {
   private static MotorTrackerPipe instance;
   private final Map<String, MotorPositionData> motorPositions = new HashMap<>();
-  private final List<CallbackData<Integer>> motorPositionCallbacks = new LinkedList<>();
-  private boolean inPipe = false;
+  private List<CallbackData<Integer>> motorPositionCallbacks = new LinkedList<>();
 
   public MotorTrackerPipe(String name) {
     super(name);
@@ -31,11 +30,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
   }
 
   public void setCallbackForMotorPosition(CallbackData<Integer> data) {
-    if (!inPipe) {
-      motorPositionCallbacks.add(data);
-    } else {
-      ExitPipe.getInstance().onNextTick(() -> motorPositionCallbacks.add(data));
-    }
+    motorPositionCallbacks.add(data);
   }
 
   public void clearScheduledCallbacks() {
@@ -61,7 +56,6 @@ public class MotorTrackerPipe extends HardwarePipeline {
   @Override
   @SuppressWarnings("all")
   public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
-    inPipe = true;
     r.getNextMotorStates()
         .forEach(
             (m) -> {
@@ -76,11 +70,15 @@ public class MotorTrackerPipe extends HardwarePipeline {
                 }
               }
             });
+    List<CallbackData<Integer>> functions;
+    synchronized (this) {
+      functions = motorPositionCallbacks;
+      motorPositionCallbacks = new LinkedList<>();
+    }
     DataTracker.evaluateCallbacks(
-        motorPositionCallbacks,
+        functions,
         motorPositions,
         (MotorPositionData data) -> (int) data.getCurrentTicks());
-    inPipe = false;
     return super.process(hardware, r);
   }
 }

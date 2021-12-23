@@ -6,6 +6,8 @@ import org.firstinspires.ftc.teamcode.core.hardware.state.StatefulMechanism;
 public interface ITurret extends Component, StatefulMechanism<Double> {
   void turnToDegrees(double degrees);
 
+  void turnToPosition(double position);
+
   void turnToFront();
 
   void turnToLeft();
