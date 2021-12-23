@@ -52,6 +52,15 @@ public class RedTeleOp extends EnhancedTeleOp {
     controller1.registerOnPressedCallback(
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
+      controller1.registerOnPressedCallback(
+              () -> {
+                  robot.clearFutureEvents();
+                  robot.afterTimedAction(
+                          robot.dropFreight(), () -> robot.goToPosition(NewChassisPosition.INTAKE_POSITION));
+              },
+              true,
+              BooleanSurface.A);
+
     controller2.registerOnPressedCallback(
         robot.intake::toggleIntaking, true, BooleanSurface.RIGHT_BUMPER);
     controller2.registerOnPressedCallback(
@@ -68,15 +77,6 @@ public class RedTeleOp extends EnhancedTeleOp {
         BooleanSurface.BACK);
 
     controller2.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
-
-    controller2.registerOnPressedCallback(
-        () -> {
-          robot.clearFutureEvents();
-          robot.afterTimedAction(
-              robot.dropFreight(), () -> robot.goToPosition(NewChassisPosition.INTAKE_POSITION));
-        },
-        true,
-        BooleanSurface.A);
 
     // Mode specific controls
     controller2.registerOnPressedCallback(

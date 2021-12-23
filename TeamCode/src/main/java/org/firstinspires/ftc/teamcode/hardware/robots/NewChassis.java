@@ -91,7 +91,7 @@ public class NewChassis implements Component {
         Math.abs(
                 position
                     - MotorTrackerPipe.getInstance()
-                        .getPositionOf(DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME))
+                        .getPositionOf(Turret.TURRET_MOTOR_NAME))
             <= tolerance);
   }
 
