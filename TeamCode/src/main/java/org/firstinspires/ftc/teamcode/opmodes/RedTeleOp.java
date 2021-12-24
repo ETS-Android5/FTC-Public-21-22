@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.core.Alliance;
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
@@ -31,7 +32,7 @@ public class RedTeleOp extends EnhancedTeleOp {
   private boolean previouslyTrimming = false;
 
   public RedTeleOp() {
-    super(new NewChassis());
+    super(new NewChassis(Alliance.RED));
     this.robot = (NewChassis) super.robotObject;
   }
 

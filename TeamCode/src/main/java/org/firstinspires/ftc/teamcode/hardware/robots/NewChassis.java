@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
+import org.firstinspires.ftc.teamcode.core.Alliance;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
@@ -30,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class NewChassis implements Component {
   private static final int firstJointOffset = 230;
@@ -46,6 +48,13 @@ public class NewChassis implements Component {
       Executors.newSingleThreadScheduledExecutor();
   private final List<ScheduledFuture<?>> futures = new LinkedList<>();
 
+  private final AtomicReference<Alliance> alliance = new AtomicReference<>();
+
+  public NewChassis(Alliance alliance) {
+    assert alliance != null;
+    this.alliance.set(alliance);
+  }
+
   @Override
   public String getName() {
     return this.getClass().getName();
@@ -57,6 +66,14 @@ public class NewChassis implements Component {
     Arrays.asList(drivetrain, intake, carouselSpinner, turret, lift, gripper)
         .forEach((component) -> component.getNextState().forEach((s) -> states.add((State) s)));
     return states;
+  }
+
+  public Alliance getAlliance() {
+    return alliance.get();
+  }
+
+  public void setAlliance(Alliance alliance) {
+    this.alliance.set(alliance);
   }
 
   public void afterTimedAction(int ms, Runnable r) {
