@@ -20,42 +20,33 @@ public class MotorPositionReachedCallback {
   public void andThen(Runnable r) {
     if (shouldSetCallback(r)) {
       MotorTrackerPipe.getInstance()
-              .setCallbackForMotorPosition(
-                      new CallbackData<>(
-                              motorName, (ticks) -> Math.abs(ticks - motorTarget) <= motorTolerance, r));
+          .setCallbackForMotorPosition(
+              new CallbackData<>(
+                  motorName, (ticks) -> Math.abs(ticks - motorTarget) <= motorTolerance, r));
     }
   }
 
   public void andAfterMotorIsAt(int target, int tolerance, Runnable r) {
     if (shouldSetCallback(r)) {
       MotorTrackerPipe.getInstance()
-              .setCallbackForMotorPosition(
-                      new CallbackData<>(
-                              motorName, (ticks) -> Math.abs(ticks - target) <= tolerance, r
-                      )
-              );
+          .setCallbackForMotorPosition(
+              new CallbackData<>(motorName, (ticks) -> Math.abs(ticks - target) <= tolerance, r));
     }
   }
 
   public void andAfterMotorIsBelow(int target, int tolerance, Runnable r) {
     if (shouldSetCallback(r)) {
       MotorTrackerPipe.getInstance()
-              .setCallbackForMotorPosition(
-                      new CallbackData<>(
-                              motorName, (ticks) -> ticks < target + tolerance, r
-                      )
-              );
+          .setCallbackForMotorPosition(
+              new CallbackData<>(motorName, (ticks) -> ticks < target + tolerance, r));
     }
   }
 
   public void andAfterMotorIsBeyond(int target, int tolerance, Runnable r) {
     if (shouldSetCallback(r)) {
       MotorTrackerPipe.getInstance()
-              .setCallbackForMotorPosition(
-                      new CallbackData<>(
-                              motorName, (ticks) -> ticks > target + tolerance, r
-                      )
-              );
+          .setCallbackForMotorPosition(
+              new CallbackData<>(motorName, (ticks) -> ticks > target + tolerance, r));
     }
   }
 
