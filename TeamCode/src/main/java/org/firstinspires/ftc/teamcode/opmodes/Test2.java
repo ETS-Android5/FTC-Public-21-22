@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Test2")
-@Disabled
 public class Test2 extends OpMode {
   private DcMotor fl;
   private DcMotor fr;

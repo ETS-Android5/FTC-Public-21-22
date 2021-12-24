@@ -149,17 +149,17 @@ public class TurretBot implements Component {
         break;
       case SHARED_MIDDLE_POSITION:
         ensureTurretIsAt(
-            turretPositionForShared(),
-            5,
-            firstJointOffset - 230,
-            () -> lift.setArmTwoPosition(0.13));
+                turretPositionForShared(),
+                5,
+                firstJointOffset + 10,
+                () -> lift.setArmTwoPosition(0.39));
         break;
       case SHARED_FAR_POSITION:
         ensureTurretIsAt(
-            turretPositionForShared(),
-            5,
-            firstJointOffset + 10,
-            () -> lift.setArmTwoPosition(0.39));
+                turretPositionForShared(),
+                5,
+                firstJointOffset - 230,
+                () -> lift.setArmTwoPosition(0.13));
         break;
       case TIPPED_CLOSE_POSITION:
         // TODO: VALUES
