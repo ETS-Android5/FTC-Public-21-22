@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
-public enum NewChassisPosition {
+public enum TurretBotPosition {
   INTAKE_POSITION,
   SHARED_CLOSE_POSITION,
   SHARED_MIDDLE_POSITION,

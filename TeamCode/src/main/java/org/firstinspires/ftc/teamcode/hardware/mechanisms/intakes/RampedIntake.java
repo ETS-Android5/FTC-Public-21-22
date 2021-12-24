@@ -23,7 +23,7 @@ public class RampedIntake implements IRampedIntake {
   private static final double MOVING_SPEED = 1.0;
   private static final double INTAKING_SPEED = MOVING_SPEED;
   private static final double OUTTAKING_SPEED = MOVING_SPEED * -1;
-  private static final double SLOWLY_OUTTAKING_SPEED = -0.3;
+  private static final double SLOWLY_OUTTAKING_SPEED = -0.45;
   private static final double LOWERED_POSITION = 0.33;
   private static final double RAISED_POSITION = 0.0;
 

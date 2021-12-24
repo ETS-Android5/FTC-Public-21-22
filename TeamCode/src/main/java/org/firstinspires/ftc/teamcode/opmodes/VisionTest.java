@@ -4,21 +4,22 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.core.Alliance;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
 import org.firstinspires.ftc.teamcode.cv.CameraPosition;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPosition;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPositionDetector;
-import org.firstinspires.ftc.teamcode.hardware.robots.NewChassis;
+import org.firstinspires.ftc.teamcode.hardware.robots.TurretBot;
 
 @Autonomous(name = "CB_AUTO_VisionTest")
 public class VisionTest extends EnhancedAutonomous {
 
-  private final NewChassis robot;
+  private final TurretBot robot;
 
   public VisionTest() {
-    super(new NewChassis());
-    this.robot = (NewChassis) robotObject;
+    super(new TurretBot(Alliance.RED));
+    this.robot = (TurretBot) robotObject;
   }
 
   @Override
