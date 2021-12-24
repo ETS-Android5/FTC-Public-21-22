@@ -30,7 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class MecanumBot implements Component {
+public class SliderLiftBot implements Component {
   public final IMecanumDrivetrain drivetrain = new MecanumDrivetrain();
   public final IRampedIntake intake = new RampedIntake();
   public final IFourHeightLift fourHeightLift = new FourHeightLift();

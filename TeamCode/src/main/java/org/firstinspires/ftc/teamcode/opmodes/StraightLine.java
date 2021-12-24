@@ -4,17 +4,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
-import org.firstinspires.ftc.teamcode.hardware.robots.MecanumBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.SliderLiftBot;
 
 @Autonomous(name = "CB_AUTO_StraightLine")
 @Disabled
 public class StraightLine extends EnhancedAutonomous {
 
-  private final MecanumBot robot;
+  private final SliderLiftBot robot;
 
   public StraightLine() {
-    super(new MecanumBot());
-    this.robot = (MecanumBot) robotObject;
+    super(new SliderLiftBot());
+    this.robot = (SliderLiftBot) robotObject;
   }
 
   @Override

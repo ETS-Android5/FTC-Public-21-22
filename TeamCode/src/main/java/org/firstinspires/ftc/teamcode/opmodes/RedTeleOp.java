@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.Turret;
-import org.firstinspires.ftc.teamcode.hardware.robots.NewChassis;
-import org.firstinspires.ftc.teamcode.hardware.robots.NewChassisPosition;
+import org.firstinspires.ftc.teamcode.hardware.robots.TurretBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.TurretBotPosition;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -22,7 +22,7 @@ public class RedTeleOp extends EnhancedTeleOp {
 
   private static final int firstJointOffset = 230;
 
-  private final NewChassis robot;
+  private final TurretBot robot;
 
   private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
 
@@ -32,8 +32,8 @@ public class RedTeleOp extends EnhancedTeleOp {
   private boolean previouslyTrimming = false;
 
   public RedTeleOp() {
-    super(new NewChassis(Alliance.RED));
-    this.robot = (NewChassis) super.robotObject;
+    super(new TurretBot(Alliance.RED));
+    this.robot = (TurretBot) super.robotObject;
   }
 
   private static double THIRD_MANIPULATION(double in) {
@@ -53,11 +53,20 @@ public class RedTeleOp extends EnhancedTeleOp {
     controller1.registerOnPressedCallback(
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
-      controller1.registerOnPressedCallback(
+    controller1.registerOnPressedCallback(
+        () -> {
+          robot.clearFutureEvents();
+          robot.afterTimedAction(
+              robot.dropFreight(), () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
+        },
+        true,
+        BooleanSurface.A);
+
+      controller2.registerOnPressedCallback(
               () -> {
                   robot.clearFutureEvents();
                   robot.afterTimedAction(
-                          robot.dropFreight(), () -> robot.goToPosition(NewChassisPosition.INTAKE_POSITION));
+                          robot.dropFreight(), () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
               },
               true,
               BooleanSurface.A);
@@ -69,6 +78,9 @@ public class RedTeleOp extends EnhancedTeleOp {
 
     controller2.registerOnPressedCallback(
         robot.carouselSpinner::spinBackward, true, BooleanSurface.LEFT_STICK);
+    controller2.registerOnPressedCallback(
+        () -> robot.setAlliance(robot.getAlliance().opposite()), true, BooleanSurface.RIGHT_STICK);
+
     controller2.registerOnPressedCallback(
         () -> {
           boolean allianceHubModeTmp = allianceHubMode.get();
@@ -88,14 +100,14 @@ public class RedTeleOp extends EnhancedTeleOp {
           robot.afterTimedAction(
               robot.grabFreight(),
               () -> {
-                robot.outtakeIfNecessary();
+                //robot.outtakeIfNecessary();
                 if (inAllianceHubMode) {
-                  robot.goToPosition(NewChassisPosition.ALLIANCE_BOTTOM_POSITION);
+                  robot.goToPosition(TurretBotPosition.ALLIANCE_BOTTOM_POSITION);
                 } else {
                   if (inTippedMode) {
-                    robot.goToPosition(NewChassisPosition.TIPPED_CLOSE_POSITION);
+                    robot.goToPosition(TurretBotPosition.TIPPED_CLOSE_POSITION);
                   } else {
-                    robot.goToPosition(NewChassisPosition.SHARED_CLOSE_POSITION);
+                    robot.goToPosition(TurretBotPosition.SHARED_CLOSE_POSITION);
                   }
                 }
               });
@@ -110,14 +122,14 @@ public class RedTeleOp extends EnhancedTeleOp {
           robot.afterTimedAction(
               robot.grabFreight(),
               () -> {
-                robot.outtakeIfNecessary();
+                //robot.outtakeIfNecessary();
                 if (inAllianceHubMode) {
-                  robot.goToPosition(NewChassisPosition.ALLIANCE_MIDDLE_POSITION);
+                  robot.goToPosition(TurretBotPosition.ALLIANCE_MIDDLE_POSITION);
                 } else {
                   if (inTippedMode) {
-                    robot.goToPosition(NewChassisPosition.TIPPED_MIDDLE_POSITION);
+                    robot.goToPosition(TurretBotPosition.TIPPED_MIDDLE_POSITION);
                   } else {
-                    robot.goToPosition(NewChassisPosition.SHARED_MIDDLE_POSITION);
+                    robot.goToPosition(TurretBotPosition.SHARED_MIDDLE_POSITION);
                   }
                 }
               });
@@ -133,14 +145,14 @@ public class RedTeleOp extends EnhancedTeleOp {
           robot.afterTimedAction(
               robot.grabFreight(),
               () -> {
-                robot.outtakeIfNecessary();
+                //robot.outtakeIfNecessary();
                 if (inAllianceHubMode) {
-                  robot.goToPosition(NewChassisPosition.ALLIANCE_TOP_POSITION);
+                  robot.goToPosition(TurretBotPosition.ALLIANCE_TOP_POSITION);
                 } else {
                   if (inTippedMode) {
-                    robot.goToPosition(NewChassisPosition.TIPPED_FAR_POSITION);
+                    robot.goToPosition(TurretBotPosition.TIPPED_FAR_POSITION);
                   } else {
-                    robot.goToPosition(NewChassisPosition.SHARED_FAR_POSITION);
+                    robot.goToPosition(TurretBotPosition.SHARED_FAR_POSITION);
                   }
                 }
               });
@@ -151,8 +163,8 @@ public class RedTeleOp extends EnhancedTeleOp {
         () -> {
           if (allianceHubMode.get()) {
             robot.clearFutureEvents();
-            robot.outtakeIfNecessary();
-            robot.goToPosition(NewChassisPosition.TEAM_MARKER_GRAB_POSITION);
+            //robot.outtakeIfNecessary();
+            robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION);
           }
         },
         true,
@@ -161,10 +173,10 @@ public class RedTeleOp extends EnhancedTeleOp {
         () -> {
           if (allianceHubMode.get()) {
             robot.clearFutureEvents();
-            robot.outtakeIfNecessary();
+            //robot.outtakeIfNecessary();
             robot.afterTimedAction(
                 robot.grabTeamMarker(),
-                () -> robot.goToPosition(NewChassisPosition.TEAM_MARKER_DEPOSIT_POSITION));
+                () -> robot.goToPosition(TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION));
           }
         },
         true,

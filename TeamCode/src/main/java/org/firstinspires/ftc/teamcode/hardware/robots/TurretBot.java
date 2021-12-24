@@ -33,7 +33,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class NewChassis implements Component {
+public class TurretBot implements Component {
   private static final int firstJointOffset = 230;
 
   public final IMecanumDrivetrain drivetrain = new MecanumDrivetrain();
@@ -50,7 +50,7 @@ public class NewChassis implements Component {
 
   private final AtomicReference<Alliance> alliance = new AtomicReference<>();
 
-  public NewChassis(Alliance alliance) {
+  public TurretBot(Alliance alliance) {
     assert alliance != null;
     this.alliance.set(alliance);
   }
@@ -105,10 +105,7 @@ public class NewChassis implements Component {
         Turret.TURRET_MOTOR_NAME,
         position,
         tolerance,
-        Math.abs(
-                position
-                    - MotorTrackerPipe.getInstance()
-                        .getPositionOf(Turret.TURRET_MOTOR_NAME))
+        Math.abs(position - MotorTrackerPipe.getInstance().getPositionOf(Turret.TURRET_MOTOR_NAME))
             <= tolerance);
   }
 
@@ -130,7 +127,7 @@ public class NewChassis implements Component {
     }
   }
 
-  public void goToPosition(NewChassisPosition position) {
+  public void goToPosition(TurretBotPosition position) {
     lift.setArmTwoPosition(0.47);
     switch (position) {
       case INTAKE_POSITION:
@@ -145,15 +142,15 @@ public class NewChassis implements Component {
         break;
       case SHARED_CLOSE_POSITION:
         ensureTurretIsAt(
-            Turret.TICKS_RIGHT, 5, firstJointOffset + 69, () -> lift.setArmTwoPosition(0.56));
+            turretPositionForShared(), 5, firstJointOffset + 69, () -> lift.setArmTwoPosition(0.56));
         break;
       case SHARED_MIDDLE_POSITION:
         ensureTurretIsAt(
-            Turret.TICKS_RIGHT, 5, firstJointOffset - 230, () -> lift.setArmTwoPosition(0.13));
+                turretPositionForShared(), 5, firstJointOffset - 230, () -> lift.setArmTwoPosition(0.13));
         break;
       case SHARED_FAR_POSITION:
         ensureTurretIsAt(
-            Turret.TICKS_RIGHT, 5, firstJointOffset + 10, () -> lift.setArmTwoPosition(0.39));
+                turretPositionForShared(), 5, firstJointOffset + 10, () -> lift.setArmTwoPosition(0.39));
         break;
       case TIPPED_CLOSE_POSITION:
         // TODO: VALUES
@@ -166,19 +163,19 @@ public class NewChassis implements Component {
         break;
       case ALLIANCE_BOTTOM_POSITION:
         ensureTurretIsAt(
-            Turret.TICKS_CCW_BACK, 5, firstJointOffset - 390, () -> lift.setArmTwoPosition(0));
+            turretPositionForAllianceHub(), 5, firstJointOffset - 390, () -> lift.setArmTwoPosition(0));
         break;
       case ALLIANCE_MIDDLE_POSITION:
         ensureTurretIsAt(
-            Turret.TICKS_CCW_BACK, 5, firstJointOffset - 22, () -> lift.setArmTwoPosition(0.13));
+                turretPositionForAllianceHub(), 5, firstJointOffset - 22, () -> lift.setArmTwoPosition(0.13));
         break;
       case ALLIANCE_TOP_POSITION:
         ensureTurretIsAt(
-            Turret.TICKS_CCW_BACK, 5, firstJointOffset + 550, () -> lift.setArmTwoPosition(0.43));
+                turretPositionForAllianceHub(), 5, firstJointOffset + 550, () -> lift.setArmTwoPosition(0.43));
         break;
       case TEAM_MARKER_GRAB_POSITION:
         ensureTurretIsAt(
-            Turret.TICKS_LEFT,
+            turretPositionForTeamMarkerGrab(),
             5,
             firstJointOffset - 540,
             () -> {
@@ -188,7 +185,7 @@ public class NewChassis implements Component {
         break;
       case TEAM_MARKER_DEPOSIT_POSITION:
         ensureTurretIsAt(
-            Turret.TICKS_CCW_BACK, 5, firstJointOffset + 570, () -> lift.setArmTwoPosition(0.3));
+            turretPositionForTeamMarkerDeposit(), 5, firstJointOffset + 570, () -> lift.setArmTwoPosition(0.3));
         break;
     }
   }
@@ -223,7 +220,7 @@ public class NewChassis implements Component {
   public void outtakeIfNecessary() {
     if (intake.getState() == IntakeState.INTAKING) {
       intake.beginOuttakingSlowly();
-      afterTimedAction(2500, intake::stop);
+      afterTimedAction(1750, intake::stop);
     }
   }
 
@@ -232,5 +229,45 @@ public class NewChassis implements Component {
     futures.clear();
     MotorTrackerPipe.getInstance().clearScheduledCallbacks();
     ExitPipe.getInstance().clearScheduledCallbacks();
+  }
+
+  private int turretPositionForShared() {
+    switch (alliance.get()) {
+      case RED:
+        return Turret.TICKS_RIGHT;
+      case BLUE:
+        return Turret.TICKS_LEFT;
+    }
+    return 0;
+  }
+
+  private int turretPositionForAllianceHub() {
+    switch (alliance.get()) {
+      case RED:
+        return Turret.TICKS_CCW_BACK;
+      case BLUE:
+        return Turret.TICKS_CW_BACK;
+    }
+    return 0;
+  }
+
+  private int turretPositionForTeamMarkerGrab() {
+    switch (alliance.get()) {
+      case RED:
+        return Turret.TICKS_LEFT;
+      case BLUE:
+        return Turret.TICKS_RIGHT;
+    }
+    return 0;
+  }
+
+  private int turretPositionForTeamMarkerDeposit() {
+    switch (alliance.get()) {
+      case RED:
+        return Turret.TICKS_CCW_BACK;
+      case BLUE:
+        return Turret.TICKS_CW_BACK;
+    }
+    return 0;
   }
 }

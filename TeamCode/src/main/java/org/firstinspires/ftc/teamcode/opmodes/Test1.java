@@ -6,20 +6,20 @@ import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts.FourHeightLiftState;
-import org.firstinspires.ftc.teamcode.hardware.robots.MecanumBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.SliderLiftBot;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp(name = "Test1")
 public class Test1 extends EnhancedTeleOp {
-  private final MecanumBot robot;
+  private final SliderLiftBot robot;
   private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
   private final AtomicBoolean alreadyIntaking = new AtomicBoolean(false);
   private final AtomicBoolean alreadyOuttaking = new AtomicBoolean(false);
 
   public Test1() {
-    super(new MecanumBot());
-    this.robot = (MecanumBot) robotObject;
+    super(new SliderLiftBot());
+    this.robot = (SliderLiftBot) robotObject;
   }
 
   private static double THIRD_MANIPULATION(double in) {

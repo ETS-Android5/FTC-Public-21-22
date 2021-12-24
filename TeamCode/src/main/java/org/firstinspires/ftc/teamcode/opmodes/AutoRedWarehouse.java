@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.cv.CameraPosition;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPosition;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPositionDetector;
-import org.firstinspires.ftc.teamcode.hardware.robots.MecanumBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.SliderLiftBot;
 import org.opencv.core.Mat;
 
 import java.io.PrintWriter;
@@ -18,11 +18,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @Autonomous(name = "CB_AUTO_AutoRed")
 public class AutoRedWarehouse extends EnhancedAutonomous {
 
-  private final MecanumBot robot;
+  private final SliderLiftBot robot;
 
   public AutoRedWarehouse() {
-    super(new MecanumBot());
-    this.robot = (MecanumBot) robotObject;
+    super(new SliderLiftBot());
+    this.robot = (SliderLiftBot) robotObject;
   }
 
   @Override

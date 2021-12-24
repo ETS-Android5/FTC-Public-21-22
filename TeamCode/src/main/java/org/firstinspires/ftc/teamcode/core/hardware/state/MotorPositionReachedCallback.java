@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.core.hardware.state;
 
-import android.util.Log;
-
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.CallbackData;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 
@@ -20,15 +18,52 @@ public class MotorPositionReachedCallback {
   }
 
   public void andThen(Runnable r) {
+    if (shouldSetCallback(r)) {
+      MotorTrackerPipe.getInstance()
+              .setCallbackForMotorPosition(
+                      new CallbackData<>(
+                              motorName, (ticks) -> Math.abs(ticks - motorTarget) <= motorTolerance, r));
+    }
+  }
+
+  public void andAfterMotorIsAt(int target, int tolerance, Runnable r) {
+    if (shouldSetCallback(r)) {
+      MotorTrackerPipe.getInstance()
+              .setCallbackForMotorPosition(
+                      new CallbackData<>(
+                              motorName, (ticks) -> Math.abs(ticks - target) <= tolerance, r
+                      )
+              );
+    }
+  }
+
+  public void andAfterMotorIsBelow(int target, int tolerance, Runnable r) {
+    if (shouldSetCallback(r)) {
+      MotorTrackerPipe.getInstance()
+              .setCallbackForMotorPosition(
+                      new CallbackData<>(
+                              motorName, (ticks) -> ticks < target + tolerance, r
+                      )
+              );
+    }
+  }
+
+  public void andAfterMotorIsBeyond(int target, int tolerance, Runnable r) {
+    if (shouldSetCallback(r)) {
+      MotorTrackerPipe.getInstance()
+              .setCallbackForMotorPosition(
+                      new CallbackData<>(
+                              motorName, (ticks) -> ticks > target + tolerance, r
+                      )
+              );
+    }
+  }
+
+  private boolean shouldSetCallback(Runnable r) {
     if (targetAlreadyReached) {
       r.run();
-    } else {
-      MotorTrackerPipe.getInstance()
-          .setCallbackForMotorPosition(
-              new CallbackData<>(
-                  motorName,
-                  (ticks) -> Math.abs(ticks - motorTarget) <= motorTolerance,
-                  r));
+      return false;
     }
+    return true;
   }
 }

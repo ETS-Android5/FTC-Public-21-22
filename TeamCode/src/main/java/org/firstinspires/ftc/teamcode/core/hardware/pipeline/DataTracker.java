@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import android.util.Log;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
