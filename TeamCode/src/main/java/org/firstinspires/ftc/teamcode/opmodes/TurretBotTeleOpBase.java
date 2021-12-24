@@ -78,9 +78,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         () -> robot.setAlliance(robot.getAlliance().opposite()), true, BooleanSurface.RIGHT_STICK);
 
     controller2.registerOnPressedCallback(
-        () -> allianceHubMode.set(!allianceHubMode.get()),
-        true,
-        BooleanSurface.BACK);
+        () -> allianceHubMode.set(!allianceHubMode.get()), true, BooleanSurface.BACK);
 
     controller2.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
 
@@ -93,7 +91,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 // robot.outtakeIfNecessary();
-                  robot.intake.stop();
+                robot.intake.stop();
                 robot.goToPosition(position);
               });
         },
@@ -102,13 +100,13 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> {
           robot.clearFutureEvents();
-            TurretBotPosition position = botPositionFor(BooleanSurface.X);
+          TurretBotPosition position = botPositionFor(BooleanSurface.X);
           robot.afterTimedAction(
               robot.grabFreight(),
               () -> {
                 // robot.outtakeIfNecessary();
-                  robot.intake.stop();
-                  robot.goToPosition(position);
+                robot.intake.stop();
+                robot.goToPosition(position);
               });
         },
         true,
@@ -117,12 +115,12 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> {
           robot.clearFutureEvents();
-            TurretBotPosition position = botPositionFor(BooleanSurface.Y);
+          TurretBotPosition position = botPositionFor(BooleanSurface.Y);
           robot.afterTimedAction(
               robot.grabFreight(),
               () -> {
                 // robot.outtakeIfNecessary();
-                  robot.intake.stop();
+                robot.intake.stop();
                 robot.goToPosition(position);
               });
         },
@@ -133,7 +131,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           if (allianceHubMode.get()) {
             robot.clearFutureEvents();
             // robot.outtakeIfNecessary();
-              robot.intake.stop();
+            robot.intake.stop();
             robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION);
           }
         },
@@ -141,14 +139,16 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         BooleanSurface.DPAD_LEFT);
     controller2.registerOnPressedCallback(
         () -> {
-          if (allianceHubMode.get()) {
-            robot.clearFutureEvents();
-            // robot.outtakeIfNecessary();
-              robot.intake.stop();
-            robot.afterTimedAction(
-                robot.grabTeamMarker(),
-                () -> robot.goToPosition(TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION));
-          }
+          robot.clearFutureEvents();
+          TurretBotPosition position = botPositionFor(BooleanSurface.DPAD_UP);
+          robot.afterTimedAction(
+              position == TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION
+                  ? robot.grabTeamMarker()
+                  : robot.grabFreight(),
+              () -> {
+                robot.intake.stop();
+                robot.goToPosition(position);
+              });
         },
         true,
         BooleanSurface.DPAD_UP);
@@ -200,20 +200,33 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   public void onStop() {}
 
   private TurretBotPosition botPositionFor(BooleanSurface input) {
-      switch (input) {
-          case A:
-              return TurretBotPosition.INTAKE_POSITION;
-          case B:
-              return allianceHubMode.get() ? TurretBotPosition.ALLIANCE_BOTTOM_POSITION
-                      : tippedMode.get() ? TurretBotPosition.TIPPED_CLOSE_POSITION : TurretBotPosition.SHARED_CLOSE_POSITION;
-          case X:
-              return allianceHubMode.get() ? TurretBotPosition.ALLIANCE_MIDDLE_POSITION
-                      : tippedMode.get() ? TurretBotPosition.TIPPED_FAR_POSITION : TurretBotPosition.SHARED_FAR_POSITION;
-          case Y:
-              return allianceHubMode.get() ? TurretBotPosition.ALLIANCE_TOP_POSITION
-                      : tippedMode.get() ? TurretBotPosition.TIPPED_MIDDLE_POSITION : TurretBotPosition.SHARED_MIDDLE_POSITION;
-          default:
-              return null;
-      }
+    switch (input) {
+      case A:
+        return TurretBotPosition.INTAKE_POSITION;
+      case B:
+        return allianceHubMode.get()
+            ? TurretBotPosition.ALLIANCE_BOTTOM_POSITION
+            : tippedMode.get()
+                ? TurretBotPosition.TIPPED_CLOSE_POSITION
+                : TurretBotPosition.SHARED_CLOSE_POSITION;
+      case X:
+        return allianceHubMode.get()
+            ? TurretBotPosition.ALLIANCE_MIDDLE_POSITION
+            : tippedMode.get()
+                ? TurretBotPosition.TIPPED_FAR_POSITION
+                : TurretBotPosition.SHARED_FAR_POSITION;
+      case Y:
+        return allianceHubMode.get()
+            ? TurretBotPosition.ALLIANCE_TOP_POSITION
+            : tippedMode.get()
+                ? TurretBotPosition.TIPPED_MIDDLE_POSITION
+                : TurretBotPosition.SHARED_MIDDLE_POSITION;
+      case DPAD_UP:
+        return allianceHubMode.get()
+            ? TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION
+            : TurretBotPosition.INTAKE_HOVER_POSITION;
+      default:
+        return null;
+    }
   }
 }
