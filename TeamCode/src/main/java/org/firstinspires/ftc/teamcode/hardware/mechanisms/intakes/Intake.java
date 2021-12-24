@@ -48,11 +48,16 @@ public class Intake implements IIntake<IntakeState> {
   @Observable(key = "INTAKE")
   public IntakeState getState() {
     double power = intakeMotorState.getPower();
-    return power == INTAKING_SPEED
-        ? IntakeState.INTAKING
-        : power == OUTTAKING_SPEED
-            ? IntakeState.OUTTAKING
-            : power == SLOW_OUTTAKING_SPEED ? IntakeState.SLOW_OUTTAKING : IntakeState.STOPPED;
+    if (power == INTAKING_SPEED) {
+      return IntakeState.INTAKING;
+    }
+    if (power == OUTTAKING_SPEED) {
+      return IntakeState.OUTTAKING;
+    }
+    if (power == SLOW_OUTTAKING_SPEED) {
+      return IntakeState.SLOW_OUTTAKING;
+    }
+    return IntakeState.STOPPED;
   }
 
   @Override

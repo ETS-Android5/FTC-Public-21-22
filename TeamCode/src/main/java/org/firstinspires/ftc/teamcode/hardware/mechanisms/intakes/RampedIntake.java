@@ -112,21 +112,27 @@ public class RampedIntake implements IRampedIntake {
   public RampedIntakeState getState() {
     double power = intakeMotorState.getPower();
     if (intakeServoState.getPosition() == LOWERED_POSITION) {
-      return power == INTAKING_SPEED
-          ? RampedIntakeState.LOWERED_AND_INTAKING
-          : power == OUTTAKING_SPEED
-              ? RampedIntakeState.LOWERED_AND_OUTTAKING
-              : power == SLOWLY_OUTTAKING_SPEED
-                  ? RampedIntakeState.LOWERED_AND_OUTTAKING_SLOWLY
-                  : RampedIntakeState.LOWERED_AND_STOPPED;
+      if (power == INTAKING_SPEED) {
+        return RampedIntakeState.LOWERED_AND_INTAKING;
+      }
+      if (power == OUTTAKING_SPEED) {
+        return RampedIntakeState.LOWERED_AND_OUTTAKING;
+      }
+      if (power == SLOWLY_OUTTAKING_SPEED) {
+        return RampedIntakeState.LOWERED_AND_OUTTAKING_SLOWLY;
+      }
+      return RampedIntakeState.LOWERED_AND_STOPPED;
     } else {
-      return power == INTAKING_SPEED
-          ? RampedIntakeState.RAISED_AND_INTAKING
-          : power == OUTTAKING_SPEED
-              ? RampedIntakeState.RAISED_AND_OUTTAKING
-              : power == SLOWLY_OUTTAKING_SPEED
-                  ? RampedIntakeState.RAISED_AND_OUTTAKING_SLOWLY
-                  : RampedIntakeState.RAISED_AND_STOPPED;
+      if (power == INTAKING_SPEED) {
+        return RampedIntakeState.RAISED_AND_INTAKING;
+      }
+      if (power == OUTTAKING_SPEED) {
+        return RampedIntakeState.RAISED_AND_OUTTAKING;
+      }
+      if (power == SLOWLY_OUTTAKING_SPEED) {
+        return RampedIntakeState.RAISED_AND_OUTTAKING_SLOWLY;
+      }
+      return RampedIntakeState.RAISED_AND_STOPPED;
     }
   }
 }
