@@ -17,8 +17,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private static final double MAX_FIRST_JOINT_ADJUSTMENT = 2.5; // ticks
   private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.0055; // 1.5 degrees
 
-  private static final int firstJointOffset = 230;
-
   private final TurretBot robot;
 
   private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
@@ -99,6 +97,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 // robot.outtakeIfNecessary();
+                  robot.intake.stop();
                 if (inAllianceHubMode) {
                   robot.goToPosition(TurretBotPosition.ALLIANCE_BOTTOM_POSITION);
                 } else {
@@ -121,6 +120,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 // robot.outtakeIfNecessary();
+                  robot.intake.stop();
                 if (inAllianceHubMode) {
                   robot.goToPosition(TurretBotPosition.ALLIANCE_MIDDLE_POSITION);
                 } else {
@@ -144,6 +144,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 // robot.outtakeIfNecessary();
+                  robot.intake.stop();
                 if (inAllianceHubMode) {
                   robot.goToPosition(TurretBotPosition.ALLIANCE_TOP_POSITION);
                 } else {
@@ -162,6 +163,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           if (allianceHubMode.get()) {
             robot.clearFutureEvents();
             // robot.outtakeIfNecessary();
+              robot.intake.stop();
             robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION);
           }
         },
@@ -172,6 +174,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           if (allianceHubMode.get()) {
             robot.clearFutureEvents();
             // robot.outtakeIfNecessary();
+              robot.intake.stop();
             robot.afterTimedAction(
                 robot.grabTeamMarker(),
                 () -> robot.goToPosition(TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION));
@@ -182,7 +185,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> tippedMode.set(!tippedMode.get()), true, BooleanSurface.DPAD_DOWN);
     robot.turret.turnToFront();
-    robot.lift.setArmOnePosition(firstJointOffset);
+    robot.lift.setArmOnePosition(0);
     hardwarePipeline.process(initializedHardware, new StateFilterResult(robotObject));
     hardwarePipeline.process(initializedHardware, new StateFilterResult(robotObject));
   }
