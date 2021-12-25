@@ -73,7 +73,8 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         robot.intake::toggleOuttaking, true, BooleanSurface.LEFT_BUMPER);
 
     controller2.registerOnPressedCallback(
-        robot.carouselSpinner::spinBackward, true, BooleanSurface.LEFT_STICK);
+        carouselMoveForAlliance(robot.getAlliance()), true, BooleanSurface.LEFT_STICK);
+
     controller2.registerOnPressedCallback(
         () -> robot.setAlliance(robot.getAlliance().opposite()), true, BooleanSurface.RIGHT_STICK);
 
@@ -225,6 +226,17 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         return allianceHubMode.get()
             ? TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION
             : TurretBotPosition.INTAKE_HOVER_POSITION;
+      default:
+        return null;
+    }
+  }
+
+  private Runnable carouselMoveForAlliance(Alliance alliance) {
+    switch (alliance) {
+      case RED:
+        return robot.carouselSpinner::spinBackward;
+      case BLUE:
+        return robot.carouselSpinner::spinForward;
       default:
         return null;
     }
