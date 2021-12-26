@@ -1,48 +1,23 @@
 package org.firstinspires.ftc.teamcode.core.hardware.state;
 
 public class MotorPositionData {
-  private long previousTime;
-  private double previousTicks;
-  private long currentTime;
-  private double currentTicks;
+  private double ticks;
+  private double velocity;
 
-  public MotorPositionData(
-      long previousTick, int previousCount, long currentTick, int currentCount) {
-    this.previousTime = previousTick;
-    this.previousTicks = previousCount;
-    this.currentTime = currentTick;
-    this.currentTicks = currentCount;
+  public MotorPositionData(double ticks, double velocity) {
+    addDataPoint(ticks, velocity);
   }
 
-  public MotorPositionData(long currentTime, int currentTicks) {
-    this.currentTime = currentTime;
-    this.currentTicks = currentTicks;
+  public double getTicks() {
+    return ticks;
   }
 
-  public long getPreviousTime() {
-    return previousTime;
+  public double getVelocity() {
+    return velocity;
   }
 
-  public double getPreviousTicks() {
-    return previousTicks;
-  }
-
-  public long getCurrentTime() {
-    return currentTime;
-  }
-
-  public double getCurrentTicks() {
-    return currentTicks;
-  }
-
-  public void addDataPoint(long timestamp, int ticks) {
-    previousTime = currentTime;
-    previousTicks = currentTicks;
-    currentTime = timestamp;
-    currentTicks = ticks;
-  }
-
-  public double velocity() {
-    return (currentTicks - previousTicks) / ((currentTime - previousTime) / 1_000_000_000.0);
+  public void addDataPoint(double ticks, double velocity) {
+    this.ticks = ticks;
+    this.velocity = velocity;
   }
 }
