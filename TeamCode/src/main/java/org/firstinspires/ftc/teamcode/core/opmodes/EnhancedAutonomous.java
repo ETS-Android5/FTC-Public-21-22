@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.core.opmodes;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.BulkReadManagerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
@@ -31,10 +33,16 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
     hardwarePipeline =
         new HardwarePipeline(
             Constants.PIPELINE_BASE_NAME,
-            new InitializedFilterPipe(
-                "FilterElement",
-                new MotorTrackerPipe(
-                    "MotorTracker", new RunToPositionPipe("RunToPosition", new ExitPipe("Exit")))));
+            new BulkReadManagerPipe(
+                    "BulkReadManager",
+                    hardwareMap.getAll(LynxModule.class),
+                    new InitializedFilterPipe(
+                            "FilterElement",
+                            new MotorTrackerPipe(
+                                    "MotorTracker",
+                                    new RunToPositionPipe(
+                                            "RunToPosition",
+                                            new ExitPipe("Exit"))))));
     this.robotObject = robotObject;
     initialize();
   }

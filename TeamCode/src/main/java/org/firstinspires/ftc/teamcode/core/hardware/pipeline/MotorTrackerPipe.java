@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.hardware.state.MotorPositionData;
@@ -61,7 +61,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
             (m) -> {
               if (m.getRunMode() == RunMode.RUN_TO_POSITION
                   || m.getRunMode() == RunMode.RUN_USING_ENCODER) {
-                int pos = ((DcMotor) hardware.get(m.getName())).getCurrentPosition();
+                int pos = ((DcMotorEx) hardware.get(m.getName())).getCurrentPosition();
                 MotorPositionData data = motorPositions.get(m.getName());
                 if (data != null && data.getCurrentTicks() != pos) {
                   data.addDataPoint(System.nanoTime(), pos);

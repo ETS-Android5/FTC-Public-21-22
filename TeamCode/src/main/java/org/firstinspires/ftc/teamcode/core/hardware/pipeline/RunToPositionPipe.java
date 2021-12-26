@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
@@ -69,7 +69,7 @@ public class RunToPositionPipe extends HardwarePipeline {
           }
           if (motor.shouldUpdatePower(currentPosition) || shouldAdjustForRealPower) {
             Object motorObj = hardware.get(motorName);
-            if (motorObj instanceof DcMotor) {
+            if (motorObj instanceof DcMotorEx) {
               double power = motor.getTargetPowerPercentage(currentPosition);
               if (shouldAdjustForRealPower && power != 0) {
                 double velocity = MotorTrackerPipe.getInstance().getVelocity(motorName);
@@ -91,7 +91,7 @@ public class RunToPositionPipe extends HardwarePipeline {
                   }
                 }
               }
-              ((DcMotor) motorObj).setPower(power);
+              ((DcMotorEx) motorObj).setPower(power);
               motor.setLastPower(power);
             }
           }

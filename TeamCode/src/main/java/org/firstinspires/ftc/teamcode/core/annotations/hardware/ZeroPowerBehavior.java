@@ -1,17 +1,17 @@
 package org.firstinspires.ftc.teamcode.core.annotations.hardware;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 public enum ZeroPowerBehavior {
   BRAKE,
   COAST;
 
-  public DcMotor.ZeroPowerBehavior primitiveConversion() {
+  public DcMotorEx.ZeroPowerBehavior primitiveConversion() {
     switch (this) {
       case BRAKE:
-        return DcMotor.ZeroPowerBehavior.BRAKE;
+        return DcMotorEx.ZeroPowerBehavior.BRAKE;
       case COAST:
-        return DcMotor.ZeroPowerBehavior.FLOAT;
+        return DcMotorEx.ZeroPowerBehavior.FLOAT;
     }
     return null;
   }

@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.core.opmodes;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.core.controller.Controller;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.BulkReadManagerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
@@ -34,11 +36,16 @@ public abstract class EnhancedTeleOp extends OpMode {
     hardwarePipeline =
         new HardwarePipeline(
             Constants.PIPELINE_BASE_NAME,
-            new InitializedFilterPipe(
-                "FilterElement",
-                new MotorTrackerPipe(
-                    "MotorTrackerPipe",
-                    new RunToPositionPipe("RunToPosition", new ExitPipe("Exit")))));
+            new BulkReadManagerPipe(
+                    "BulkReadManager",
+                    hardwareMap.getAll(LynxModule.class),
+                    new InitializedFilterPipe(
+                            "FilterElement",
+                            new MotorTrackerPipe(
+                                    "MotorTrackerPipe",
+                                    new RunToPositionPipe(
+                                            "RunToPosition",
+                                            new ExitPipe("Exit"))))));
     controller1 = new Controller(Constants.GAMEPAD_1_NAME);
     controller2 = new Controller(Constants.GAMEPAD_2_NAME);
     this.robotObject = robotObject;

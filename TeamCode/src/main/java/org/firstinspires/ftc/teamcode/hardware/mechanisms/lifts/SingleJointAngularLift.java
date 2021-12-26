@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
@@ -18,7 +18,7 @@ public class SingleJointAngularLift implements ISingleJointAngularLift {
   private static final String LIFT_MOTOR_NAME = "LIFT_MOTOR";
 
   @Hardware(name = LIFT_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
-  public DcMotor liftMotor;
+  public DcMotorEx liftMotor;
 
   private IMotorState liftMotorState;
 

@@ -2,20 +2,20 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Test2")
 public class Test2 extends OpMode {
-  private DcMotor fl;
-  private DcMotor fr;
-  private DcMotor rl;
-  private DcMotor rr;
+  private DcMotorEx fl;
+  private DcMotorEx fr;
+  private DcMotorEx rl;
+  private DcMotorEx rr;
 
-  private DcMotor turret;
-  private DcMotor firstJoint;
-  private DcMotor intake;
+  private DcMotorEx turret;
+  private DcMotorEx firstJoint;
+  private DcMotorEx intake;
   private Servo secondJoint;
   private Servo gripper;
 
@@ -28,14 +28,14 @@ public class Test2 extends OpMode {
 
   @Override
   public void init() {
-    fl = hardwareMap.dcMotor.get("FRONT_LEFT_MOTOR");
-    fr = hardwareMap.dcMotor.get("FRONT_RIGHT_MOTOR");
-    rl = hardwareMap.dcMotor.get("REAR_LEFT_MOTOR");
-    rr = hardwareMap.dcMotor.get("REAR_RIGHT_MOTOR");
+    fl = hardwareMap.get(DcMotorEx.class, "FRONT_LEFT_MOTOR");
+    fr = hardwareMap.get(DcMotorEx.class, "FRONT_RIGHT_MOTOR");
+    rl = hardwareMap.get(DcMotorEx.class, "REAR_LEFT_MOTOR");
+    rr = hardwareMap.get(DcMotorEx.class, "REAR_RIGHT_MOTOR");
 
-    turret = hardwareMap.dcMotor.get("TURRET_MOTOR");
-    firstJoint = hardwareMap.dcMotor.get("LIFT_JOINT_ONE_MOTOR");
-    intake = hardwareMap.dcMotor.get("INTAKE_MOTOR");
+    turret = hardwareMap.get(DcMotorEx.class, "TURRET_MOTOR");
+    firstJoint = hardwareMap.get(DcMotorEx.class, "LIFT_JOINT_ONE_MOTOR");
+    intake = hardwareMap.get(DcMotorEx.class, "INTAKE_MOTOR");
     secondJoint = hardwareMap.servo.get("LIFT_JOINT_TWO_SERVO");
     gripper = hardwareMap.servo.get("SINGLE_SERVO_GRIPPER_SERVO");
 
@@ -53,10 +53,10 @@ public class Test2 extends OpMode {
     intake.setDirection(DcMotorSimple.Direction.REVERSE);
   }
 
-  private void reset(DcMotor motor) {
-    motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+  private void reset(DcMotorEx motor) {
+    motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+    motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+    motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
   }
 
   @Override
