@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.intakes;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
@@ -28,7 +28,7 @@ public class RampedIntake implements IRampedIntake {
   private static final double RAISED_POSITION = 0.0;
 
   @Hardware(name = INTAKE_MOTOR_NAME)
-  public DcMotor intakeMotor;
+  public DcMotorEx intakeMotor;
 
   @Hardware(name = INTAKE_SERVO_NAME)
   public Servo intakeServo;

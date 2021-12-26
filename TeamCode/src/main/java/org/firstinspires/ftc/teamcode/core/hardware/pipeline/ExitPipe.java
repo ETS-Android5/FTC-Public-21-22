@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
@@ -48,7 +48,7 @@ public class ExitPipe extends HardwarePipeline {
   @SuppressWarnings("all")
   private void processMotor(IMotorState nextState, Map<String, Object> hardware) {
     IMotorState currentState = State.currentStateOf(nextState.getName());
-    DcMotor motorObj = (DcMotor) hardware.get(nextState.getName());
+    DcMotorEx motorObj = (DcMotorEx) hardware.get(nextState.getName());
     boolean noState = currentState == null;
     if (noState || currentState.getDirection() != nextState.getDirection()) {
       motorObj.setDirection(nextState.getDirection().primitiveConversion());

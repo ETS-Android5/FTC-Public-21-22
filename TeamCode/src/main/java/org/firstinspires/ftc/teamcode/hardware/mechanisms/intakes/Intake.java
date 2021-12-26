@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.intakes;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
@@ -22,7 +22,7 @@ public class Intake implements IIntake<IntakeState> {
   private static final double SLOW_OUTTAKING_SPEED = -0.45;
 
   @Hardware(name = INTAKE_MOTOR_NAME)
-  public DcMotor intakeMotor;
+  public DcMotorEx intakeMotor;
 
   private IMotorState intakeMotorState;
 

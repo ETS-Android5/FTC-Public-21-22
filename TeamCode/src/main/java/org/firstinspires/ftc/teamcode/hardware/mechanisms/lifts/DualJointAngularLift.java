@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts;
 
 import android.util.Pair;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
@@ -27,7 +27,7 @@ public class DualJointAngularLift implements IDualJointAngularLift {
       name = LIFT_JOINT_ONE_MOTOR_NAME,
       runMode = RunMode.RUN_TO_POSITION,
       direction = Direction.REVERSE)
-  public DcMotor liftJointOneMotor;
+  public DcMotorEx liftJointOneMotor;
 
   @Hardware(name = LIFT_JOINT_TWO_SERVO_NAME)
   public Servo liftJointTwoServo;

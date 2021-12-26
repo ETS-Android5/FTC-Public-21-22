@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.drivetrains;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
@@ -23,16 +23,16 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   private static final String REAR_RIGHT_MOTOR_NAME = "REAR_RIGHT_MOTOR";
 
   @Hardware(name = FRONT_LEFT_MOTOR_NAME)
-  public DcMotor frontLeftMotor;
+  public DcMotorEx frontLeftMotor;
 
   @Hardware(name = FRONT_RIGHT_MOTOR_NAME, direction = Direction.REVERSE)
-  public DcMotor frontRightMotor;
+  public DcMotorEx frontRightMotor;
 
   @Hardware(name = REAR_LEFT_MOTOR_NAME)
-  public DcMotor rearLeftMotor;
+  public DcMotorEx rearLeftMotor;
 
   @Hardware(name = REAR_RIGHT_MOTOR_NAME, direction = Direction.REVERSE)
-  public DcMotor rearRightMotor;
+  public DcMotorEx rearRightMotor;
 
   protected IMotorState frontLeftMotorState;
   protected IMotorState frontRightMotorState;

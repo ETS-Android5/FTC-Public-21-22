@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.core.annotations.Observable;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
@@ -27,7 +27,7 @@ public class Turret implements ITurret {
   public static final int TICKS_CCW_BACK = (int) ((-DEGREES_BACK * DEGREES_TO_TICKS) - 0.5);
 
   @Hardware(name = TURRET_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
-  public DcMotor turretMotor;
+  public DcMotorEx turretMotor;
 
   private IMotorState turretMotorState;
 
