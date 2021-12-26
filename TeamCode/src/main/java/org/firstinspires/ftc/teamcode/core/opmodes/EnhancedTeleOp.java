@@ -37,15 +37,13 @@ public abstract class EnhancedTeleOp extends OpMode {
         new HardwarePipeline(
             Constants.PIPELINE_BASE_NAME,
             new BulkReadManagerPipe(
-                    "BulkReadManager",
-                    hardwareMap.getAll(LynxModule.class),
-                    new InitializedFilterPipe(
-                            "FilterElement",
-                            new MotorTrackerPipe(
-                                    "MotorTrackerPipe",
-                                    new RunToPositionPipe(
-                                            "RunToPosition",
-                                            new ExitPipe("Exit"))))));
+                "BulkReadManager",
+                hardwareMap.getAll(LynxModule.class),
+                new InitializedFilterPipe(
+                    "FilterElement",
+                    new MotorTrackerPipe(
+                        "MotorTrackerPipe",
+                        new RunToPositionPipe("RunToPosition", new ExitPipe("Exit"))))));
     controller1 = new Controller(Constants.GAMEPAD_1_NAME);
     controller2 = new Controller(Constants.GAMEPAD_2_NAME);
     this.robotObject = robotObject;

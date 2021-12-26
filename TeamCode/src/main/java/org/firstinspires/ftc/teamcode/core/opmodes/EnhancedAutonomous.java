@@ -34,15 +34,13 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
         new HardwarePipeline(
             Constants.PIPELINE_BASE_NAME,
             new BulkReadManagerPipe(
-                    "BulkReadManager",
-                    hardwareMap.getAll(LynxModule.class),
-                    new InitializedFilterPipe(
-                            "FilterElement",
-                            new MotorTrackerPipe(
-                                    "MotorTracker",
-                                    new RunToPositionPipe(
-                                            "RunToPosition",
-                                            new ExitPipe("Exit"))))));
+                "BulkReadManager",
+                hardwareMap.getAll(LynxModule.class),
+                new InitializedFilterPipe(
+                    "FilterElement",
+                    new MotorTrackerPipe(
+                        "MotorTracker",
+                        new RunToPositionPipe("RunToPosition", new ExitPipe("Exit"))))));
     this.robotObject = robotObject;
     initialize();
   }

@@ -31,7 +31,9 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
               0,
               (int) Math.round(resized.height() / 2.5),
               resized.width(),
-              (int) Math.round(resized.height() - (resized.height() / 2.5) - (resized.height() / 4.7)));
+              (int)
+                  Math.round(
+                      resized.height() - (resized.height() / 2.5) - (resized.height() / 4.7)));
     } else {
       crop = new Rect(0, 0, resized.width(), resized.height() / 2);
     }

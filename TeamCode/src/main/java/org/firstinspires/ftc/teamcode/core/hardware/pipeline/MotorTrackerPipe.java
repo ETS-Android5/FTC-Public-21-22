@@ -40,7 +40,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
   public int getPositionOf(String motorName) throws IllegalArgumentException {
     MotorPositionData motorPositionData = motorPositions.get(motorName);
     if (motorPositionData != null) {
-      return (int) motorPositionData.getCurrentTicks();
+      return (int) motorPositionData.getTicks();
     }
     throw new IllegalArgumentException("That Motor is not tracked!");
   }
@@ -48,7 +48,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
   public double getVelocity(String motorName) throws IllegalArgumentException {
     MotorPositionData motorPositionData = motorPositions.get(motorName);
     if (motorPositionData != null) {
-      return motorPositionData.velocity();
+      return motorPositionData.getVelocity();
     }
     throw new IllegalArgumentException("That Motor is not tracked!");
   }
@@ -59,14 +59,19 @@ public class MotorTrackerPipe extends HardwarePipeline {
     r.getNextMotorStates()
         .forEach(
             (m) -> {
+              boolean proxyEncoder = (m.getEncoderDataSource() != null && !m.getEncoderDataSource().isEmpty());
               if (m.getRunMode() == RunMode.RUN_TO_POSITION
-                  || m.getRunMode() == RunMode.RUN_USING_ENCODER) {
-                int pos = ((DcMotorEx) hardware.get(m.getName())).getCurrentPosition();
+                  || m.getRunMode() == RunMode.RUN_USING_ENCODER
+                  || proxyEncoder) {
+                String encoder = proxyEncoder ? m.getEncoderDataSource() : m.getName();
+                DcMotorEx motor = ((DcMotorEx) hardware.get(encoder));
                 MotorPositionData data = motorPositions.get(m.getName());
-                if (data != null && data.getCurrentTicks() != pos) {
-                  data.addDataPoint(System.nanoTime(), pos);
+                if (data != null) {
+                  data.addDataPoint(motor.getCurrentPosition(), motor.getVelocity());
                 } else {
-                  motorPositions.put(m.getName(), new MotorPositionData(System.nanoTime(), pos));
+                  motorPositions.put(
+                      m.getName(),
+                      new MotorPositionData(motor.getCurrentPosition(), motor.getVelocity()));
                 }
               }
             });
@@ -76,7 +81,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
       motorPositionCallbacks = new LinkedList<>(functions);
     }
     DataTracker.evaluateCallbacks(
-        functions, motorPositions, (MotorPositionData data) -> (int) data.getCurrentTicks());
+        functions, motorPositions, (MotorPositionData data) -> (int) data.getTicks());
     return super.process(hardware, r);
   }
 }

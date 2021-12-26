@@ -17,6 +17,7 @@ public class MotorState extends IMotorState {
   private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
   private final Function<Double, Double> powerAndTickRateRelation;
   private final QuadFunction<Double, Double, Integer, Integer, Double> powerCorrection;
+  private final String encoderDataSource;
 
   public MotorState(String name, Direction direction) {
     this(
@@ -26,6 +27,7 @@ public class MotorState extends IMotorState {
         ZeroPowerBehavior.BRAKE,
         0.0,
         0,
+        null,
         null,
         null,
         null);
@@ -40,7 +42,8 @@ public class MotorState extends IMotorState {
       Integer targetPosition,
       TriFunction<Integer, Integer, Integer, Double> powerCurve,
       Function<Double, Double> powerAndTickRateRelation,
-      QuadFunction<Double, Double, Integer, Integer, Double> powerCorrection) {
+      QuadFunction<Double, Double, Integer, Integer, Double> powerCorrection,
+      String encoderDataSource) {
     super(name);
     this.direction = direction;
     this.runMode = runMode;
@@ -50,6 +53,7 @@ public class MotorState extends IMotorState {
     this.powerCurve = powerCurve;
     this.powerAndTickRateRelation = powerAndTickRateRelation;
     this.powerCorrection = powerCorrection;
+    this.encoderDataSource = encoderDataSource;
   }
 
   @Override
@@ -68,7 +72,8 @@ public class MotorState extends IMotorState {
         this.targetPosition,
         this.powerCurve,
         this.powerAndTickRateRelation,
-        this.powerCorrection);
+        this.powerCorrection,
+        this.encoderDataSource);
   }
 
   @Override
@@ -87,7 +92,8 @@ public class MotorState extends IMotorState {
         this.targetPosition,
         this.powerCurve,
         this.powerAndTickRateRelation,
-        this.powerCorrection);
+        this.powerCorrection,
+        this.encoderDataSource);
   }
 
   @Override
@@ -106,7 +112,8 @@ public class MotorState extends IMotorState {
         this.targetPosition,
         this.powerCurve,
         this.powerAndTickRateRelation,
-        this.powerCorrection);
+        this.powerCorrection,
+        this.encoderDataSource);
   }
 
   @Override
@@ -125,7 +132,8 @@ public class MotorState extends IMotorState {
         this.targetPosition,
         this.powerCurve,
         this.powerAndTickRateRelation,
-        this.powerCorrection);
+        this.powerCorrection,
+        this.encoderDataSource);
   }
 
   @Override
@@ -144,7 +152,8 @@ public class MotorState extends IMotorState {
         targetPosition,
         this.powerCurve,
         this.powerAndTickRateRelation,
-        this.powerCorrection);
+        this.powerCorrection,
+        this.encoderDataSource);
   }
 
   @Override
@@ -163,7 +172,8 @@ public class MotorState extends IMotorState {
         this.targetPosition,
         powerCurve,
         this.powerAndTickRateRelation,
-        this.powerCorrection);
+        this.powerCorrection,
+        this.encoderDataSource);
   }
 
   @Override
@@ -183,7 +193,8 @@ public class MotorState extends IMotorState {
         this.targetPosition,
         this.powerCurve,
         powerAndTickRateRelation,
-        this.powerCorrection);
+        this.powerCorrection,
+        this.encoderDataSource);
   }
 
   @Override
@@ -203,7 +214,28 @@ public class MotorState extends IMotorState {
         this.targetPosition,
         this.powerCurve,
         this.powerAndTickRateRelation,
-        powerCorrection);
+        powerCorrection,
+        this.encoderDataSource);
+  }
+
+  @Override
+  public String getEncoderDataSource() {
+    return encoderDataSource;
+  }
+
+  @Override
+  public IMotorState withEncoderDataSource(String encoderDataSource) {
+    return new MotorState(
+        this.name,
+        this.direction,
+        this.runMode,
+        this.zeroPowerBehavior,
+        this.power,
+        this.targetPosition,
+        this.powerCurve,
+        this.powerAndTickRateRelation,
+        this.powerCorrection,
+        encoderDataSource);
   }
 
   @Override
@@ -217,6 +249,7 @@ public class MotorState extends IMotorState {
         targetPosition,
         powerCurve,
         powerAndTickRateRelation,
-        powerCorrection);
+        powerCorrection,
+        encoderDataSource);
   }
 }
