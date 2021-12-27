@@ -127,14 +127,20 @@ import org.threeten.bp.YearMonth;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileNotFoundException;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @SuppressWarnings("WeakerAccess")
-public class FtcRobotControllerActivity extends Activity
-  {
+public class FtcRobotControllerActivity extends Activity {
+  private static WeakReference<FtcRobotControllerActivity> activityReference;
+
+  public static FtcRobotControllerActivity getInstance() {
+    return activityReference.get();
+  }
+
   public static final String TAG = "RCActivity";
   public String getTag() { return TAG; }
 
@@ -264,6 +270,8 @@ public class FtcRobotControllerActivity extends Activity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    activityReference = new WeakReference<>(this);
 
     if (enforcePermissionValidator()) {
       return;
