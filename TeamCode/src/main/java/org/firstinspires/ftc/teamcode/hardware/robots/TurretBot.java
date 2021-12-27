@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
-import org.firstinspires.ftc.teamcode.core.Alliance;
+import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
