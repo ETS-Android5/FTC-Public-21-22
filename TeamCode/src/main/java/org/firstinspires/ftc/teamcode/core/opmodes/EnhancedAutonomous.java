@@ -35,7 +35,6 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
             Constants.PIPELINE_BASE_NAME,
             new BulkReadManagerPipe(
                 "BulkReadManager",
-                hardwareMap.getAll(LynxModule.class),
                 new InitializedFilterPipe(
                     "FilterElement",
                     new MotorTrackerPipe(
@@ -61,6 +60,7 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
   public final void runOpMode() {
     telemetry.setMsTransmissionInterval(Constants.TELEMETRY_TRANSMISSION_INTERVAL);
     aotRuntime.setHardwareMap(hardwareMap);
+    BulkReadManagerPipe.getInstance().setLynxModules(hardwareMap.getAll(LynxModule.class));
     aotRuntime.waveWand();
     serviceRuntime.waveWand();
     onInitPressed();
