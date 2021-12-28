@@ -98,7 +98,7 @@ public class RampedIntake implements IRampedIntake {
   }
 
   @Override
-  public void beginOuttakingSlowly() {
+  public synchronized void beginOuttakingSlowly() {
     intakeMotorState = intakeMotorState.withPower(SLOWLY_OUTTAKING_SPEED);
   }
 
