@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
 import org.firstinspires.ftc.teamcode.hardware.robots.TurretBot;
 import org.firstinspires.ftc.teamcode.hardware.robots.TurretBotPosition;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TurretBotTeleOpBase extends EnhancedTeleOp {
@@ -37,6 +38,21 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onStartPressed() {
+      robot.getExecutorService().schedule(() -> {
+          controller1.vibrate(0.25, 0.25, 5000);
+          controller2.vibrate(0.25, 0.25, 5000);
+      }, 75, TimeUnit.SECONDS);
+
+      robot.getExecutorService().schedule(() -> {
+          controller1.vibrate(0.5, 0.5, 5000);
+          controller2.vibrate(0.5, 0.5, 5000);
+      }, 80, TimeUnit.SECONDS);
+
+      robot.getExecutorService().schedule(() -> {
+          controller1.vibrate(1, 1, 5000);
+          controller2.vibrate(1, 1, 5000);
+      }, 85, TimeUnit.SECONDS);
+
     controller1.setManipulation(
         TurretBotTeleOpBase::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
 

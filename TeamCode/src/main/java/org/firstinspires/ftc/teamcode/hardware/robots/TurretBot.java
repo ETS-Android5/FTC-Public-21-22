@@ -322,6 +322,10 @@ public class TurretBot implements Component {
     ExitPipe.getInstance().clearScheduledCallbacks();
   }
 
+  public ScheduledExecutorService getExecutorService() {
+    return executorService;
+  }
+
   private int turretPositionForShared() {
     switch (alliance.get()) {
       case RED:
