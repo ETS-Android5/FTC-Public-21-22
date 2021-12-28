@@ -138,11 +138,13 @@ public class TurretBot implements Component {
       return;
     }
     setPosition.set(position);
-    lift.setArmTwoPosition(0.47);
+    int turretTarget;
     switch (position) {
       case INTAKE_POSITION:
+        turretTarget = Turret.TICKS_FRONT;
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            Turret.TICKS_FRONT,
+            turretTarget,
             5,
             0,
             () -> {
@@ -151,25 +153,33 @@ public class TurretBot implements Component {
             });
         break;
       case INTAKE_HOVER_POSITION:
-        ensureTurretIsAt(Turret.TICKS_FRONT, 5, firstJointOffset, () -> {});
+        turretTarget = Turret.TICKS_FRONT;
+        adjustSecondJointForTurretMovement(turretTarget);
+        ensureTurretIsAt(turretTarget, 5, firstJointOffset, () -> {});
         break;
       case SHARED_CLOSE_POSITION:
+        turretTarget = turretPositionForShared();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForShared(),
+            turretTarget,
             5,
             firstJointOffset + 69,
             () -> lift.setArmTwoPosition(0.63));
         break;
       case SHARED_MIDDLE_POSITION:
+        turretTarget = turretPositionForShared();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForShared(),
+            turretTarget,
             5,
             firstJointOffset + 10,
             () -> lift.setArmTwoPosition(0.39));
         break;
       case SHARED_FAR_POSITION:
+        turretTarget = turretPositionForShared();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForShared(),
+            turretTarget,
             5,
             firstJointOffset,
             () -> {
@@ -182,22 +192,28 @@ public class TurretBot implements Component {
             });
         break;
       case TIPPED_CLOSE_POSITION:
+        turretTarget = turretPositionForShared();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForShared(),
+            turretTarget,
             5,
             firstJointOffset + 88,
             () -> lift.setArmTwoPosition(0.63));
         break;
       case TIPPED_MIDDLE_POSITION:
+        turretTarget = turretPositionForShared();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForShared(),
+            turretTarget,
             5,
             firstJointOffset + 45,
             () -> lift.setArmTwoPosition(0.44));
         break;
       case TIPPED_FAR_POSITION:
+        turretTarget = turretPositionForShared();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForShared(),
+            turretTarget,
             5,
             firstJointOffset,
             () -> {
@@ -210,8 +226,10 @@ public class TurretBot implements Component {
             });
         break;
       case ALLIANCE_BOTTOM_POSITION:
+        turretTarget = turretPositionForAllianceHub();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForAllianceHub(),
+            turretTarget,
             5,
             firstJointOffset,
             () -> {
@@ -224,22 +242,28 @@ public class TurretBot implements Component {
             });
         break;
       case ALLIANCE_MIDDLE_POSITION:
+        turretTarget = turretPositionForAllianceHub();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForAllianceHub(),
+            turretTarget,
             5,
             firstJointOffset - 22,
             () -> lift.setArmTwoPosition(0.13));
         break;
       case ALLIANCE_TOP_POSITION:
+        turretTarget = turretPositionForAllianceHub();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForAllianceHub(),
+            turretTarget,
             5,
             firstJointOffset + 550,
             () -> lift.setArmTwoPosition(0.43));
         break;
       case TEAM_MARKER_GRAB_POSITION:
+        turretTarget = turretPositionForTeamMarkerGrab();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForTeamMarkerGrab(),
+            turretTarget,
             5,
             firstJointOffset,
             () -> {
@@ -253,8 +277,10 @@ public class TurretBot implements Component {
             });
         break;
       case TEAM_MARKER_DEPOSIT_POSITION:
+        turretTarget = turretPositionForTeamMarkerDeposit();
+        adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretPositionForTeamMarkerDeposit(),
+            turretTarget,
             5,
             firstJointOffset + 570,
             () -> lift.setArmTwoPosition(0.3));
@@ -286,13 +312,6 @@ public class TurretBot implements Component {
       return SingleServoGripper.GRIPPER_ACTION_DELAY_MS;
     } else {
       return 0;
-    }
-  }
-
-  public void outtakeIfNecessary() {
-    if (intake.getState() == IntakeState.INTAKING) {
-      intake.beginOuttakingSlowly();
-      afterTimedAction(1750, intake::stop);
     }
   }
 
@@ -341,5 +360,12 @@ public class TurretBot implements Component {
         return Turret.TICKS_CW_BACK;
     }
     return 0;
+  }
+
+  private void adjustSecondJointForTurretMovement(int nextTurretPosition) {
+    double currentDegrees = turret.getState();
+    if (Math.abs(currentDegrees - (nextTurretPosition / Turret.DEGREES_TO_TICKS)) > 45) {
+      lift.setArmTwoPosition(0.47);
+    }
   }
 }

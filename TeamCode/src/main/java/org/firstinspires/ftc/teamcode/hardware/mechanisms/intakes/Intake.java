@@ -89,7 +89,7 @@ public class Intake implements IIntake<IntakeState> {
   }
 
   @Override
-  public void beginOuttakingSlowly() {
+  public synchronized void beginOuttakingSlowly() {
     intakeMotorState = intakeMotorState.withPower(SLOW_OUTTAKING_SPEED);
   }
 
