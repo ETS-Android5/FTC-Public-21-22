@@ -6,21 +6,25 @@ import java.util.List;
 import java.util.Map;
 
 public class BulkReadManagerPipe extends HardwarePipeline {
-  private final List<LynxModule> lynxModules;
+  private static BulkReadManagerPipe instance;
+  private List<LynxModule> lynxModules;
   private boolean initialized = false;
 
   public BulkReadManagerPipe(String name) {
     super(name);
-    lynxModules = null;
+    BulkReadManagerPipe.instance = this;
   }
 
   public BulkReadManagerPipe(String name, HardwarePipeline nextPipe) {
     super(name, nextPipe);
-    lynxModules = null;
+    BulkReadManagerPipe.instance = this;
   }
 
-  public BulkReadManagerPipe(String name, List<LynxModule> lynxModules, HardwarePipeline nextPipe) {
-    super(name, nextPipe);
+  public static BulkReadManagerPipe getInstance() {
+    return instance;
+  }
+
+  public void setLynxModules(List<LynxModule> lynxModules) {
     this.lynxModules = lynxModules;
   }
 

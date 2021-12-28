@@ -38,7 +38,6 @@ public abstract class EnhancedTeleOp extends OpMode {
             Constants.PIPELINE_BASE_NAME,
             new BulkReadManagerPipe(
                 "BulkReadManager",
-                hardwareMap.getAll(LynxModule.class),
                 new InitializedFilterPipe(
                     "FilterElement",
                     new MotorTrackerPipe(
@@ -61,8 +60,8 @@ public abstract class EnhancedTeleOp extends OpMode {
   public final void init() {
     telemetry.setMsTransmissionInterval(Constants.TELEMETRY_TRANSMISSION_INTERVAL);
     aotRuntime.setHardwareMap(hardwareMap);
+    BulkReadManagerPipe.getInstance().setLynxModules(hardwareMap.getAll(LynxModule.class));
     aotRuntime.waveWand();
-
     serviceRuntime.waveWand();
     onInitPressed();
   }
