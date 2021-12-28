@@ -213,6 +213,14 @@ public class Controller implements Namable {
         .ifPresent((t) -> t.registerOnReleasedCallback(callback, debounced));
   }
 
+  public void vibrate(double leftPower, double rightPower, int durationMs) {
+    gamepad.rumble(leftPower, rightPower, durationMs);
+  }
+
+  public void vibrate(int durationMs) {
+    gamepad.rumble(durationMs);
+  }
+
   private Toggle toggleForControlSurface(BooleanSurface surface) {
     switch (surface) {
       case LEFT_BUMPER:
