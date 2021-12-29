@@ -18,29 +18,16 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     /*
     * The shared alliance hub basically has 12 places to put blocks before they start stacking up
     * Those places are organized as follows
-    *                                              *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *  *                                                                                         *
-    * *                                                                                           *
-    *  *                                                                                         *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
+    *                    Field wall
+    *                       1|1
+    *                      2 | 2
+    *                     3  |  3
+    *                    4 12|12 4
+    *Blue alliance side 5  11|11  5  Red alliance side
+    *                    6 10|10 6
+    *                     7  |  7
+    *                      8 | 8
+    *                       9|9
     * */
 
     private static final double[][] SHARED_POSITION_LIST = {
