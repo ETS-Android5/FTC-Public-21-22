@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
-import android.util.Log;
-
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
@@ -41,7 +39,6 @@ public class SliderLiftBot implements Component {
 
   // Sensors store 5 data points at a time
   // Sample every 25 ms
-  // Polynomial degree could be 2-7 we'll play with what's accurate
 
   @AutonomousOnly
   public final Interpolatable frontDistance =
@@ -95,30 +92,16 @@ public class SliderLiftBot implements Component {
     double rightDiff;
     double directionAdjustment = direction == Direction.FORWARD ? -1 : 1;
     while (opModeIsActive.get() && !condition.get()) {
-      long start = System.nanoTime();
       currentHeading = InterpolatablePipe.getInstance().currentDataPointOf("CB_AUTO_IMU");
-      long mark1 = System.nanoTime();
       turnSpeed =
           powerCurve.apply(
               (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
-      long mark2 = System.nanoTime();
       leftDiff = turnSpeed * (currentHeading > target ? -1 : 1) * directionAdjustment;
       rightDiff = turnSpeed * (currentHeading < target ? -1 : 1) * directionAdjustment;
-      long mark3 = System.nanoTime();
       double basePowerVal = basePower.get();
-      long mark4 = System.nanoTime();
       drivetrain.setLeftPower((basePowerVal * directionAdjustment) + leftDiff);
       drivetrain.setRightPower((basePowerVal * directionAdjustment) + rightDiff);
-      long mark5 = System.nanoTime();
       update.run();
-      long end = System.nanoTime();
-      Log.d("LOOPTIME", "MAINLOOP: " + (end - start));
-      Log.d("LOOPTIME", "MARK1: " + (mark1 - start));
-      Log.d("LOOPTIME", "MARK2: " + (mark2 - mark1));
-      Log.d("LOOPTIME", "MARK3: " + (mark3 - mark2));
-      Log.d("LOOPTIME", "MARK4: " + (mark4 - mark3));
-      Log.d("LOOPTIME", "MARK5: " + (mark5 - mark4));
-      Log.d("LOOPTIME", "END: " + (end - mark5));
     }
     drivetrain.setAllPower(0);
     update.run();
