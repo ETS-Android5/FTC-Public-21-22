@@ -84,6 +84,7 @@ public class InterpolatablePipe extends HardwarePipeline {
             });
     DataTracker.evaluateCallbacks(
         dataSourceCallbacks,
+        null,
         trackedDataSources,
         (Interpolatable i) -> currentDataPointOf(i.getName()));
     inPipe = false;

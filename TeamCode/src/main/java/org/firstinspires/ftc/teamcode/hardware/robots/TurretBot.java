@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
+import android.util.Log;
+
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
@@ -149,6 +151,7 @@ public class TurretBot implements Component {
             0,
             () -> {
               gripper.open();
+              Log.d("WTF", "AT BEGIN INTAKING");
               intake.beginIntaking();
             });
         break;
