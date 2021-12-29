@@ -56,7 +56,9 @@ public class Turret implements ITurret {
                   if (currentPower > idealPower) ret = currentPower - adjustment;
                   if (currentPower < idealPower) ret = currentPower + adjustment;
                   ret = Math.round(ret * 100) / 100.0;
-                  return ret > 1 ? 1 : ret < -1 ? -1 : ret;
+                  double clippedRange = ret > 1 ? 1 : ret < -1 ? -1 : ret;
+                  clippedRange = clippedRange == 0 ? Double.MIN_VALUE : clippedRange;
+                  return clippedRange;
                 });
   }
 
