@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
+import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
 import org.firstinspires.ftc.teamcode.hardware.robots.TurretBot;
@@ -38,20 +38,35 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onStartPressed() {
-      robot.getExecutorService().schedule(() -> {
-          controller1.vibrate(0.25, 0.25, 5000);
-          controller2.vibrate(0.25, 0.25, 5000);
-      }, 75, TimeUnit.SECONDS);
+    robot
+        .getExecutorService()
+        .schedule(
+            () -> {
+              controller1.vibrate(0.25, 0.25, 5000);
+              controller2.vibrate(0.25, 0.25, 5000);
+            },
+            75,
+            TimeUnit.SECONDS);
 
-      robot.getExecutorService().schedule(() -> {
-          controller1.vibrate(0.5, 0.5, 5000);
-          controller2.vibrate(0.5, 0.5, 5000);
-      }, 80, TimeUnit.SECONDS);
+    robot
+        .getExecutorService()
+        .schedule(
+            () -> {
+              controller1.vibrate(0.5, 0.5, 5000);
+              controller2.vibrate(0.5, 0.5, 5000);
+            },
+            80,
+            TimeUnit.SECONDS);
 
-      robot.getExecutorService().schedule(() -> {
-          controller1.vibrate(1, 1, 5000);
-          controller2.vibrate(1, 1, 5000);
-      }, 85, TimeUnit.SECONDS);
+    robot
+        .getExecutorService()
+        .schedule(
+            () -> {
+              controller1.vibrate(1, 1, 5000);
+              controller2.vibrate(1, 1, 5000);
+            },
+            85,
+            TimeUnit.SECONDS);
 
     controller1.setManipulation(
         TurretBotTeleOpBase::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
@@ -59,23 +74,9 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller1.registerOnPressedCallback(
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
-    controller1.registerOnPressedCallback(
-        () -> {
-          robot.clearFutureEvents();
-          robot.afterTimedAction(
-              robot.dropFreight() + (allianceHubMode.get() ? 750 : 0), () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
-        },
-        true,
-        BooleanSurface.A);
+    controller1.registerOnPressedCallback(this::onAPressed, true, BooleanSurface.A);
 
-    controller2.registerOnPressedCallback(
-        () -> {
-          robot.clearFutureEvents();
-          robot.afterTimedAction(
-              robot.dropFreight() + (allianceHubMode.get() ? 750 : 0), () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
-        },
-        true,
-        BooleanSurface.A);
+    controller2.registerOnPressedCallback(this::onAPressed, true, BooleanSurface.A);
 
     controller2.registerOnPressedCallback(
         robot.intake::toggleIntaking, true, BooleanSurface.RIGHT_BUMPER);
@@ -182,6 +183,13 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onStop() {}
+
+  private void onAPressed() {
+    robot.clearFutureEvents();
+    robot.afterTimedAction(
+        robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
+        () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
+  }
 
   private TurretBotPosition botPositionFor(BooleanSurface input) {
     switch (input) {

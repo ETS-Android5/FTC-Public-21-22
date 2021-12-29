@@ -28,7 +28,10 @@ public class DataTracker {
   }
 
   public static <T, U> void evaluateCallbacks(
-      List<CallbackData<T>> callbacks, List<CallbackData<T>> newCallbacks, Map<String, U> dataset, Function<U, T> transformer) {
+      List<CallbackData<T>> callbacks,
+      List<CallbackData<T>> newCallbacks,
+      Map<String, U> dataset,
+      Function<U, T> transformer) {
     Map<String, T> transformedDataset = new HashMap<>();
     dataset.forEach((k, v) -> transformedDataset.put(k, transformer.apply(v)));
     evaluateCallbacks(callbacks, newCallbacks, transformedDataset);

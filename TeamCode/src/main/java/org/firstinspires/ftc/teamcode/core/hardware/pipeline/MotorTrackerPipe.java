@@ -59,7 +59,8 @@ public class MotorTrackerPipe extends HardwarePipeline {
     r.getNextMotorStates()
         .forEach(
             (m) -> {
-              boolean proxyEncoder = (m.getEncoderDataSource() != null && !m.getEncoderDataSource().isEmpty());
+              boolean proxyEncoder =
+                  (m.getEncoderDataSource() != null && !m.getEncoderDataSource().isEmpty());
               if (m.getRunMode() == RunMode.RUN_TO_POSITION
                   || m.getRunMode() == RunMode.RUN_USING_ENCODER
                   || proxyEncoder) {
@@ -71,9 +72,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
                 if (data != null) {
                   data.addDataPoint(currentPosition, velocity);
                 } else {
-                  motorPositions.put(
-                      m.getName(),
-                      new MotorPositionData(currentPosition, velocity));
+                  motorPositions.put(m.getName(), new MotorPositionData(currentPosition, velocity));
                 }
               }
             });
@@ -83,7 +82,10 @@ public class MotorTrackerPipe extends HardwarePipeline {
       motorPositionCallbacks = new LinkedList<>(functions);
     }
     DataTracker.evaluateCallbacks(
-        functions, motorPositionCallbacks, motorPositions, (MotorPositionData data) -> (int) data.getTicks());
+        functions,
+        motorPositionCallbacks,
+        motorPositions,
+        (MotorPositionData data) -> (int) data.getTicks());
     return super.process(hardware, r);
   }
 }
