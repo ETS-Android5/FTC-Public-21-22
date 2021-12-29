@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware.robots;
 
-import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
+import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
@@ -161,19 +161,13 @@ public class TurretBot implements Component {
         turretTarget = turretPositionForShared();
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretTarget,
-            5,
-            firstJointOffset + 69,
-            () -> lift.setArmTwoPosition(0.63));
+            turretTarget, 5, firstJointOffset + 69, () -> lift.setArmTwoPosition(0.63));
         break;
       case SHARED_MIDDLE_POSITION:
         turretTarget = turretPositionForShared();
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretTarget,
-            5,
-            firstJointOffset + 10,
-            () -> lift.setArmTwoPosition(0.39));
+            turretTarget, 5, firstJointOffset + 10, () -> lift.setArmTwoPosition(0.39));
         break;
       case SHARED_FAR_POSITION:
         turretTarget = turretPositionForShared();
@@ -195,19 +189,13 @@ public class TurretBot implements Component {
         turretTarget = turretPositionForShared();
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretTarget,
-            5,
-            firstJointOffset + 88,
-            () -> lift.setArmTwoPosition(0.63));
+            turretTarget, 5, firstJointOffset + 88, () -> lift.setArmTwoPosition(0.63));
         break;
       case TIPPED_MIDDLE_POSITION:
         turretTarget = turretPositionForShared();
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretTarget,
-            5,
-            firstJointOffset + 45,
-            () -> lift.setArmTwoPosition(0.44));
+            turretTarget, 5, firstJointOffset + 45, () -> lift.setArmTwoPosition(0.44));
         break;
       case TIPPED_FAR_POSITION:
         turretTarget = turretPositionForShared();
@@ -245,19 +233,13 @@ public class TurretBot implements Component {
         turretTarget = turretPositionForAllianceHub();
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretTarget,
-            5,
-            firstJointOffset - 22,
-            () -> lift.setArmTwoPosition(0.13));
+            turretTarget, 5, firstJointOffset - 22, () -> lift.setArmTwoPosition(0.13));
         break;
       case ALLIANCE_TOP_POSITION:
         turretTarget = turretPositionForAllianceHub();
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretTarget,
-            5,
-            firstJointOffset + 550,
-            () -> lift.setArmTwoPosition(0.43));
+            turretTarget, 5, firstJointOffset + 550, () -> lift.setArmTwoPosition(0.43));
         break;
       case TEAM_MARKER_GRAB_POSITION:
         turretTarget = turretPositionForTeamMarkerGrab();
@@ -280,10 +262,7 @@ public class TurretBot implements Component {
         turretTarget = turretPositionForTeamMarkerDeposit();
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
-            turretTarget,
-            5,
-            firstJointOffset + 570,
-            () -> lift.setArmTwoPosition(0.3));
+            turretTarget, 5, firstJointOffset + 570, () -> lift.setArmTwoPosition(0.3));
         break;
     }
   }

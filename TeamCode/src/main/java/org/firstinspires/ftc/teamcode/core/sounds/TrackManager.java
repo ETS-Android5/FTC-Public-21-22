@@ -7,23 +7,32 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TrackManager {
-    private final AtomicReference<MediaPlayer> mediaPlayer = new AtomicReference<>();
+  private final AtomicReference<MediaPlayer> mediaPlayer = new AtomicReference<>();
 
-    public void playTrack(int sound, boolean loop, long loopForMs) {
-        MediaPlayer player = getMediaPlayer(sound);
-        player.setLooping(loop);
-        player.setOnCompletionListener((player1) -> {
-            player1.release();
-            mediaPlayer.compareAndSet(player1, null);
+  private static MediaPlayer getMediaPlayer(int sound) {
+    MediaPlayer player =
+        MediaPlayer.create(FtcRobotControllerActivity.getInstance().getApplicationContext(), sound);
+    player.setVolume(1, 1);
+    return player;
+  }
+
+  public void playTrack(int sound, boolean loop, long loopForMs) {
+    MediaPlayer player = getMediaPlayer(sound);
+    player.setLooping(loop);
+    player.setOnCompletionListener(
+        (player1) -> {
+          player1.release();
+          mediaPlayer.compareAndSet(player1, null);
         });
-        MediaPlayer prevPlayer = mediaPlayer.getAndSet(player);
-        if (prevPlayer != null) {
-            prevPlayer.stop();
-            prevPlayer.release();
-        }
-        player.start();
-        if (loopForMs != 0) {
-            new Thread(() -> {
+    MediaPlayer prevPlayer = mediaPlayer.getAndSet(player);
+    if (prevPlayer != null) {
+      prevPlayer.stop();
+      prevPlayer.release();
+    }
+    player.start();
+    if (loopForMs != 0) {
+      new Thread(
+              () -> {
                 try {
                   Thread.sleep(loopForMs);
                 } catch (InterruptedException ignored) {
@@ -33,19 +42,14 @@ public class TrackManager {
                   killablePlayer.stop();
                   killablePlayer.release();
                 }
-            }).start();
-        }
+              })
+          .start();
     }
+  }
 
-    public void playSound(int sound) {
-        MediaPlayer player = getMediaPlayer(sound);
-        player.setOnCompletionListener(MediaPlayer::release);
-        player.start();
-    }
-
-    private static MediaPlayer getMediaPlayer(int sound) {
-        MediaPlayer player = MediaPlayer.create(FtcRobotControllerActivity.getInstance().getApplicationContext(), sound);
-        player.setVolume(1, 1);
-        return player;
-    }
+  public void playSound(int sound) {
+    MediaPlayer player = getMediaPlayer(sound);
+    player.setOnCompletionListener(MediaPlayer::release);
+    player.start();
+  }
 }
