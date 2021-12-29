@@ -267,6 +267,29 @@ public class TurretBot implements Component {
     }
   }
 
+  public void goToSharedPosition(double[] position, Runnable afterReached) {
+    setPosition.set(null);
+    int turretTarget = turretPositionForShared();
+    adjustSecondJointForTurretMovement(turretTarget);
+    if (position[0] < 150 || position[1] < 0.3) {
+      // Handle low movements
+      ensureTurretIsAt(turretTarget, 5, firstJointOffset, () -> {
+        lift.setArmTwoPosition(position[1]);
+        afterTimedAction(elbowJointMovementDelayMs, () -> setLiftToPosition(firstJointOffset + (int) position[0], 5)
+                .andThen(() -> {
+                  gripperIsNearGround.set(true);
+                  afterReached.run();
+                }));
+      });
+    } else {
+      // Handle closer movements
+      ensureTurretIsAt(turretTarget, 5, firstJointOffset + (int) position[0], () -> {
+        lift.setArmTwoPosition(position[1]);
+        afterTimedAction(elbowJointMovementDelayMs, afterReached);
+      });
+    }
+  }
+
   public int dropFreight() {
     if (gripper.getState() != SingleServoGripperState.OPEN_POSITION) {
       gripper.open();
