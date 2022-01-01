@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.core.hardware.state;
 
 import com.google.common.collect.EvictingQueue;
 
-import org.firstinspires.ftc.teamcode.core.controller.Namable;
+import org.firstinspires.ftc.teamcode.core.Namable;
 
 public interface Interpolatable extends Namable {
   @SuppressWarnings("UnstableApiUsage")

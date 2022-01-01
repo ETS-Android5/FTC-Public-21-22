@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
@@ -10,14 +11,15 @@ import org.firstinspires.ftc.teamcode.hardware.robots.sliderliftbot.SliderLiftBo
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@TeleOp(name = "Test1")
-public class Test1 extends EnhancedTeleOp {
+@TeleOp(name = "SliderLiftTele")
+@Disabled
+public class SliderLiftTele extends EnhancedTeleOp {
   private final SliderLiftBot robot;
   private final AtomicBoolean halfSpeed = new AtomicBoolean(false);
   private final AtomicBoolean alreadyIntaking = new AtomicBoolean(false);
   private final AtomicBoolean alreadyOuttaking = new AtomicBoolean(false);
 
-  public Test1() {
+  public SliderLiftTele() {
     super(new SliderLiftBot());
     this.robot = (SliderLiftBot) robotObject;
   }
@@ -34,7 +36,7 @@ public class Test1 extends EnhancedTeleOp {
 
   @Override
   public void onStartPressed() {
-    controller1.setManipulation(Test1::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
+    controller1.setManipulation(SliderLiftTele::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
 
     controller1.registerOnPressedCallback(
         () -> {

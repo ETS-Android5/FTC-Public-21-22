@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.core.controller;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.core.Namable;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
