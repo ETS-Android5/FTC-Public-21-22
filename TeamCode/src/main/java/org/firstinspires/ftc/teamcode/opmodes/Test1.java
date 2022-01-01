@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts.FourHeightLiftState;
-import org.firstinspires.ftc.teamcode.hardware.robots.SliderLiftBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.sliderliftbot.SliderLiftBot;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

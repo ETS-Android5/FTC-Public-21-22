@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.cv.CameraPosition;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPosition;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPositionDetector;
-import org.firstinspires.ftc.teamcode.hardware.robots.TurretBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBot;
 
 @Autonomous(name = "CB_AUTO_VisionTest")
 public class VisionTest extends EnhancedAutonomous {
