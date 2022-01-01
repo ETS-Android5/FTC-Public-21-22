@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.hardware.robots;
+package org.firstinspires.ftc.teamcode.hardware.robots.sliderliftbot;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;

@@ -26,14 +26,6 @@ public class MotorPositionReachedCallback {
     }
   }
 
-  public void andAfterMotorIsAt(int target, int tolerance, Runnable r) {
-    if (shouldSetCallback(r)) {
-      MotorTrackerPipe.getInstance()
-          .setCallbackForMotorPosition(
-              new CallbackData<>(motorName, (ticks) -> Math.abs(ticks - target) <= tolerance, r));
-    }
-  }
-
   public void andAfterMotorIsBelow(int target, int tolerance, Runnable r) {
     if (shouldSetCallback(r)) {
       MotorTrackerPipe.getInstance()
@@ -46,7 +38,7 @@ public class MotorPositionReachedCallback {
     if (shouldSetCallback(r)) {
       MotorTrackerPipe.getInstance()
           .setCallbackForMotorPosition(
-              new CallbackData<>(motorName, (ticks) -> ticks > target + tolerance, r));
+              new CallbackData<>(motorName, (ticks) -> ticks > target - tolerance, r));
     }
   }
 

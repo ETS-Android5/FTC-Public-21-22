@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
-import org.firstinspires.ftc.teamcode.hardware.robots.SliderLiftBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.sliderliftbot.SliderLiftBot;
 
 @Autonomous(name = "CB_AUTO_StraightLine")
 @Disabled

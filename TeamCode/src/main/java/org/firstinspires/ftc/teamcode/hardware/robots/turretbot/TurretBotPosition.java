@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.hardware.robots;
+package org.firstinspires.ftc.teamcode.hardware.robots.turretbot;
 
 public enum TurretBotPosition {
   INTAKE_POSITION,

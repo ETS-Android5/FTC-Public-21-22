@@ -5,8 +5,8 @@ import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
-import org.firstinspires.ftc.teamcode.hardware.robots.TurretBot;
-import org.firstinspires.ftc.teamcode.hardware.robots.TurretBotPosition;
+import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBotPosition;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -179,19 +179,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         true,
         BooleanSurface.X);
 
-    controller2.registerOnPressedCallback(
-        () -> {
-          robot.clearFutureEvents();
-          TurretBotPosition position = botPositionFor(BooleanSurface.Y);
-          robot.afterTimedAction(
-              robot.grabFreight(),
-              () -> {
-                robot.intake.stop();
-                robot.goToPosition(position);
-              });
-        },
-        true,
-        BooleanSurface.Y);
+    controller2.registerOnPressedCallback(this::onController2YPressed, true, BooleanSurface.Y);
     controller2.registerOnPressedCallback(
         () -> {
           if (allianceHubMode.get()) {
@@ -206,6 +194,8 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
                           SHARED_POSITION_LIST[sharedDropProgress.get()],
                           sharedDropProgress::incrementAndGet);
               });
+          } else {
+              onController2YPressed();
           }
         },
         true,
@@ -240,6 +230,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     robot.drivetrain.driveBySticks(
         controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
     if (controller2.rightStickY() < -0.02 || controller2.rightStickY() > 0.02) {
+        robot.onTrim();
       robot.lift.setArmTwoPosition(
           robot.lift.getState().second
               + (-controller2.rightStickY() * MAX_SECOND_JOINT_ADJUSTMENT));
@@ -254,6 +245,17 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     robot.afterTimedAction(
         robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
         () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
+  }
+
+  private void onController2YPressed() {
+      robot.clearFutureEvents();
+      TurretBotPosition position = botPositionFor(BooleanSurface.Y);
+      robot.afterTimedAction(
+              robot.grabFreight(),
+              () -> {
+                  robot.intake.stop();
+                  robot.goToPosition(position);
+              });
   }
 
   private TurretBotPosition botPositionFor(BooleanSurface input) {

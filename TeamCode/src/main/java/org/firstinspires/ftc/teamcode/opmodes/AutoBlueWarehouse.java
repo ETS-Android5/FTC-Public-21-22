@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.cv.CameraPosition;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPosition;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPositionDetector;
-import org.firstinspires.ftc.teamcode.hardware.robots.SliderLiftBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.sliderliftbot.SliderLiftBot;
 import org.opencv.core.Mat;
 
 import java.io.PrintWriter;
