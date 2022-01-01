@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "Test2")
-public class Test2 extends OpMode {
+@TeleOp(name = "ArmPositionDiscovery")
+public class ArmPositionDiscovery extends OpMode {
   private DcMotorEx fl;
   private DcMotorEx fr;
   private DcMotorEx rl;

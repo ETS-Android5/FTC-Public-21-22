@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.core.hardware.state;
 
-import org.firstinspires.ftc.teamcode.core.controller.Namable;
+import org.firstinspires.ftc.teamcode.core.Namable;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
 public class RunToPositionTracker implements Namable {
