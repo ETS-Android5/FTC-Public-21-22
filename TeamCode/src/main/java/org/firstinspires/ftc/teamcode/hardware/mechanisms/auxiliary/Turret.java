@@ -50,7 +50,7 @@ public class Turret implements ITurret {
                   if (currentPower.equals(idealPower)) return currentPower;
                   // If the turret is moving faster than full speed, why slow it down?
                   if ((idealPower == 1 && currentPower >= 1)
-                          || (idealPower == -1 && currentPower <= -1)) {
+                      || (idealPower == -1 && currentPower <= -1)) {
                     return idealPower;
                   }
                   double diff = Math.abs(currentPower - idealPower);

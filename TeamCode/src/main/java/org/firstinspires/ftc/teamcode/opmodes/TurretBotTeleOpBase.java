@@ -15,59 +15,59 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.0055; // 1.5 degrees
 
-    /*
-    * The shared alliance hub basically has 12 places to put blocks before they start stacking up
-    * Those places are organized as follows
-    *                    Field wall
-    *                       1|1
-    *                      2 | 2
-    *                     3  |  3
-    *                    4 12|12 4
-    *Blue alliance side 5  11|11  5  Red alliance side
-    *                    6 10|10 6
-    *                     7  |  7
-    *                      8 | 8
-    *                       9|9
-    * */
+  /*
+   * The shared alliance hub basically has 12 places to put blocks before they start stacking up
+   * Those places are organized as follows
+   *                    Field wall
+   *                       1|1
+   *                      2 | 2
+   *                     3  |  3
+   *                    4 12|12 4
+   *Blue alliance side 5  11|11  5  Red alliance side
+   *                    6 10|10 6
+   *                     7  |  7
+   *                      8 | 8
+   *                       9|9
+   * */
 
-    private static final double[][] SHARED_POSITION_LIST = {
-            {
-                20, 0.43 // pos 5
-            },
-            {
-                0, 0.47 // pos 4
-            },
-            {
-                -30, 0.33 // pos 6
-            },
-            {
-                -230, 0.15 // pos 7
-            },
-            {
-                0, 0.57 // pos 3
-            },
-            {
-                -230, 0.15 // pos 8
-            },
-            {
-                0, 0.59 // pos 2
-            },
-            {
-                -230, 0.15 // pos 9
-            },
-            {
-                0, 0.65 // pos 1
-            },
-            {
-                -230, 0.15 // pos 10
-            },
-            {
-                0, 0.5 // pos 12
-            },
-            {
-                -70, 0.37 // pos 11
-            },
-    };
+  private static final double[][] SHARED_POSITION_LIST = {
+    {
+      20, 0.43 // pos 5
+    },
+    {
+      0, 0.47 // pos 4
+    },
+    {
+      -30, 0.33 // pos 6
+    },
+    {
+      -230, 0.15 // pos 7
+    },
+    {
+      0, 0.57 // pos 3
+    },
+    {
+      -230, 0.15 // pos 8
+    },
+    {
+      0, 0.59 // pos 2
+    },
+    {
+      -230, 0.15 // pos 9
+    },
+    {
+      0, 0.65 // pos 1
+    },
+    {
+      -230, 0.15 // pos 10
+    },
+    {
+      0, 0.5 // pos 12
+    },
+    {
+      -70, 0.37 // pos 11
+    },
+  };
 
   private final TurretBot robot;
 
@@ -99,30 +99,30 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         .getExecutorService()
         .schedule(
             () -> {
-              controller1.vibrate(0.25, 0.25, 5000);
-              controller2.vibrate(0.25, 0.25, 5000);
+              controller1.vibrate(0.25, 0.25, 3000);
+              controller2.vibrate(0.25, 0.25, 3000);
             },
-            75,
+            81,
             TimeUnit.SECONDS);
 
     robot
         .getExecutorService()
         .schedule(
             () -> {
-              controller1.vibrate(0.5, 0.5, 5000);
-              controller2.vibrate(0.5, 0.5, 5000);
+              controller1.vibrate(0.5, 0.5, 3000);
+              controller2.vibrate(0.5, 0.5, 3000);
             },
-            80,
+            84,
             TimeUnit.SECONDS);
 
     robot
         .getExecutorService()
         .schedule(
             () -> {
-              controller1.vibrate(1, 1, 5000);
-              controller2.vibrate(1, 1, 5000);
+              controller1.vibrate(1, 1, 3000);
+              controller2.vibrate(1, 1, 3000);
             },
-            85,
+            87,
             TimeUnit.SECONDS);
 
     controller1.setManipulation(
@@ -147,7 +147,13 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         () -> robot.setAlliance(robot.getAlliance().opposite()), true, BooleanSurface.RIGHT_STICK);
 
     controller2.registerOnPressedCallback(
-        () -> allianceHubMode.set(!allianceHubMode.get()), true, BooleanSurface.BACK);
+        () -> {
+          allianceHubMode.set(!allianceHubMode.get());
+          controller1.vibrate(0.5, 0.5, 1000);
+          controller2.vibrate(0.5, 0.5, 1000);
+        },
+        true,
+        BooleanSurface.BACK);
 
     controller2.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
 
@@ -187,15 +193,17 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
             robot.intake.stop();
             robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION);
           } else if (sharedDropProgress.get() < SHARED_POSITION_LIST.length) {
-              robot.clearFutureEvents();
-              robot.afterTimedAction(robot.grabFreight(), () -> {
+            robot.clearFutureEvents();
+            robot.afterTimedAction(
+                robot.grabFreight(),
+                () -> {
                   robot.intake.stop();
                   robot.goToSharedPosition(
-                          SHARED_POSITION_LIST[sharedDropProgress.get()],
-                          sharedDropProgress::incrementAndGet);
-              });
+                      SHARED_POSITION_LIST[sharedDropProgress.get()],
+                      sharedDropProgress::incrementAndGet);
+                });
           } else {
-              onController2YPressed();
+            onController2YPressed();
           }
         },
         true,
@@ -230,7 +238,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     robot.drivetrain.driveBySticks(
         controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
     if (controller2.rightStickY() < -0.02 || controller2.rightStickY() > 0.02) {
-        robot.onTrim();
+      robot.onTrim();
       robot.lift.setArmTwoPosition(
           robot.lift.getState().second
               + (-controller2.rightStickY() * MAX_SECOND_JOINT_ADJUSTMENT));
@@ -248,14 +256,14 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   }
 
   private void onController2YPressed() {
-      robot.clearFutureEvents();
-      TurretBotPosition position = botPositionFor(BooleanSurface.Y);
-      robot.afterTimedAction(
-              robot.grabFreight(),
-              () -> {
-                  robot.intake.stop();
-                  robot.goToPosition(position);
-              });
+    robot.clearFutureEvents();
+    TurretBotPosition position = botPositionFor(BooleanSurface.Y);
+    robot.afterTimedAction(
+        robot.grabFreight(),
+        () -> {
+          robot.intake.stop();
+          robot.goToPosition(position);
+        });
   }
 
   private TurretBotPosition botPositionFor(BooleanSurface input) {

@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.core.magic.runtime;
 
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.core.annotations.Observable;
 import org.firstinspires.ftc.teamcode.core.Namable;
+import org.firstinspires.ftc.teamcode.core.annotations.Observable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

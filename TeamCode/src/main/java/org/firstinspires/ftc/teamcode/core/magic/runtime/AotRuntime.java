@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.core.Namable;
 import org.firstinspires.ftc.teamcode.core.annotations.PostInit;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
-import org.firstinspires.ftc.teamcode.core.Namable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
