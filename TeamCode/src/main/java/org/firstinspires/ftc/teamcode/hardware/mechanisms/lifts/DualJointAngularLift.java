@@ -54,7 +54,7 @@ public class DualJointAngularLift implements IDualJointAngularLift {
                   if (currentPower.equals(idealPower)) return currentPower;
                   double diff = Math.abs(currentPower - idealPower);
                   double adjustment =
-                      Math.min(Math.abs(currentTicks - targetTicks) / 5, 1)
+                      Math.min(Math.abs(currentTicks - targetTicks) / 8, 1)
                           * Math.pow(diff, 1.0 / 1.3);
                   double ret = 0;
                   if (currentPower > idealPower) ret = currentPower - adjustment;

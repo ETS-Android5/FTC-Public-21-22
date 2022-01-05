@@ -102,36 +102,37 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onStartPressed() {
-      futures.add(
-              robot
-                      .getExecutorService()
-                      .schedule(
-                              () -> {
-                                  controller1.vibrate(0.25, 0.25, 3000);
-                                  controller2.vibrate(0.25, 0.25, 3000);
-                              },
-                              81,
-                              TimeUnit.SECONDS)
-      );
+    futures.add(
+        robot
+            .getExecutorService()
+            .schedule(
+                () -> {
+                  controller1.vibrate(0.25, 0.25, 3000);
+                  controller2.vibrate(0.25, 0.25, 3000);
+                },
+                81,
+                TimeUnit.SECONDS));
 
-      futures.add(robot
-              .getExecutorService()
-              .schedule(
-                      () -> {
-                          controller1.vibrate(0.5, 0.5, 3000);
-                          controller2.vibrate(0.5, 0.5, 3000);
-                      },
-                      84,
-                      TimeUnit.SECONDS));
-      futures.add(robot
-              .getExecutorService()
-              .schedule(
-                      () -> {
-                          controller1.vibrate(1, 1, 3000);
-                          controller2.vibrate(1, 1, 3000);
-                      },
-                      87,
-                      TimeUnit.SECONDS));
+    futures.add(
+        robot
+            .getExecutorService()
+            .schedule(
+                () -> {
+                  controller1.vibrate(0.5, 0.5, 3000);
+                  controller2.vibrate(0.5, 0.5, 3000);
+                },
+                84,
+                TimeUnit.SECONDS));
+    futures.add(
+        robot
+            .getExecutorService()
+            .schedule(
+                () -> {
+                  controller1.vibrate(1, 1, 3000);
+                  controller2.vibrate(1, 1, 3000);
+                },
+                87,
+                TimeUnit.SECONDS));
 
     controller1.setManipulation(
         TurretBotTeleOpBase::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
@@ -196,15 +197,15 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(this::onController2YPressed, true, BooleanSurface.Y);
     controller2.registerOnPressedCallback(
         () -> {
-            Log.d("DPAD_LEFT", "At dpad up");
+          Log.d("DPAD_LEFT", "At dpad up");
           if (allianceHubMode.get()) {
-              Log.d("DPAD_LEFT", "In alliance mode");
+            Log.d("DPAD_LEFT", "In alliance mode");
             robot.clearFutureEvents();
             robot.intake.stop();
             Log.d("DPAD_LEFT", "Going to TEAM_MARKER_GRAB_POSITION");
             robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION);
           } else if (sharedDropProgress.get() < SHARED_POSITION_LIST.length) {
-              Log.d("DPAD_LEFT", "In shared shipping hub mode and in queue");
+            Log.d("DPAD_LEFT", "In shared shipping hub mode and in queue");
             robot.clearFutureEvents();
             robot.afterTimedAction(
                 robot.grabFreight(),
@@ -215,7 +216,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
                       sharedDropProgress::incrementAndGet);
                 });
           } else {
-              Log.d("DPAD_LEFT", "In shared shipping hub mode and completed queue");
+            Log.d("DPAD_LEFT", "In shared shipping hub mode and completed queue");
             onController2YPressed();
           }
         },
@@ -260,9 +261,9 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onStop() {
-      futures.forEach(future -> future.cancel(false));
-      futures.clear();
-      robot.clearFutureEvents();
+    futures.forEach(future -> future.cancel(false));
+    futures.clear();
+    robot.clearFutureEvents();
   }
 
   private void onAPressed() {

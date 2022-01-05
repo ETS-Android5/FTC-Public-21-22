@@ -62,13 +62,14 @@ public class InterpolatablePipe extends HardwarePipeline {
         case 2:
           DataPoint pt1 = dataPoints.getFirst();
           DataPoint pt2 = dataPoints.get(1);
-          double rateOfChangeUnitPerNanosecond = (pt2.getData() - pt1.getData()) /
-                  (pt2.getTimestamp() - pt1.getTimestamp());
+          double rateOfChangeUnitPerNanosecond =
+              (pt2.getData() - pt1.getData()) / (pt2.getTimestamp() - pt1.getTimestamp());
           double yIntercept = pt1.getData() - (pt1.getTimestamp() * rateOfChangeUnitPerNanosecond);
           ret = (currentTime * rateOfChangeUnitPerNanosecond) + yIntercept;
           break;
         default:
-          ret = DataPointEstimator.predictData(
+          ret =
+              DataPointEstimator.predictData(
                   new LinkedList<>(dataTracker.getDataPoints()),
                   currentTime,
                   dataTracker.getPolynomialDegree());

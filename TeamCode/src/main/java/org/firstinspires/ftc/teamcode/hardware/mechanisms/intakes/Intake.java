@@ -13,13 +13,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class Intake implements IIntake<IntakeState> {
-  private static final String INTAKE_MOTOR_NAME = "INTAKE_MOTOR";
+  public static final String INTAKE_MOTOR_NAME = "INTAKE_MOTOR";
 
   private static final double STOPPED_SPEED = 0.0;
-  private static final double MOVING_SPEED = 0.9;
+  private static final double MOVING_SPEED = -0.9;
   private static final double INTAKING_SPEED = MOVING_SPEED;
   private static final double OUTTAKING_SPEED = MOVING_SPEED * -1;
-  private static final double SLOW_OUTTAKING_SPEED = -0.45;
+  private static final double SLOW_OUTTAKING_SPEED = 0.45;
 
   @Hardware(name = INTAKE_MOTOR_NAME)
   public DcMotorEx intakeMotor;
@@ -31,7 +31,7 @@ public class Intake implements IIntake<IntakeState> {
   }
 
   private void initialize() {
-    intakeMotorState = new MotorState(INTAKE_MOTOR_NAME, Direction.REVERSE);
+    intakeMotorState = new MotorState(INTAKE_MOTOR_NAME, Direction.FORWARD);
   }
 
   @Override
