@@ -8,6 +8,9 @@ import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBot;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBotPosition;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -78,6 +81,8 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   private final AtomicInteger sharedDropProgress = new AtomicInteger(0);
 
+  private final List<ScheduledFuture<?>> futures = new LinkedList<>();
+
   public TurretBotTeleOpBase(Alliance alliance) {
     super(new TurretBot(alliance));
     this.robot = (TurretBot) super.robotObject;
@@ -95,35 +100,36 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onStartPressed() {
-    robot
-        .getExecutorService()
-        .schedule(
-            () -> {
-              controller1.vibrate(0.25, 0.25, 3000);
-              controller2.vibrate(0.25, 0.25, 3000);
-            },
-            81,
-            TimeUnit.SECONDS);
+      futures.add(
+              robot
+                      .getExecutorService()
+                      .schedule(
+                              () -> {
+                                  controller1.vibrate(0.25, 0.25, 3000);
+                                  controller2.vibrate(0.25, 0.25, 3000);
+                              },
+                              81,
+                              TimeUnit.SECONDS)
+      );
 
-    robot
-        .getExecutorService()
-        .schedule(
-            () -> {
-              controller1.vibrate(0.5, 0.5, 3000);
-              controller2.vibrate(0.5, 0.5, 3000);
-            },
-            84,
-            TimeUnit.SECONDS);
-
-    robot
-        .getExecutorService()
-        .schedule(
-            () -> {
-              controller1.vibrate(1, 1, 3000);
-              controller2.vibrate(1, 1, 3000);
-            },
-            87,
-            TimeUnit.SECONDS);
+      futures.add(robot
+              .getExecutorService()
+              .schedule(
+                      () -> {
+                          controller1.vibrate(0.5, 0.5, 3000);
+                          controller2.vibrate(0.5, 0.5, 3000);
+                      },
+                      84,
+                      TimeUnit.SECONDS));
+      futures.add(robot
+              .getExecutorService()
+              .schedule(
+                      () -> {
+                          controller1.vibrate(1, 1, 3000);
+                          controller2.vibrate(1, 1, 3000);
+                      },
+                      87,
+                      TimeUnit.SECONDS));
 
     controller1.setManipulation(
         TurretBotTeleOpBase::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
@@ -246,7 +252,11 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   }
 
   @Override
-  public void onStop() {}
+  public void onStop() {
+      futures.forEach(future -> future.cancel(false));
+      futures.clear();
+      robot.clearFutureEvents();
+  }
 
   private void onAPressed() {
     robot.clearFutureEvents();
