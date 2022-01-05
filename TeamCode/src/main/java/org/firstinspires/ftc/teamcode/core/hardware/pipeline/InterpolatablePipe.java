@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
 import org.firstinspires.ftc.teamcode.core.hardware.state.CachedValue;
+import org.firstinspires.ftc.teamcode.core.hardware.state.DataPoint;
 import org.firstinspires.ftc.teamcode.core.hardware.state.DataPointEstimator;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Interpolatable;
 
@@ -42,19 +43,39 @@ public class InterpolatablePipe extends HardwarePipeline {
 
   @SuppressWarnings("All")
   public Double currentDataPointOf(String hardwareDeviceName) {
+    long currentTime = System.nanoTime();
     if (!trackedDataSources.containsKey(hardwareDeviceName)) {
       return null;
     }
     CachedValue<Double> cachedValue = cachedValues.get(hardwareDeviceName);
     if (cachedValue == null || cachedValue.getId() != pipelineIteration) {
       Interpolatable dataTracker = trackedDataSources.get(hardwareDeviceName);
-      double val =
-          DataPointEstimator.predictData(
-              new LinkedList<>(dataTracker.getDataPoints()),
-              System.nanoTime(),
-              dataTracker.getPolynomialDegree());
-      cachedValues.put(hardwareDeviceName, new CachedValue<>(val, pipelineIteration));
-      return val;
+      LinkedList<DataPoint> dataPoints = new LinkedList<>(dataTracker.getDataPoints());
+      Double ret = null;
+      switch (dataPoints.size()) {
+        case 0:
+          ret = null;
+          break;
+        case 1:
+          ret = dataPoints.getFirst().getData();
+          break;
+        case 2:
+          DataPoint pt1 = dataPoints.getFirst();
+          DataPoint pt2 = dataPoints.get(1);
+          double rateOfChangeUnitPerNanosecond = (pt2.getData() - pt1.getData()) /
+                  (pt2.getTimestamp() - pt1.getTimestamp());
+          double yIntercept = pt1.getData() - (pt1.getTimestamp() * rateOfChangeUnitPerNanosecond);
+          ret = (currentTime * rateOfChangeUnitPerNanosecond) + yIntercept;
+          break;
+        default:
+          ret = DataPointEstimator.predictData(
+                  new LinkedList<>(dataTracker.getDataPoints()),
+                  currentTime,
+                  dataTracker.getPolynomialDegree());
+          break;
+      }
+      cachedValues.put(hardwareDeviceName, new CachedValue<>(ret, pipelineIteration));
+      return ret;
     }
     return cachedValue.getValue();
   }

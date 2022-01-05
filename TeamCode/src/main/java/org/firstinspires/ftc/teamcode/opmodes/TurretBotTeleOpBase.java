@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.util.Log;
+
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
@@ -155,8 +157,8 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> {
           allianceHubMode.set(!allianceHubMode.get());
-          controller1.vibrate(0.5, 0.5, 1000);
-          controller2.vibrate(0.5, 0.5, 1000);
+          controller1.vibrate(1, 1, 250);
+          controller2.vibrate(1, 1, 250);
         },
         true,
         BooleanSurface.BACK);
@@ -194,11 +196,15 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(this::onController2YPressed, true, BooleanSurface.Y);
     controller2.registerOnPressedCallback(
         () -> {
+            Log.d("DPAD_LEFT", "At dpad up");
           if (allianceHubMode.get()) {
+              Log.d("DPAD_LEFT", "In alliance mode");
             robot.clearFutureEvents();
             robot.intake.stop();
+            Log.d("DPAD_LEFT", "Going to TEAM_MARKER_GRAB_POSITION");
             robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION);
           } else if (sharedDropProgress.get() < SHARED_POSITION_LIST.length) {
+              Log.d("DPAD_LEFT", "In shared shipping hub mode and in queue");
             robot.clearFutureEvents();
             robot.afterTimedAction(
                 robot.grabFreight(),
@@ -209,6 +215,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
                       sharedDropProgress::incrementAndGet);
                 });
           } else {
+              Log.d("DPAD_LEFT", "In shared shipping hub mode and completed queue");
             onController2YPressed();
           }
         },
