@@ -14,8 +14,7 @@ public class RunToPositionTracker implements Namable {
       String name,
       TriFunction<Integer, Integer, Integer, Double> powerCurve,
       int startingTicks,
-      int targetTicks,
-      double lastPower) {
+      int targetTicks) {
     this.name = name;
     this.powerCurve = powerCurve;
     this.startingTicks = startingTicks;

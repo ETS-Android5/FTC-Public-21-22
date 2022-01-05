@@ -89,6 +89,7 @@ public class ArmPositionDiscovery extends OpMode {
     telemetry.addData("RR", rr.getCurrentPosition());
 
     telemetry.addData("TURRET", turret.getCurrentPosition());
+    telemetry.addData("TURRET_VIA_INTAKE", intake.getCurrentPosition());
     telemetry.addData("FIRST JOINT", firstJoint.getCurrentPosition());
     telemetry.addData("INTAKE SPEED", intakeSpeed);
     telemetry.addData("SECOND JOINT", secondJointPosition);

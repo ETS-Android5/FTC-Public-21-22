@@ -41,11 +41,7 @@ public class RunToPositionPipe extends HardwarePipeline {
                 }
                 trackedMotors.add(
                     new RunToPositionTracker(
-                        motorName,
-                        powerCurve,
-                        currentPosition,
-                        nextState.getTargetPosition(),
-                        nextState.getPower()));
+                        motorName, powerCurve, currentPosition, nextState.getTargetPosition()));
               } else if ((currentState == null
                       || currentState.getRunMode() == RunMode.RUN_TO_POSITION)
                   && nextState.getRunMode() != RunMode.RUN_TO_POSITION) {
