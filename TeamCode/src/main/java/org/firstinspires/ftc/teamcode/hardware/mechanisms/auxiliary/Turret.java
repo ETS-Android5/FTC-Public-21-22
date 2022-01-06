@@ -41,7 +41,7 @@ public class Turret implements ITurret {
         new MotorState(TURRET_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generatePowerCurve(1, .9))
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, .8))
             .withEncoderDataSource(Intake.INTAKE_MOTOR_NAME)
             .withPowerAndTickRateRelation((power) -> power * 5900.4166666) // 5900 tps at 100% power
             .withPowerCorrection(
@@ -58,7 +58,7 @@ public class Turret implements ITurret {
                   double diff = Math.abs(currentPower - idealPower);
                   double adjustment =
                       Math.min(Math.pow(Math.abs(currentTicks - targetTicks) / 120.0, 3.5), 1)
-                          * Math.pow(diff, 1.0 / 3.0);
+                          * Math.pow(diff, 1.0 / 2.8);
 
                   double ret = 0;
                   if (currentPower > idealPower) ret = idealPower - adjustment;
