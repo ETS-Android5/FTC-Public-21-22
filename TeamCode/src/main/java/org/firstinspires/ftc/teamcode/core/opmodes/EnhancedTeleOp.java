@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.core.hardware.pipeline.BulkReadManagerPipe
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InterpolatablePipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.RunToPositionPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
@@ -29,7 +30,7 @@ public abstract class EnhancedTeleOp extends OpMode {
   protected Component robotObject;
   private HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
   private ReflectionBasedMagicRuntime serviceRuntime;
-
+//@SuppressWarnings("unused")
   public EnhancedTeleOp(Component robotObject) {
     State.clear();
     initializedHardware = new ConcurrentHashMap<>();
@@ -40,9 +41,13 @@ public abstract class EnhancedTeleOp extends OpMode {
                 "BulkReadManager",
                 new InitializedFilterPipe(
                     "FilterElement",
-                    new MotorTrackerPipe(
-                        "MotorTrackerPipe",
-                        new RunToPositionPipe("RunToPosition", new ExitPipe("Exit"))))));
+                    new InterpolatablePipe(
+                            "InterpolatablePipe",
+                            new MotorTrackerPipe(
+                                    "MotorTrackerPipe",
+                                    new RunToPositionPipe("RunToPosition",
+                                            new ExitPipe("Exit")))
+                    ))));
     controller1 = new Controller(Constants.GAMEPAD_1_NAME);
     controller2 = new Controller(Constants.GAMEPAD_2_NAME);
     this.robotObject = robotObject;

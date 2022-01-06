@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware.robots.turretbot;
 
-import android.util.Log;
-
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
@@ -9,6 +7,8 @@ import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.MotorPositionReachedCallback;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
+import org.firstinspires.ftc.teamcode.hardware.detection.distance.InterpolatableRev2m;
+import org.firstinspires.ftc.teamcode.hardware.detection.gyro.InterpolatableRevGyro;
 import org.firstinspires.ftc.teamcode.hardware.detection.vision.FtcCamera;
 import org.firstinspires.ftc.teamcode.hardware.detection.vision.Webcam;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.CarouselSpinner;
@@ -42,7 +42,7 @@ public class TurretBot implements Component {
   private static final int ELBOW_JOINT_MOVEMENT_DELAY_MS = 250;
 
   private static final int liftTolerance = 8;
-  private static final int turretTolerance = 60;
+  private static final int turretTolerance = 5;
 
   public final IMecanumDrivetrain drivetrain = new MecanumDrivetrain();
   public final IIntake<IntakeState> intake = new Intake();
@@ -51,7 +51,42 @@ public class TurretBot implements Component {
   public final IDualJointAngularLift lift = new DualJointAngularLift();
   public final ISingleServoGripper gripper = new SingleServoGripper();
 
+  @SuppressWarnings("unused")
   @AutonomousOnly public final FtcCamera webcam = new Webcam();
+  @SuppressWarnings("unused")
+  @AutonomousOnly public final InterpolatableRevGyro gyro = new InterpolatableRevGyro(
+          48,
+          25000000,
+          3
+  );
+  @SuppressWarnings("unused")
+  @AutonomousOnly public final InterpolatableRev2m frontRange = new InterpolatableRev2m(
+          48,
+          25000000,
+          3,
+          "CB_AUTO_FRONT_RANGE"
+  );
+  @SuppressWarnings("unused")
+  @AutonomousOnly public final InterpolatableRev2m leftRange = new InterpolatableRev2m(
+          48,
+          25000000,
+          3,
+          "CB_AUTO_LEFT_RANGE"
+  );
+  @SuppressWarnings("unused")
+  @AutonomousOnly public final InterpolatableRev2m rightRange = new InterpolatableRev2m(
+          48,
+          25000000,
+          3,
+          "CB_AUTO_RIGHT_RANGE"
+  );
+  @SuppressWarnings("unused")
+  @AutonomousOnly public final InterpolatableRev2m rearRange = new InterpolatableRev2m(
+          48,
+          25000000,
+          3,
+          "CB_AUTO_REAR_RANGE"
+  );
 
   private final ScheduledExecutorService executorService =
       Executors.newSingleThreadScheduledExecutor();
@@ -324,17 +359,10 @@ public class TurretBot implements Component {
             () -> {
               lift.setArmTwoPosition(0);
               gripper.open();
-              Log.d("WTF", "HERE1");
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
-                  () -> {
-                    Log.d("WTF", "HERE2");
-                    setLiftToPosition(FIRST_JOINT_OFFSET - 520)
-                            .andThen(() -> {
-                              Log.d("WTF", "HERE3");
-                              gripperIsNearGround.set(true);
-                            });
-                  });
+                  () -> setLiftToPosition(FIRST_JOINT_OFFSET - 520)
+                          .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
       case TEAM_MARKER_DEPOSIT_POSITION:

@@ -16,10 +16,6 @@ import java.util.Map;
 public class RunToPositionPipe extends HardwarePipeline {
   private final List<RunToPositionTracker> trackedMotors = new LinkedList<>();
 
-  public RunToPositionPipe(String name) {
-    super(name);
-  }
-
   public RunToPositionPipe(String name, HardwarePipeline nextElement) {
     super(name, nextElement);
   }

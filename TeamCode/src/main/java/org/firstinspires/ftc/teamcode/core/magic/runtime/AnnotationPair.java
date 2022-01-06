@@ -18,14 +18,6 @@ public class AnnotationPair implements IAnnotationPair {
     this.annotationTargetMethod = null;
   }
 
-  public AnnotationPair(
-      Annotation annotation, Object annotationContainer, Method annotationTargetMethod) {
-    this.annotation = annotation;
-    this.annotationContainer = annotationContainer;
-    this.annotationTargetMethod = annotationTargetMethod;
-    this.annotationTargetField = null;
-  }
-
   @Override
   public Annotation getAnnotation() {
     return annotation;
@@ -39,10 +31,5 @@ public class AnnotationPair implements IAnnotationPair {
   @Override
   public Field getAnnotationTargetField() {
     return annotationTargetField;
-  }
-
-  @Override
-  public Method getAnnotationTargetMethod() {
-    return annotationTargetMethod;
   }
 }

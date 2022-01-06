@@ -10,11 +10,6 @@ public class BulkReadManagerPipe extends HardwarePipeline {
   private List<LynxModule> lynxModules;
   private boolean initialized = false;
 
-  public BulkReadManagerPipe(String name) {
-    super(name);
-    BulkReadManagerPipe.instance = this;
-  }
-
   public BulkReadManagerPipe(String name, HardwarePipeline nextPipe) {
     super(name, nextPipe);
     BulkReadManagerPipe.instance = this;
