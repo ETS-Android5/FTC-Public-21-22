@@ -28,9 +28,11 @@ public class RampedIntake implements IRampedIntake {
   private static final double RAISED_POSITION = 0.0;
 
   @Hardware(name = INTAKE_MOTOR_NAME)
+  @SuppressWarnings("unused")
   public DcMotorEx intakeMotor;
 
   @Hardware(name = INTAKE_SERVO_NAME)
+  @SuppressWarnings("unused")
   public Servo intakeServo;
 
   private IMotorState intakeMotorState;

@@ -20,6 +20,7 @@ public class SingleServoGripper implements ISingleServoGripper {
   private static final double CLOSED_ON_TEAM_MARKER_POSITION = 0.73;
 
   @Hardware(name = SINGLE_SERVO_GRIPPER_SERVO_NAME)
+  @SuppressWarnings("unused")
   public Servo singleServoGripperServo;
 
   private IServoState singleServoGripperServoState;

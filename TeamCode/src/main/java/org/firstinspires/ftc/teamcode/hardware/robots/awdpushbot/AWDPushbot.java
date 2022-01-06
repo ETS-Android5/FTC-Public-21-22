@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.hardware.mechanisms.drivetrains.AWDClassic
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class AWDPushbot implements Component {
   public final AWDClassicDrivetrain drivetrain = new AWDClassicDrivetrain();
 

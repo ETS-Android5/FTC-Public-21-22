@@ -19,6 +19,7 @@ public class OuttakeBucket implements IOuttakeBucket {
   private static final double DUMP_POSITION = .9;
 
   @Hardware(name = OUTTAKE_BUCKET_SERVO_NAME)
+  @SuppressWarnings("unused")
   public Servo outtakeServo;
 
   private IServoState outtakeServoState;

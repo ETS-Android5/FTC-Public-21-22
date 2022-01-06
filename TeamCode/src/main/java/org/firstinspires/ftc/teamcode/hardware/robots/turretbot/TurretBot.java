@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode.hardware.robots.turretbot;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
+import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
+import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.ExitPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InterpolatablePipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
 import org.firstinspires.ftc.teamcode.core.hardware.state.MotorPositionReachedCallback;
@@ -35,6 +39,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 public class TurretBot implements Component {
   private static final int FIRST_JOINT_OFFSET = 230;
@@ -501,5 +506,56 @@ public class TurretBot implements Component {
     if (Math.abs(currentDegrees - (nextTurretPosition / Turret.DEGREES_TO_TICKS)) > 45) {
       lift.setArmTwoPosition(0.47);
     }
+  }
+
+  // Auto methods
+
+  public void runAtHeadingUntilCondition(
+          int target,
+          int tolerance,
+          Direction direction,
+          Supplier<Boolean> condition,
+          Supplier<Double> basePower,
+          Supplier<Boolean> opModeIsActive,
+          Runnable update) {
+    TriFunction<Integer, Integer, Integer, Double> powerCurve =
+            PowerCurves.generatePowerCurve(0.25, 2.33);
+    Double currentHeading = InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
+    double initialHeading = currentHeading;
+    Double turnSpeed;
+    int leftDirection;
+    int rightDirection;
+    if (Math.abs(target - currentHeading) > tolerance) {
+      while (opModeIsActive.get() && Math.abs(target - currentHeading) > tolerance) {
+        currentHeading = InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
+        turnSpeed =
+                powerCurve.apply(
+                        (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
+        leftDirection = currentHeading > target ? -1 : 1;
+        rightDirection = currentHeading < target ? -1 : 1;
+        drivetrain.setLeftPower(turnSpeed * leftDirection);
+        drivetrain.setRightPower(turnSpeed * rightDirection);
+        update.run();
+      }
+    }
+    drivetrain.setAllPower(0);
+    update.run();
+    double leftDiff;
+    double rightDiff;
+    double directionAdjustment = direction == Direction.FORWARD ? -1 : 1;
+    while (opModeIsActive.get() && !condition.get()) {
+      currentHeading = InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
+      turnSpeed =
+              powerCurve.apply(
+                      (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
+      leftDiff = turnSpeed * (currentHeading > target ? -1 : 1) * directionAdjustment;
+      rightDiff = turnSpeed * (currentHeading < target ? -1 : 1) * directionAdjustment;
+      double basePowerVal = basePower.get();
+      drivetrain.setLeftPower((basePowerVal * directionAdjustment) + leftDiff);
+      drivetrain.setRightPower((basePowerVal * directionAdjustment) + rightDiff);
+      update.run();
+    }
+    drivetrain.setAllPower(0);
+    update.run();
   }
 }
