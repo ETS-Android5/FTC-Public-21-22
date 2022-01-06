@@ -170,7 +170,12 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         carouselMoveForAlliance(robot.getAlliance()), true, BooleanSurface.LEFT_STICK);
 
     controller2.registerOnPressedCallback(
-        () -> robot.setAlliance(robot.getAlliance().opposite()), true, BooleanSurface.RIGHT_STICK);
+        () -> {
+          robot.setAlliance(robot.getAlliance().opposite());
+          controller2.vibrate(1, 1, 250);
+        },
+        true,
+        BooleanSurface.RIGHT_STICK);
 
     controller2.registerOnPressedCallback(
         () -> {
