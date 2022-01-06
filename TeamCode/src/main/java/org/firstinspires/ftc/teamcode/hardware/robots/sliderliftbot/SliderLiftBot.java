@@ -56,7 +56,8 @@ public class SliderLiftBot implements Component {
       new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_REAR_RANGE");
 
   @SuppressWarnings("unused")
-  @AutonomousOnly public final Interpolatable gyro = new InterpolatableRevGyro(48, 25000000, 3);
+  @AutonomousOnly
+  public final Interpolatable gyro = new InterpolatableRevGyro(48, 25000000, 3);
 
   @Override
   public String getName() {

@@ -57,41 +57,32 @@ public class TurretBot implements Component {
   public final ISingleServoGripper gripper = new SingleServoGripper();
 
   @SuppressWarnings("unused")
-  @AutonomousOnly public final FtcCamera webcam = new Webcam();
+  @AutonomousOnly
+  public final FtcCamera webcam = new Webcam();
+
   @SuppressWarnings("unused")
-  @AutonomousOnly public final InterpolatableRevGyro gyro = new InterpolatableRevGyro(
-          48,
-          25000000,
-          3
-  );
+  @AutonomousOnly
+  public final InterpolatableRevGyro gyro = new InterpolatableRevGyro(48, 25000000, 3);
+
   @SuppressWarnings("unused")
-  @AutonomousOnly public final InterpolatableRev2m frontRange = new InterpolatableRev2m(
-          48,
-          25000000,
-          3,
-          "CB_AUTO_FRONT_RANGE"
-  );
+  @AutonomousOnly
+  public final InterpolatableRev2m frontRange =
+      new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_FRONT_RANGE");
+
   @SuppressWarnings("unused")
-  @AutonomousOnly public final InterpolatableRev2m leftRange = new InterpolatableRev2m(
-          48,
-          25000000,
-          3,
-          "CB_AUTO_LEFT_RANGE"
-  );
+  @AutonomousOnly
+  public final InterpolatableRev2m leftRange =
+      new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_LEFT_RANGE");
+
   @SuppressWarnings("unused")
-  @AutonomousOnly public final InterpolatableRev2m rightRange = new InterpolatableRev2m(
-          48,
-          25000000,
-          3,
-          "CB_AUTO_RIGHT_RANGE"
-  );
+  @AutonomousOnly
+  public final InterpolatableRev2m rightRange =
+      new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_RIGHT_RANGE");
+
   @SuppressWarnings("unused")
-  @AutonomousOnly public final InterpolatableRev2m rearRange = new InterpolatableRev2m(
-          48,
-          25000000,
-          3,
-          "CB_AUTO_REAR_RANGE"
-  );
+  @AutonomousOnly
+  public final InterpolatableRev2m rearRange =
+      new InterpolatableRev2m(48, 25000000, 3, "CB_AUTO_REAR_RANGE");
 
   private final ScheduledExecutorService executorService =
       Executors.newSingleThreadScheduledExecutor();
@@ -143,7 +134,7 @@ public class TurretBot implements Component {
     return new MotorPositionReachedCallback(
         DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
         position,
-            TurretBot.liftTolerance,
+        TurretBot.liftTolerance,
         Math.abs(
                 position
                     - MotorTrackerPipe.getInstance()
@@ -156,16 +147,16 @@ public class TurretBot implements Component {
     return new MotorPositionReachedCallback(
         Turret.TURRET_MOTOR_NAME,
         position,
-            TurretBot.turretTolerance,
+        TurretBot.turretTolerance,
         Math.abs(position - MotorTrackerPipe.getInstance().getPositionOf(Turret.TURRET_MOTOR_NAME))
             <= TurretBot.turretTolerance);
   }
 
   private void ensureTurretIsAt(
-          int position,
-          int liftJointOneTarget,
-          MovementStepStrictness stepStrictness,
-          Runnable andThen) {
+      int position,
+      int liftJointOneTarget,
+      MovementStepStrictness stepStrictness,
+      Runnable andThen) {
     double currentTurretPosition = turret.getState();
     if (Math.abs(position - currentTurretPosition) <= TurretBot.turretTolerance) {
       lift.setArmOnePosition(liftJointOneTarget);
@@ -176,12 +167,11 @@ public class TurretBot implements Component {
       setLiftToPosition(liftJointOneMaximizedTarget)
           .andAfterMotorIsBeyond(
               FIRST_JOINT_OFFSET,
-                  TurretBot.liftTolerance,
+              TurretBot.liftTolerance,
               () -> {
                 if (stepStrictness == MovementStepStrictness.ORDERED_STRICTLY) {
                   setTurretToPosition(position)
-                      .andThen(
-                          () -> setLiftToPosition(liftJointOneTarget).andThen(andThen));
+                      .andThen(() -> setLiftToPosition(liftJointOneTarget).andThen(andThen));
                   return;
                 }
                 if (liftJointOneTarget
@@ -206,7 +196,7 @@ public class TurretBot implements Component {
                     setTurretToPosition(position)
                         .andAfterMotorIsBeyond(
                             safeTicksForLiftMovements,
-                                TurretBot.turretTolerance,
+                            TurretBot.turretTolerance,
                             () -> {
                               setLiftToPosition(liftJointOneTarget);
                               andThen.run();
@@ -216,7 +206,7 @@ public class TurretBot implements Component {
                     setTurretToPosition(position)
                         .andAfterMotorIsBelow(
                             safeTicksForLiftMovements,
-                                TurretBot.turretTolerance,
+                            TurretBot.turretTolerance,
                             () -> {
                               setLiftToPosition(liftJointOneTarget);
                               andThen.run();
@@ -239,7 +229,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                0,
+            0,
             MovementStepStrictness.ORDERED_STRICTLY,
             () -> {
               gripper.open();
@@ -257,7 +247,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET + 69,
+            FIRST_JOINT_OFFSET + 69,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             () -> lift.setArmTwoPosition(0.63));
         break;
@@ -266,7 +256,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET + 10,
+            FIRST_JOINT_OFFSET + 10,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             () -> lift.setArmTwoPosition(0.39));
         break;
@@ -275,7 +265,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET,
+            FIRST_JOINT_OFFSET,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             () -> {
               lift.setArmTwoPosition(0.13);
@@ -291,7 +281,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET + 88,
+            FIRST_JOINT_OFFSET + 88,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             () -> lift.setArmTwoPosition(0.63));
         break;
@@ -300,7 +290,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET + 45,
+            FIRST_JOINT_OFFSET + 45,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             () -> lift.setArmTwoPosition(0.44));
         break;
@@ -309,7 +299,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET,
+            FIRST_JOINT_OFFSET,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             () -> {
               lift.setArmTwoPosition(0.13);
@@ -325,7 +315,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET,
+            FIRST_JOINT_OFFSET,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             () -> {
               lift.setArmTwoPosition(0);
@@ -341,7 +331,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET - 22,
+            FIRST_JOINT_OFFSET - 22,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             () -> lift.setArmTwoPosition(0.13));
         break;
@@ -350,7 +340,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET + 550,
+            FIRST_JOINT_OFFSET + 550,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             () -> lift.setArmTwoPosition(0.43));
         break;
@@ -359,14 +349,15 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET,
+            FIRST_JOINT_OFFSET,
             MovementStepStrictness.ORDERED_LOOSELY,
             () -> {
               lift.setArmTwoPosition(0);
               gripper.open();
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
-                  () -> setLiftToPosition(FIRST_JOINT_OFFSET - 520)
+                  () ->
+                      setLiftToPosition(FIRST_JOINT_OFFSET - 520)
                           .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
@@ -375,7 +366,7 @@ public class TurretBot implements Component {
         adjustSecondJointForTurretMovement(turretTarget);
         ensureTurretIsAt(
             turretTarget,
-                FIRST_JOINT_OFFSET + 570,
+            FIRST_JOINT_OFFSET + 570,
             MovementStepStrictness.ORDERED_LOOSELY,
             () -> lift.setArmTwoPosition(0.3));
         break;
@@ -390,7 +381,7 @@ public class TurretBot implements Component {
       // Handle low movements
       ensureTurretIsAt(
           turretTarget,
-              FIRST_JOINT_OFFSET,
+          FIRST_JOINT_OFFSET,
           MovementStepStrictness.SECOND_JOINT_SAFE,
           () -> {
             lift.setArmTwoPosition(position[1]);
@@ -408,7 +399,7 @@ public class TurretBot implements Component {
       // Handle closer movements
       ensureTurretIsAt(
           turretTarget,
-              FIRST_JOINT_OFFSET + (int) position[0],
+          FIRST_JOINT_OFFSET + (int) position[0],
           MovementStepStrictness.SECOND_JOINT_SAFE,
           () -> {
             lift.setArmTwoPosition(position[1]);
@@ -511,26 +502,28 @@ public class TurretBot implements Component {
   // Auto methods
 
   public void runAtHeadingUntilCondition(
-          int target,
-          int tolerance,
-          Direction direction,
-          Supplier<Boolean> condition,
-          Supplier<Double> basePower,
-          Supplier<Boolean> opModeIsActive,
-          Runnable update) {
+      int target,
+      int tolerance,
+      Direction direction,
+      Supplier<Boolean> condition,
+      Supplier<Double> basePower,
+      Supplier<Boolean> opModeIsActive,
+      Runnable update) {
     TriFunction<Integer, Integer, Integer, Double> powerCurve =
-            PowerCurves.generatePowerCurve(0.25, 2.33);
-    Double currentHeading = InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
+        PowerCurves.generatePowerCurve(0.25, 2.33);
+    Double currentHeading =
+        InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
     double initialHeading = currentHeading;
     Double turnSpeed;
     int leftDirection;
     int rightDirection;
     if (Math.abs(target - currentHeading) > tolerance) {
       while (opModeIsActive.get() && Math.abs(target - currentHeading) > tolerance) {
-        currentHeading = InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
+        currentHeading =
+            InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
         turnSpeed =
-                powerCurve.apply(
-                        (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
+            powerCurve.apply(
+                (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
         leftDirection = currentHeading > target ? -1 : 1;
         rightDirection = currentHeading < target ? -1 : 1;
         drivetrain.setLeftPower(turnSpeed * leftDirection);
@@ -544,10 +537,11 @@ public class TurretBot implements Component {
     double rightDiff;
     double directionAdjustment = direction == Direction.FORWARD ? -1 : 1;
     while (opModeIsActive.get() && !condition.get()) {
-      currentHeading = InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
+      currentHeading =
+          InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
       turnSpeed =
-              powerCurve.apply(
-                      (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
+          powerCurve.apply(
+              (int) Math.round(currentHeading), (int) Math.round(initialHeading), target);
       leftDiff = turnSpeed * (currentHeading > target ? -1 : 1) * directionAdjustment;
       rightDiff = turnSpeed * (currentHeading < target ? -1 : 1) * directionAdjustment;
       double basePowerVal = basePower.get();

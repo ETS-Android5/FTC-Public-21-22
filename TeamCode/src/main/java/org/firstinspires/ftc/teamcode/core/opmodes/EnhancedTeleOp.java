@@ -30,7 +30,7 @@ public abstract class EnhancedTeleOp extends OpMode {
   protected Component robotObject;
   private HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
   private ReflectionBasedMagicRuntime serviceRuntime;
-//@SuppressWarnings("unused")
+  // @SuppressWarnings("unused")
   public EnhancedTeleOp(Component robotObject) {
     State.clear();
     initializedHardware = new ConcurrentHashMap<>();
@@ -42,12 +42,10 @@ public abstract class EnhancedTeleOp extends OpMode {
                 new InitializedFilterPipe(
                     "FilterElement",
                     new InterpolatablePipe(
-                            "InterpolatablePipe",
-                            new MotorTrackerPipe(
-                                    "MotorTrackerPipe",
-                                    new RunToPositionPipe("RunToPosition",
-                                            new ExitPipe("Exit")))
-                    ))));
+                        "InterpolatablePipe",
+                        new MotorTrackerPipe(
+                            "MotorTrackerPipe",
+                            new RunToPositionPipe("RunToPosition", new ExitPipe("Exit")))))));
     controller1 = new Controller(Constants.GAMEPAD_1_NAME);
     controller2 = new Controller(Constants.GAMEPAD_2_NAME);
     this.robotObject = robotObject;

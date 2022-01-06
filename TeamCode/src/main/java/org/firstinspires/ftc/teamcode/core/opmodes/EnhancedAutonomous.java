@@ -38,12 +38,11 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
                 "BulkReadManager",
                 new InitializedFilterPipe(
                     "FilterElement",
-                        new InterpolatablePipe(
-                                "Interpolatable",
-                                new MotorTrackerPipe(
-                                        "MotorTracker",
-                                        new RunToPositionPipe("RunToPosition",
-                                                new ExitPipe("Exit")))))));
+                    new InterpolatablePipe(
+                        "Interpolatable",
+                        new MotorTrackerPipe(
+                            "MotorTracker",
+                            new RunToPositionPipe("RunToPosition", new ExitPipe("Exit")))))));
     this.robotObject = robotObject;
     initialize();
   }

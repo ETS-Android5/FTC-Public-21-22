@@ -138,22 +138,28 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller1.registerOnPressedCallback(
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
-    controller1.registerOnPressedCallback(() -> {
-        robot.clearFutureEvents();
-        robot.afterTimedAction(
-                robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
-                () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
-    }, true, BooleanSurface.A);
+    controller1.registerOnPressedCallback(
+        () -> {
+          robot.clearFutureEvents();
+          robot.afterTimedAction(
+              robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
+              () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
+        },
+        true,
+        BooleanSurface.A);
 
-    controller2.registerOnPressedCallback(() -> {
-        robot.clearFutureEvents();
-        robot.afterTimedAction(
-                robot.grabFreight(),
-                () -> {
-                    robot.intake.stop();
-                    robot.goToPosition(TurretBotPosition.INTAKE_HOVER_POSITION);
-                });
-    }, true, BooleanSurface.A);
+    controller2.registerOnPressedCallback(
+        () -> {
+          robot.clearFutureEvents();
+          robot.afterTimedAction(
+              robot.grabFreight(),
+              () -> {
+                robot.intake.stop();
+                robot.goToPosition(TurretBotPosition.INTAKE_HOVER_POSITION);
+              });
+        },
+        true,
+        BooleanSurface.A);
 
     controller2.registerOnPressedCallback(
         robot.intake::toggleIntaking, true, BooleanSurface.RIGHT_BUMPER);
@@ -233,7 +239,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           robot.clearFutureEvents();
           TurretBotPosition position = TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION;
           robot.afterTimedAction(
-                  robot.grabTeamMarker(),
+              robot.grabTeamMarker(),
               () -> {
                 robot.intake.stop();
                 robot.goToPosition(position);
