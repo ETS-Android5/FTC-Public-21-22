@@ -30,10 +30,6 @@ public class RunToPositionTracker implements Namable {
     this.targetTicks = targetTicks;
   }
 
-  public double getLastPower() {
-    return lastPower;
-  }
-
   public void setLastPower(double lastPower) {
     this.lastPower = lastPower;
   }

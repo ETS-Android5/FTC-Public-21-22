@@ -138,9 +138,22 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller1.registerOnPressedCallback(
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
-    controller1.registerOnPressedCallback(this::onAPressed, true, BooleanSurface.A);
+    controller1.registerOnPressedCallback(() -> {
+        robot.clearFutureEvents();
+        robot.afterTimedAction(
+                robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
+                () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
+    }, true, BooleanSurface.A);
 
-    controller2.registerOnPressedCallback(this::onAPressed, true, BooleanSurface.A);
+    controller2.registerOnPressedCallback(() -> {
+        robot.clearFutureEvents();
+        robot.afterTimedAction(
+                robot.grabFreight(),
+                () -> {
+                    robot.intake.stop();
+                    robot.goToPosition(TurretBotPosition.INTAKE_HOVER_POSITION);
+                });
+    }, true, BooleanSurface.A);
 
     controller2.registerOnPressedCallback(
         robot.intake::toggleIntaking, true, BooleanSurface.RIGHT_BUMPER);
@@ -218,11 +231,9 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> {
           robot.clearFutureEvents();
-          TurretBotPosition position = botPositionFor(BooleanSurface.DPAD_UP);
+          TurretBotPosition position = TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION;
           robot.afterTimedAction(
-              position == TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION
-                  ? robot.grabTeamMarker()
-                  : robot.grabFreight(),
+                  robot.grabTeamMarker(),
               () -> {
                 robot.intake.stop();
                 robot.goToPosition(position);
@@ -259,13 +270,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     robot.clearFutureEvents();
   }
 
-  private void onAPressed() {
-    robot.clearFutureEvents();
-    robot.afterTimedAction(
-        robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
-        () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION));
-  }
-
   private void onController2YPressed() {
     robot.clearFutureEvents();
     TurretBotPosition position = botPositionFor(BooleanSurface.Y);
@@ -299,10 +303,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
             : tippedMode.get()
                 ? TurretBotPosition.TIPPED_MIDDLE_POSITION
                 : TurretBotPosition.SHARED_MIDDLE_POSITION;
-      case DPAD_UP:
-        return allianceHubMode.get()
-            ? TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION
-            : TurretBotPosition.INTAKE_HOVER_POSITION;
       default:
         return null;
     }

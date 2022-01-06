@@ -19,11 +19,6 @@ public class InterpolatablePipe extends HardwarePipeline {
   private long pipelineIteration = 0;
   private boolean inPipe = false;
 
-  public InterpolatablePipe(String name) {
-    super(name);
-    InterpolatablePipe.instance = this;
-  }
-
   public InterpolatablePipe(String name, HardwarePipeline nextElement) {
     super(name, nextElement);
     InterpolatablePipe.instance = this;

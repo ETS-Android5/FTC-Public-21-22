@@ -59,11 +59,6 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
   }
 
   @Override
-  public HardwareMap getHardwareMap() {
-    return hardwareMap;
-  }
-
-  @Override
   public void setHardwareMap(HardwareMap hardwareMap) {
     this.hardwareMap = hardwareMap;
   }

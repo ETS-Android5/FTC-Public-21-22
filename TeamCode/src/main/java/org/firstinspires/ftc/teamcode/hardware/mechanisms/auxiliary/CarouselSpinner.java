@@ -30,6 +30,7 @@ public class CarouselSpinner implements ICarouselSpinner {
               + .5);
 
   @Hardware(name = CAROUSEL_SPINNER_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
+  @SuppressWarnings("unused")
   public DcMotorEx spinnerMotor;
 
   private IMotorState spinnerMotorState;

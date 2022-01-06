@@ -7,17 +7,6 @@ public enum Direction {
   FORWARD,
   REVERSE;
 
-  public Direction opposite() {
-    switch (this) {
-      case FORWARD:
-        return REVERSE;
-      case REVERSE:
-        return FORWARD;
-      default:
-        return null;
-    }
-  }
-
   public DcMotorSimple.Direction primitiveConversion() {
     switch (this) {
       case FORWARD:

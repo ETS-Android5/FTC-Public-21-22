@@ -11,11 +11,6 @@ public class InitializedFilterPipe extends HardwarePipeline {
   private static InitializedFilterPipe instance;
   private boolean allInitialized = false;
 
-  public InitializedFilterPipe(String name) {
-    super(name);
-    InitializedFilterPipe.instance = this;
-  }
-
   public InitializedFilterPipe(String name, HardwarePipeline nextPipe) {
     super(name, nextPipe);
     InitializedFilterPipe.instance = this;

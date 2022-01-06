@@ -10,6 +10,4 @@ public interface IAnnotationPair {
   Object getAnnotationContainer();
 
   Field getAnnotationTargetField();
-
-  Method getAnnotationTargetMethod();
 }

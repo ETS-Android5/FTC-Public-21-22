@@ -15,11 +15,6 @@ public class MotorTrackerPipe extends HardwarePipeline {
   private final Map<String, MotorPositionData> motorPositions = new HashMap<>();
   private List<CallbackData<Integer>> motorPositionCallbacks = new LinkedList<>();
 
-  public MotorTrackerPipe(String name) {
-    super(name);
-    MotorTrackerPipe.instance = this;
-  }
-
   public MotorTrackerPipe(String name, HardwarePipeline nextPipe) {
     super(name, nextPipe);
     MotorTrackerPipe.instance = this;
