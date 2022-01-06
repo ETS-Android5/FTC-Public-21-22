@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp(name = "SliderLiftTele")
 @Disabled
+@SuppressWarnings("unused")
 public class SliderLiftTele extends EnhancedTeleOp {
   private final SliderLiftBot robot;
   private final AtomicBoolean halfSpeed = new AtomicBoolean(false);

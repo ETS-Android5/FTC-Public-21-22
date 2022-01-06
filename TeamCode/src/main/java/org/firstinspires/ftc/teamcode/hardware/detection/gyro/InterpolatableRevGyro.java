@@ -15,7 +15,9 @@ import org.firstinspires.ftc.teamcode.core.hardware.state.Interpolatable;
 
 @SuppressWarnings("UnstableApiUsage")
 public class InterpolatableRevGyro implements Interpolatable {
-  @Hardware(name = "CB_AUTO_IMU")
+  public static final String GYRO_NAME = "CB_AUTO_IMU";
+
+  @Hardware(name = GYRO_NAME)
   public BNO055IMU gyro;
 
   private EvictingQueue<DataPoint> dataPoints;

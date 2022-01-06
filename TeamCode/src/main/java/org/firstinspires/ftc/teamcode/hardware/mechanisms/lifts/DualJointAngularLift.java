@@ -27,9 +27,11 @@ public class DualJointAngularLift implements IDualJointAngularLift {
       name = LIFT_JOINT_ONE_MOTOR_NAME,
       runMode = RunMode.RUN_TO_POSITION,
       direction = Direction.REVERSE)
+  @SuppressWarnings("unused")
   public DcMotorEx liftJointOneMotor;
 
   @Hardware(name = LIFT_JOINT_TWO_SERVO_NAME)
+  @SuppressWarnings("unused")
   public Servo liftJointTwoServo;
 
   private IMotorState liftJointOneMotorState;

@@ -22,6 +22,7 @@ public class Intake implements IIntake<IntakeState> {
   private static final double SLOW_OUTTAKING_SPEED = 0.45;
 
   @Hardware(name = INTAKE_MOTOR_NAME)
+  @SuppressWarnings("unused")
   public DcMotorEx intakeMotor;
 
   private IMotorState intakeMotorState;

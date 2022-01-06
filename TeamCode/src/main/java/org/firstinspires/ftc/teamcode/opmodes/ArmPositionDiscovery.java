@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "ArmPositionDiscovery")
+@SuppressWarnings("unused")
 public class ArmPositionDiscovery extends OpMode {
   private DcMotorEx fl;
   private DcMotorEx fr;

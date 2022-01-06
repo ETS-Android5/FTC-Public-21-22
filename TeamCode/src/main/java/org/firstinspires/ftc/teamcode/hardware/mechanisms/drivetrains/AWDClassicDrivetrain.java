@@ -19,15 +19,19 @@ public class AWDClassicDrivetrain implements IAWDClassicDrivetrain {
   private static final String REAR_RIGHT_MOTOR_NAME = "REAR_RIGHT_MOTOR";
 
   @Hardware(name = FRONT_LEFT_MOTOR_NAME, direction = Direction.REVERSE)
+  @SuppressWarnings("unused")
   public DcMotorEx frontLeftMotor;
 
   @Hardware(name = FRONT_RIGHT_MOTOR_NAME)
+  @SuppressWarnings("unused")
   public DcMotorEx frontRightMotor;
 
   @Hardware(name = REAR_LEFT_MOTOR_NAME, direction = Direction.REVERSE)
+  @SuppressWarnings("unused")
   public DcMotorEx rearLeftMotor;
 
   @Hardware(name = REAR_RIGHT_MOTOR_NAME)
+  @SuppressWarnings("unused")
   public DcMotorEx rearRightMotor;
 
   private IMotorState frontLeftMotorState;

@@ -27,6 +27,7 @@ public class Turret implements ITurret {
   public static final int TICKS_CCW_BACK = (int) ((-DEGREES_BACK * DEGREES_TO_TICKS) - 0.5);
 
   @Hardware(name = TURRET_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
+  @SuppressWarnings("unused")
   public DcMotorEx turretMotor;
 
   private IMotorState turretMotorState;

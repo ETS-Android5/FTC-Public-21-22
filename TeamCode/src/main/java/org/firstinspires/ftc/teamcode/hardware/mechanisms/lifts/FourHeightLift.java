@@ -23,6 +23,7 @@ public class FourHeightLift implements IFourHeightLift {
   private static final int HEIGHT_3_TICKS = 2300;
 
   @Hardware(name = LIFT_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
+  @SuppressWarnings("unused")
   public DcMotorEx liftMotor;
 
   private IMotorState liftMotorState;

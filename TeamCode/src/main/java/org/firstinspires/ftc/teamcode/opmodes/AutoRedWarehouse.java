@@ -16,6 +16,7 @@ import java.io.StringWriter;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Autonomous(name = "CB_AUTO_AutoRed")
+@SuppressWarnings("unused")
 public class AutoRedWarehouse extends EnhancedAutonomous {
 
   private final SliderLiftBot robot;
