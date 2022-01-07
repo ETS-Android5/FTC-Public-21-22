@@ -5,14 +5,14 @@ import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
 public class RunToPositionTracker implements Namable {
   private final String name;
-  private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
+  private final TriFunction<Double, Double, Double, Double> powerCurve;
   private int startingTicks;
   private int targetTicks;
   private double lastPower;
 
   public RunToPositionTracker(
       String name,
-      TriFunction<Integer, Integer, Integer, Double> powerCurve,
+      TriFunction<Double, Double, Double, Double> powerCurve,
       int startingTicks,
       int targetTicks) {
     this.name = name;
@@ -35,7 +35,8 @@ public class RunToPositionTracker implements Namable {
   }
 
   public double getTargetPowerPercentage(int currentTicks) {
-    double ret = powerCurve.apply(currentTicks, startingTicks, targetTicks);
+    double ret =
+        powerCurve.apply((double) currentTicks, (double) startingTicks, (double) targetTicks);
     return ret < -1 ? -1 : ret > 1 ? 1 : ret;
   }
 

@@ -14,7 +14,7 @@ public class MotorState extends IMotorState {
   private final ZeroPowerBehavior zeroPowerBehavior;
   private final double power;
   private final int targetPosition;
-  private final TriFunction<Integer, Integer, Integer, Double> powerCurve;
+  private final TriFunction<Double, Double, Double, Double> powerCurve;
   private final Function<Double, Double> powerAndTickRateRelation;
   private final QuadFunction<Double, Double, Integer, Integer, Double> powerCorrection;
   private final String encoderDataSource;
@@ -40,7 +40,7 @@ public class MotorState extends IMotorState {
       ZeroPowerBehavior zeroPowerBehavior,
       Double power,
       Integer targetPosition,
-      TriFunction<Integer, Integer, Integer, Double> powerCurve,
+      TriFunction<Double, Double, Double, Double> powerCurve,
       Function<Double, Double> powerAndTickRateRelation,
       QuadFunction<Double, Double, Integer, Integer, Double> powerCorrection,
       String encoderDataSource) {
@@ -157,12 +157,12 @@ public class MotorState extends IMotorState {
   }
 
   @Override
-  public TriFunction<Integer, Integer, Integer, Double> getPowerCurve() {
+  public TriFunction<Double, Double, Double, Double> getPowerCurve() {
     return powerCurve;
   }
 
   @Override
-  public IMotorState withPowerCurve(TriFunction<Integer, Integer, Integer, Double> powerCurve) {
+  public IMotorState withPowerCurve(TriFunction<Double, Double, Double, Double> powerCurve) {
     return new MotorState(
         this.name,
         this.direction,

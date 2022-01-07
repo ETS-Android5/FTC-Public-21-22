@@ -226,7 +226,7 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public void setPowerCurve(TriFunction<Integer, Integer, Integer, Double> powerCurve) {
+  public void setPowerCurve(TriFunction<Double, Double, Double, Double> powerCurve) {
     frontLeftMotorState = frontLeftMotorState.withPowerCurve(powerCurve);
     frontRightMotorState = frontRightMotorState.withPowerCurve(powerCurve);
     rearLeftMotorState = rearLeftMotorState.withPowerCurve(powerCurve);

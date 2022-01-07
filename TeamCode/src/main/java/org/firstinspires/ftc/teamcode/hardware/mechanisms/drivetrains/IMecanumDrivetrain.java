@@ -40,7 +40,7 @@ public interface IMecanumDrivetrain extends IAWDClassicDrivetrain {
 
   void driveBySticks(double lateral, double longitudinal, double turn);
 
-  void setPowerCurve(TriFunction<Integer, Integer, Integer, Double> powerCurve);
+  void setPowerCurve(TriFunction<Double, Double, Double, Double> powerCurve);
 
   void autoRunToPosition(
       int ticks, int tolerance, Supplier<Boolean> opModeIsActive, Runnable update);

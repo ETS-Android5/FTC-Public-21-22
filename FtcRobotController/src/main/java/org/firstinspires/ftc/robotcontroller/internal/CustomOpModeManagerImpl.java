@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
 import android.app.Activity;
-import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
@@ -21,22 +20,18 @@ public class CustomOpModeManagerImpl extends OpModeManagerImpl {
 
     @Override
     protected void callActiveOpModeInit() {
-        Log.d("TEST", activeOpModeName + " PRE INIT");
         synchronized (this.listeners) {
             for (OpModeManagerNotifier.Notifications listener : this.listeners) {
-                Log.d("TEST", "Initializing: " + listener.toString());
                 listener.onOpModePreInit(activeOpMode);
             }
         }
         for (HardwareDevice device : this.hardwareMap) {
             if (device instanceof OpModeManagerNotifier.Notifications) {
-                if (device.getDeviceName().startsWith(AUTO_ONLY_PREFIX)) {
+                if (hardwareMap.getNamesOf(device).stream().findFirst().orElse("").startsWith(AUTO_ONLY_PREFIX)) {
                     if (activeOpModeName.startsWith(AUTO_ONLY_PREFIX)) {
-                        Log.d("TEST", "Initializing: " + device.getDeviceName());
                         ((OpModeManagerNotifier.Notifications)device).onOpModePreInit(activeOpMode);
                     }
                 } else {
-                    Log.d("TEST", "Initializing: " + device.getDeviceName());
                     ((OpModeManagerNotifier.Notifications)device).onOpModePreInit(activeOpMode);
                 }
             }
