@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.teamcode.core.annotations.PostInit;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.hardware.state.DataPoint;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Interpolatable;
@@ -19,18 +20,22 @@ public class InterpolatableRevGyro implements Interpolatable {
 
   @Hardware(name = GYRO_NAME)
   public BNO055IMU gyro;
-
   private EvictingQueue<DataPoint> dataPoints;
   private long sampleRateNs;
   private int polynomialDegree;
   private long lastSampleTime;
   private boolean isSampling = false;
-
   public InterpolatableRevGyro(int analysisSize, long sampleRateNs, int polynomialDegree) {
     this.dataPoints = EvictingQueue.create(analysisSize);
     this.sampleRateNs = sampleRateNs;
     this.polynomialDegree = polynomialDegree;
     this.lastSampleTime = 0;
+  }
+
+  @PostInit(argType = BNO055IMU.class)
+  @SuppressWarnings("unused")
+  public void init(BNO055IMU arg) {
+    initialize();
   }
 
   @Override
@@ -95,9 +100,9 @@ public class InterpolatableRevGyro implements Interpolatable {
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
     parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
     parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-    parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+    parameters.calibrationDataFile = "AdafruitIMUCalibration.json";
     parameters.loggingEnabled = true;
-    parameters.loggingTag = "IMU";
+    parameters.loggingTag = GYRO_NAME;
     parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
     gyro.initialize(parameters);
     gyro.startAccelerationIntegration(new Position(), new Velocity(), 20);
@@ -122,6 +127,6 @@ public class InterpolatableRevGyro implements Interpolatable {
 
   @Override
   public String getName() {
-    return "IMU";
+    return GYRO_NAME;
   }
 }

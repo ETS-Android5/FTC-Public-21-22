@@ -30,8 +30,7 @@ public class RunToPositionPipe extends HardwarePipeline {
               if ((currentState == null || currentState.getRunMode() != RunMode.RUN_TO_POSITION)
                   && nextState.getRunMode() == RunMode.RUN_TO_POSITION) {
                 int currentPosition = MotorTrackerPipe.getInstance().getPositionOf(motorName);
-                TriFunction<Integer, Integer, Integer, Double> powerCurve =
-                    nextState.getPowerCurve();
+                TriFunction<Double, Double, Double, Double> powerCurve = nextState.getPowerCurve();
                 if (powerCurve == null) {
                   powerCurve = PowerCurves.generatePowerCurve(1, 2.33);
                 }
