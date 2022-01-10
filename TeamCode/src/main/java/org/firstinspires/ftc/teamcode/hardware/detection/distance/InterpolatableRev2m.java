@@ -81,6 +81,8 @@ public class InterpolatableRev2m implements Interpolatable {
   public void sample() {
     // Getting new data point
     double distance = distanceSensor.getDistance(DistanceUnit.MM);
+    distance = distance > 2000 ? 2000 : distance;
+    distance = distance < 0 ? 0 : distance;
     lastSampleTime = System.nanoTime();
     dataPoints.add(new DataPoint(distance, lastSampleTime));
   }

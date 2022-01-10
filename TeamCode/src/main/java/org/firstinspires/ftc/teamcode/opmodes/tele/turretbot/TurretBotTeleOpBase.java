@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.tele.turretbot;
 
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
@@ -17,6 +17,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.0055; // 1.5 degrees
 
+  private static double THIRD_MANIPULATION(double in) {
+      return Math.pow(in, 3);
+  }
+
   private final TurretBot robot;
 
   private final AtomicBoolean halfSpeed = new AtomicBoolean(true);
@@ -29,12 +33,8 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private boolean firstTime = true;
 
   public TurretBotTeleOpBase(Alliance alliance) {
-    super(new TurretBot(alliance));
+    super(new TurretBot(alliance, TurretBot.TELE_FIRST_JOINT_OFFSET, false));
     this.robot = (TurretBot) super.robotObject;
-  }
-
-  private static double THIRD_MANIPULATION(double in) {
-    return Math.pow(in, 3);
   }
 
   @Override
@@ -175,7 +175,16 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         true,
         BooleanSurface.X);
 
-    controller2.registerOnPressedCallback(this::onController2YPressed, true, BooleanSurface.Y);
+    controller2.registerOnPressedCallback(() -> {
+          robot.clearFutureEvents();
+          TurretBotPosition position = botPositionFor(BooleanSurface.Y);
+          robot.afterTimedAction(
+                  robot.grabFreight(),
+                  () -> {
+                      robot.intake.stop();
+                      robot.goToPosition(position);
+                  });
+      }, true, BooleanSurface.Y);
     controller2.registerOnPressedCallback(
         () -> {
           if (allianceHubMode.get()) {
@@ -221,6 +230,16 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           robot.lift.getState().second
               + (-controller2.rightStickY() * MAX_SECOND_JOINT_ADJUSTMENT));
     }
+
+    if (controller2.leftStickX() < -0.02 || controller2.rightStickX() > 0.02) {
+        robot.turretAdjustment.getAndAdd(controller2.leftStickX() / 100);
+        robot.syncPosition();
+    }
+
+    if (controller2.leftStickY() < -0.02 || controller2.leftStickY() > 0.02) {
+        robot.firstJointAdjustment.getAndAdd(controller2.leftStickY() / 100);
+        robot.syncPosition();
+    }
   }
 
   @Override
@@ -228,17 +247,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     futures.forEach(future -> future.cancel(false));
     futures.clear();
     robot.clearFutureEvents();
-  }
-
-  private void onController2YPressed() {
-    robot.clearFutureEvents();
-    TurretBotPosition position = botPositionFor(BooleanSurface.Y);
-    robot.afterTimedAction(
-        robot.grabFreight(),
-        () -> {
-          robot.intake.stop();
-          robot.goToPosition(position);
-        });
   }
 
   private TurretBotPosition botPositionFor(BooleanSurface input) {

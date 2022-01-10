@@ -101,8 +101,6 @@ public class InterpolatableRevGyro implements Interpolatable {
     parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
     parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
     parameters.calibrationDataFile = "AdafruitIMUCalibration.json";
-    parameters.loggingEnabled = true;
-    parameters.loggingTag = GYRO_NAME;
     parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
     gyro.initialize(parameters);
     gyro.startAccelerationIntegration(new Position(), new Velocity(), 20);

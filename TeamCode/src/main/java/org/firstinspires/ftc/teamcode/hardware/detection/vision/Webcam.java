@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware.detection.vision;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -24,8 +25,6 @@ import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +34,7 @@ public class Webcam implements FtcCamera {
   private static final String CAMERA_NAME = "CB_AUTO_Webcam 1";
   private final Handler callbackHandler = CallbackLooper.getDefault().getHandler();
   private final BlockingQueue<Bitmap> frameQueue = new LinkedBlockingQueue<>(1);
+  private final BlockingQueue<Boolean> initializationQueue = new LinkedBlockingQueue<>(1);
 
   @Hardware(name = CAMERA_NAME)
   public WebcamName cameraName;
@@ -48,10 +48,12 @@ public class Webcam implements FtcCamera {
   @SuppressWarnings("unused")
   public void init(WebcamName arg) {
     init();
+    Log.d("WEBCAM", "INITIALIZED");
   }
 
   @Override
   public synchronized void init() {
+    try {
     if (cameraName == null) return;
     if (cameraManager == null) {
       cameraManager = ClassFactory.getInstance().getCameraManager();
@@ -62,77 +64,80 @@ public class Webcam implements FtcCamera {
               new Deadline(secondsPermissionTimeout, TimeUnit.SECONDS), cameraName, null);
     }
     characteristics = cameraName.getCameraCharacteristics();
+    initializationQueue.add(true);
+    } catch (Exception e) {
+      initializationQueue.add(false);
+      Log.e("WEBCAM", "ERROR", e);
+    }
   }
 
   @Override
   public void start() {
+    boolean successfullyInitialized = false;
     try {
-      ContinuationSynchronizer<CameraCaptureSession> synchronizer =
-          new ContinuationSynchronizer<>();
-      Size size;
-      int fps;
-      synchronized (this) {
-        size = characteristics.getDefaultSize(ImageFormat.YUY2);
-        fps = characteristics.getMaxFramesPerSecond(ImageFormat.YUY2, size);
-      }
-      synchronized (this) {
-        try {
-          camera.createCaptureSession(
-              Continuation.create(
-                  callbackHandler,
-                  new CameraCaptureSession.StateCallbackDefault() {
-                    @Override
-                    public void onConfigured(@NonNull CameraCaptureSession session) {
-                      try {
-                        final CameraCaptureRequest captureRequest =
-                            camera.createCaptureRequest(ImageFormat.YUY2, size, fps);
-                        session.startCapture(
-                            captureRequest,
-                            (_u, _uu, cameraFrame) -> {
-                              Bitmap bmp = captureRequest.createEmptyBitmap();
-                              cameraFrame.copyToBitmap(bmp);
-                              try {
-                                frameQueue.put(bmp);
-                                deinit();
-                              } catch (InterruptedException e) {
-                                StringWriter sw = new StringWriter();
-                                PrintWriter pw = new PrintWriter(sw);
-                                e.printStackTrace(pw);
-                              }
-                            },
-                            Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));
-                        synchronizer.finish(session);
-                      } catch (CameraException | RuntimeException e) {
-                        StringWriter sw = new StringWriter();
-                        PrintWriter pw = new PrintWriter(sw);
-                        e.printStackTrace(pw);
-                        session.close();
-                        synchronizer.finish(null);
-                      }
-                    }
-                  }));
-        } catch (CameraException e) {
-          StringWriter sw = new StringWriter();
-          PrintWriter pw = new PrintWriter(sw);
-          e.printStackTrace(pw);
-          synchronizer.finish(null);
-        }
-      }
+      successfullyInitialized = initializationQueue.take();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    if (successfullyInitialized) {
       try {
-        synchronizer.await();
-      } catch (InterruptedException e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        Thread.currentThread().interrupt();
+        ContinuationSynchronizer<CameraCaptureSession> synchronizer =
+                new ContinuationSynchronizer<>();
+        Size size;
+        int fps;
+        synchronized (this) {
+          size = characteristics.getDefaultSize(ImageFormat.YUY2);
+          fps = characteristics.getMaxFramesPerSecond(ImageFormat.YUY2, size);
+        }
+        synchronized (this) {
+          try {
+            camera.createCaptureSession(
+                    Continuation.create(
+                            callbackHandler,
+                            new CameraCaptureSession.StateCallbackDefault() {
+                              @Override
+                              public void onConfigured(@NonNull CameraCaptureSession session) {
+                                try {
+                                  final CameraCaptureRequest captureRequest =
+                                          camera.createCaptureRequest(ImageFormat.YUY2, size, fps);
+                                  session.startCapture(
+                                          captureRequest,
+                                          (_u, _uu, cameraFrame) -> {
+                                            Bitmap bmp = captureRequest.createEmptyBitmap();
+                                            cameraFrame.copyToBitmap(bmp);
+                                            try {
+                                              frameQueue.put(bmp);
+                                              deinit();
+                                            } catch (InterruptedException e) {
+                                              Log.e("WEBCAM", "ERROR", e);
+                                            }
+                                          },
+                                          Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));
+                                  synchronizer.finish(session);
+                                } catch (CameraException | RuntimeException e) {
+                                  Log.e("WEBCAM", "ERROR", e);
+                                  session.close();
+                                  synchronizer.finish(null);
+                                }
+                              }
+                            }));
+          } catch (CameraException e) {
+            Log.e("WEBCAM", "ERROR", e);
+            synchronizer.finish(null);
+          }
+        }
+        try {
+          synchronizer.await();
+        } catch (InterruptedException e) {
+          Log.e("WEBCAM", "ERROR", e);
+          Thread.currentThread().interrupt();
+        }
+        synchronized (this) {
+          session = synchronizer.getValue();
+        }
+      } catch (Exception e) {
+        Log.e("WEBCAM", "ERROR", e);
       }
-      synchronized (this) {
-        session = synchronizer.getValue();
-      }
-    } catch (Exception e) {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      e.printStackTrace(pw);
     }
   }
 
@@ -149,9 +154,7 @@ public class Webcam implements FtcCamera {
         camera = null;
       }
     } catch (Exception e) {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      e.printStackTrace(pw);
+      Log.e("WEBCAM", "ERROR", e);
     }
   }
 
