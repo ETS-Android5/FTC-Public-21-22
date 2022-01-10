@@ -68,7 +68,9 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
     serviceRuntime.waveWand();
     onInitPressed();
     waitForStart();
-    onStartPressed();
+    if (!isStopRequested()) {
+      onStartPressed();
+    }
     onStop();
     State.clear();
   }

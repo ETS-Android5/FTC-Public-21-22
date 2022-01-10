@@ -22,18 +22,18 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
         new Size((int) Math.round(frame.width() / 10.0), (int) Math.round(frame.height() / 10.0)),
         .1,
         .1,
-        Imgproc.INTER_AREA); // TODO: Reliability?
+        Imgproc.INTER_AREA);
     // Crop out the useless data, because we only need the horizontal area containing the marker
     Rect crop;
     if (position == CameraPosition.REAR_LOW_AND_CENTERED) {
       crop =
           new Rect(
               0,
-              (int) Math.round(resized.height() / 2.5),
+              (int) Math.round(resized.height() / 2.1),
               resized.width(),
               (int)
                   Math.round(
-                      resized.height() - (resized.height() / 2.5) - (resized.height() / 4.7)));
+                      resized.height() - (resized.height() / 2.1) - (resized.height() / 4.7)));
     } else {
       crop = new Rect(0, 0, resized.width(), resized.height() / 2);
     }
@@ -45,7 +45,7 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
     Mat mask = new Mat();
     Core.inRange(hsvMat, new Scalar(15, 35, 0), new Scalar(45, 150, 255), mask);
     // Remove noise by eroding and dilating the image with this kernel
-    Mat kernel = Mat.ones(3, 3, CvType.CV_8UC1);
+    Mat kernel = Mat.ones(5, 5, CvType.CV_8UC1);
     Imgproc.erode(mask, mask, kernel);
     Imgproc.dilate(mask, mask, kernel);
     // Find the average x coordinate and return a marker position based off of it
@@ -59,7 +59,7 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
     }
     double xLength = xPositions.size();
     double avgX = xPositions.stream().reduce(0, Integer::sum) / xLength;
-    double third = (double) hsvMat.width() / 3.0;
+    double third = (double) mask.width() / 3.0;
     double middleThirdTop = third * 2;
     if (avgX < third) {
       return TeamMarkerPosition.LEFT;
