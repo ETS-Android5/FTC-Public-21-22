@@ -168,7 +168,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
         // We should really be checking the parameter number and type but Android API <26 doesn't
         // support that
         // And our min API level is 24 and could only move up to 25
-        // So we're going to use the fuck around and find out method and just assume it's safe
+        // So we're going to use the mess around and find out method and just assume it's safe
         if (Objects.requireNonNull(m.getAnnotation(PostInit.class)).argType().equals(argType)) {
           try {
             m.invoke(field.getAnnotationContainer(), initialized);
