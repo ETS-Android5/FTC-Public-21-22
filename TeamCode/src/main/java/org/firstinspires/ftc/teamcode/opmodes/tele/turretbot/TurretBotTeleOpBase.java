@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele.turretbot;
 
+import android.util.Log;
+
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
@@ -231,14 +233,18 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               + (-controller2.rightStickY() * MAX_SECOND_JOINT_ADJUSTMENT));
     }
 
-    if (controller2.leftStickX() < -0.02 || controller2.rightStickX() > 0.02) {
-        robot.turretAdjustment.getAndAdd(controller2.leftStickX() / 100);
+    if (controller2.leftStickX() < -0.02 || controller2.leftStickX() > 0.02) {
+        robot.turretAdjustment.getAndAdd(controller2.leftStickX() / 10);
+        Log.d("TURRETBOT", "TURRET ADJUSTMENT: " + robot.turretAdjustment.get());
         robot.syncPosition();
+        Log.d("TURRETBOT", "RESYNC");
     }
 
     if (controller2.leftStickY() < -0.02 || controller2.leftStickY() > 0.02) {
-        robot.firstJointAdjustment.getAndAdd(controller2.leftStickY() / 100);
+        robot.firstJointAdjustment.getAndAdd(controller2.leftStickY() / 10);
+        Log.d("TURRETBOT", "FIRST JOINT ADJUSTMENT: " + robot.firstJointAdjustment.get());
         robot.syncPosition();
+        Log.d("TURRETBOT", "RESYNC");
     }
   }
 
