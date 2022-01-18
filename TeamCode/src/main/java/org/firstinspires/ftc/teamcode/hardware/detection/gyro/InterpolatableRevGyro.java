@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.teamcode.core.annotations.PostInit;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.PollingSubscription;
 import org.firstinspires.ftc.teamcode.core.hardware.state.DataPoint;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Interpolatable;
 
@@ -26,6 +27,7 @@ public class InterpolatableRevGyro implements Interpolatable {
   private int polynomialDegree;
   private long lastSampleTime;
   private boolean isSampling = false;
+  private PollingSubscription pollingSubscription;
 
   public InterpolatableRevGyro(int analysisSize, long sampleRateNs, int polynomialDegree) {
     this.dataPoints = EvictingQueue.create(analysisSize);
@@ -84,6 +86,9 @@ public class InterpolatableRevGyro implements Interpolatable {
 
   @Override
   public long timeToNextSample() {
+    if (pollingSubscription != null) {
+      return pollingSubscription.shouldSample() ? 0 : Long.MAX_VALUE;
+    }
     return lastSampleTime == 0 ? 0 : (lastSampleTime + sampleRateNs) - System.nanoTime();
   }
 
@@ -123,6 +128,11 @@ public class InterpolatableRevGyro implements Interpolatable {
   public void stopSampling() {
     dataPoints.clear();
     isSampling = false;
+  }
+
+  @Override
+  public void subscribe(PollingSubscription subscription) {
+    pollingSubscription = subscription;
   }
 
   @Override
