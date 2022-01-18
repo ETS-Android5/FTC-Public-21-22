@@ -30,7 +30,7 @@ public abstract class EnhancedTeleOp extends OpMode {
   protected Component robotObject;
   private HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
   private ReflectionBasedMagicRuntime serviceRuntime;
-  // @SuppressWarnings("unused")
+
   public EnhancedTeleOp(Component robotObject) {
     State.clear();
     initializedHardware = new ConcurrentHashMap<>();

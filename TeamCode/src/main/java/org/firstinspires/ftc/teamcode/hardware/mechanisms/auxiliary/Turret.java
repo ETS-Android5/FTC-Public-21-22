@@ -19,7 +19,7 @@ public class Turret implements ITurret {
   public static final double DEGREES_FRONT = 0;
   public static final int DEGREES_RIGHT = 90;
   public static final int DEGREES_BACK = 180;
-  public static final double DEGREES_TO_TICKS = 2.133333333333333333333333333;
+  public static final double DEGREES_TO_TICKS = 7.7394444444;
   public static final int TICKS_FRONT = 0;
   public static final int TICKS_RIGHT = (int) ((DEGREES_RIGHT * DEGREES_TO_TICKS) + 0.5);
   public static final int TICKS_LEFT = (int) ((-DEGREES_RIGHT * DEGREES_TO_TICKS) - 0.5);
@@ -41,8 +41,8 @@ public class Turret implements ITurret {
         new MotorState(TURRET_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generatePowerCurve(1, .8))
-            .withPowerAndTickRateRelation((power) -> power * 600) // 5900 tps at 100% power
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, 1))
+            .withPowerAndTickRateRelation((power) -> power * 2786.2) // Ticks / second at 100% power
             .withPowerCorrection(
                 (Double currentPower,
                     Double idealPower,
@@ -56,9 +56,8 @@ public class Turret implements ITurret {
                   }
                   double diff = Math.abs(currentPower - idealPower);
                   double adjustment =
-                      Math.min(Math.pow(Math.abs(currentTicks - targetTicks) / 2.0, 2.2), 1)
+                      Math.min(Math.pow(Math.abs(currentTicks - targetTicks) / 7.0, 2.2), 1)
                           * Math.pow(diff, 1.0 / 3);
-
                   double ret = 0;
                   if (currentPower > idealPower) ret = idealPower - adjustment;
                   if (currentPower < idealPower) ret = idealPower + adjustment;

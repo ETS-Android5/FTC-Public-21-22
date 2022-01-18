@@ -18,25 +18,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.0055; // 1.5 degrees
-
-  private static double THIRD_MANIPULATION(double in) {
-      return Math.pow(in, 3);
-  }
-
   private final TurretBot robot;
-
   private final AtomicBoolean halfSpeed = new AtomicBoolean(true);
-
   private final AtomicBoolean allianceHubMode = new AtomicBoolean(false);
   private final AtomicBoolean tippedMode = new AtomicBoolean(false);
-
   private final List<ScheduledFuture<?>> futures = new LinkedList<>();
-
   private boolean firstTime = true;
 
   public TurretBotTeleOpBase(Alliance alliance) {
     super(new TurretBot(alliance, TurretBot.TELE_FIRST_JOINT_OFFSET, false));
     this.robot = (TurretBot) super.robotObject;
+  }
+
+  private static double THIRD_MANIPULATION(double in) {
+    return Math.pow(in, 3);
   }
 
   @Override
@@ -177,16 +172,19 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         true,
         BooleanSurface.X);
 
-    controller2.registerOnPressedCallback(() -> {
+    controller2.registerOnPressedCallback(
+        () -> {
           robot.clearFutureEvents();
           TurretBotPosition position = botPositionFor(BooleanSurface.Y);
           robot.afterTimedAction(
-                  robot.grabFreight(),
-                  () -> {
-                      robot.intake.stop();
-                      robot.goToPosition(position);
-                  });
-      }, true, BooleanSurface.Y);
+              robot.grabFreight(),
+              () -> {
+                robot.intake.stop();
+                robot.goToPosition(position);
+              });
+        },
+        true,
+        BooleanSurface.Y);
     controller2.registerOnPressedCallback(
         () -> {
           if (allianceHubMode.get()) {
@@ -234,17 +232,17 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     }
 
     if (controller2.leftStickX() < -0.02 || controller2.leftStickX() > 0.02) {
-        robot.turretAdjustment.getAndAdd(controller2.leftStickX() / 10);
-        Log.d("TURRETBOT", "TURRET ADJUSTMENT: " + robot.turretAdjustment.get());
-        robot.syncPosition();
-        Log.d("TURRETBOT", "RESYNC");
+      robot.turretAdjustment.getAndAdd(controller2.leftStickX() / 10);
+      Log.d("TURRETBOT", "TURRET ADJUSTMENT: " + robot.turretAdjustment.get());
+      robot.syncPosition();
+      Log.d("TURRETBOT", "RESYNC");
     }
 
     if (controller2.leftStickY() < -0.02 || controller2.leftStickY() > 0.02) {
-        robot.firstJointAdjustment.getAndAdd(controller2.leftStickY() / 10);
-        Log.d("TURRETBOT", "FIRST JOINT ADJUSTMENT: " + robot.firstJointAdjustment.get());
-        robot.syncPosition();
-        Log.d("TURRETBOT", "RESYNC");
+      robot.firstJointAdjustment.getAndAdd(controller2.leftStickY() / 10);
+      Log.d("TURRETBOT", "FIRST JOINT ADJUSTMENT: " + robot.firstJointAdjustment.get());
+      robot.syncPosition();
+      Log.d("TURRETBOT", "RESYNC");
     }
   }
 

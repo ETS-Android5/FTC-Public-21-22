@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.core.hardware.state;
 import com.google.common.collect.EvictingQueue;
 
 import org.firstinspires.ftc.teamcode.core.Namable;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.PollingSubscription;
 
 public interface Interpolatable extends Namable {
   @SuppressWarnings("UnstableApiUsage")
@@ -31,4 +32,6 @@ public interface Interpolatable extends Namable {
   void startSampling();
 
   void stopSampling();
+
+  void subscribe(PollingSubscription subscription);
 }
