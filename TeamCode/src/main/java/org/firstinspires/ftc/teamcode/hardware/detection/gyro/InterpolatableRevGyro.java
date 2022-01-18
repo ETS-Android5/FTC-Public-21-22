@@ -20,11 +20,13 @@ public class InterpolatableRevGyro implements Interpolatable {
 
   @Hardware(name = GYRO_NAME)
   public BNO055IMU gyro;
+
   private EvictingQueue<DataPoint> dataPoints;
   private long sampleRateNs;
   private int polynomialDegree;
   private long lastSampleTime;
   private boolean isSampling = false;
+
   public InterpolatableRevGyro(int analysisSize, long sampleRateNs, int polynomialDegree) {
     this.dataPoints = EvictingQueue.create(analysisSize);
     this.sampleRateNs = sampleRateNs;

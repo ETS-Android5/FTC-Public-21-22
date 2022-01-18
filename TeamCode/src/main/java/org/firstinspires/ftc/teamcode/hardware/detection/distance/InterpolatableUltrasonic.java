@@ -1,35 +1,33 @@
 package org.firstinspires.ftc.teamcode.hardware.detection.distance;
 
 import com.google.common.collect.EvictingQueue;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.PollingSubscription;
 import org.firstinspires.ftc.teamcode.core.hardware.state.DataPoint;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Interpolatable;
 
 @SuppressWarnings("UnstableApiUsage")
-public class InterpolatableRev2m implements Interpolatable {
+public class InterpolatableUltrasonic implements Interpolatable {
+  private static final double VOLTS_TO_INCHES_CONVERSION = 1.0 / 0.0049;
   private final String name;
 
   @Hardware(name = "")
-  public Rev2mDistanceSensor distanceSensor;
+  public AnalogInput distanceSensor;
 
   private EvictingQueue<DataPoint> dataPoints;
-  private long sampleRateNs;
   private int polynomialDegree;
-  private long lastSampleTime;
-  private boolean isSampling = false;
+
+  private boolean isSampling;
+
   private PollingSubscription pollingSubscription;
 
-  public InterpolatableRev2m(
-      int analysisSize, long sampleRateNs, int polynomialDegree, String name) {
+  public InterpolatableUltrasonic(int analysisSize, int polynomialDegree, String name) {
     this.dataPoints = EvictingQueue.create(analysisSize);
-    this.sampleRateNs = sampleRateNs;
     this.polynomialDegree = polynomialDegree;
-    this.lastSampleTime = 0;
     this.name = name;
+    this.isSampling = false;
   }
 
   @Override
@@ -56,13 +54,11 @@ public class InterpolatableRev2m implements Interpolatable {
 
   @Override
   public long getSampleRateNs() {
-    return sampleRateNs;
+    return 0;
   }
 
   @Override
-  public void setSampleRateNs(long sampleRateNs) {
-    this.sampleRateNs = sampleRateNs;
-  }
+  public void setSampleRateNs(long sampleRateNs) {}
 
   @Override
   public int getPolynomialDegree() {
@@ -76,20 +72,16 @@ public class InterpolatableRev2m implements Interpolatable {
 
   @Override
   public long timeToNextSample() {
-    if (pollingSubscription != null) {
-      return pollingSubscription.shouldSample() ? 0 : Long.MAX_VALUE;
-    }
-    return lastSampleTime == 0 ? 0 : (lastSampleTime + sampleRateNs) - System.nanoTime();
+    return this.pollingSubscription.shouldSample() ? 0 : Long.MAX_VALUE;
   }
 
   @Override
   public void sample() {
     // Getting new data point
-    double distance = distanceSensor.getDistance(DistanceUnit.MM);
-    distance = distance > 2000 ? 2000 : distance;
+    double distance = distanceSensor.getVoltage() * VOLTS_TO_INCHES_CONVERSION;
+    distance = distance > 255 ? 255 : distance;
     distance = distance < 0 ? 0 : distance;
-    lastSampleTime = System.nanoTime();
-    dataPoints.add(new DataPoint(distance, lastSampleTime));
+    dataPoints.add(new DataPoint(distance, System.nanoTime()));
   }
 
   @Override

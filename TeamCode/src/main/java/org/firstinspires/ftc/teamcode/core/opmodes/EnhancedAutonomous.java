@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.core.hardware.pipeline.HardwarePipeline;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InitializedFilterPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InterpolatablePipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.PollingPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.RunToPositionPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.hardware.state.Component;
@@ -38,11 +39,13 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
                 "BulkReadManager",
                 new InitializedFilterPipe(
                     "FilterElement",
-                    new InterpolatablePipe(
-                        "Interpolatable",
-                        new MotorTrackerPipe(
-                            "MotorTracker",
-                            new RunToPositionPipe("RunToPosition", new ExitPipe("Exit")))))));
+                    new PollingPipe(
+                        "Polling",
+                        new InterpolatablePipe(
+                            "Interpolatable",
+                            new MotorTrackerPipe(
+                                "MotorTracker",
+                                new RunToPositionPipe("RunToPosition", new ExitPipe("Exit"))))))));
     this.robotObject = robotObject;
     initialize();
   }

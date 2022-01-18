@@ -54,17 +54,17 @@ public class Webcam implements FtcCamera {
   @Override
   public synchronized void init() {
     try {
-    if (cameraName == null) return;
-    if (cameraManager == null) {
-      cameraManager = ClassFactory.getInstance().getCameraManager();
-    }
-    if (camera == null) {
-      camera =
-          cameraManager.requestPermissionAndOpenCamera(
-              new Deadline(secondsPermissionTimeout, TimeUnit.SECONDS), cameraName, null);
-    }
-    characteristics = cameraName.getCameraCharacteristics();
-    initializationQueue.add(true);
+      if (cameraName == null) return;
+      if (cameraManager == null) {
+        cameraManager = ClassFactory.getInstance().getCameraManager();
+      }
+      if (camera == null) {
+        camera =
+            cameraManager.requestPermissionAndOpenCamera(
+                new Deadline(secondsPermissionTimeout, TimeUnit.SECONDS), cameraName, null);
+      }
+      characteristics = cameraName.getCameraCharacteristics();
+      initializationQueue.add(true);
     } catch (Exception e) {
       initializationQueue.add(false);
       Log.e("WEBCAM", "ERROR", e);
@@ -82,7 +82,7 @@ public class Webcam implements FtcCamera {
     if (successfullyInitialized) {
       try {
         ContinuationSynchronizer<CameraCaptureSession> synchronizer =
-                new ContinuationSynchronizer<>();
+            new ContinuationSynchronizer<>();
         Size size;
         int fps;
         synchronized (this) {
@@ -92,35 +92,35 @@ public class Webcam implements FtcCamera {
         synchronized (this) {
           try {
             camera.createCaptureSession(
-                    Continuation.create(
-                            callbackHandler,
-                            new CameraCaptureSession.StateCallbackDefault() {
-                              @Override
-                              public void onConfigured(@NonNull CameraCaptureSession session) {
+                Continuation.create(
+                    callbackHandler,
+                    new CameraCaptureSession.StateCallbackDefault() {
+                      @Override
+                      public void onConfigured(@NonNull CameraCaptureSession session) {
+                        try {
+                          final CameraCaptureRequest captureRequest =
+                              camera.createCaptureRequest(ImageFormat.YUY2, size, fps);
+                          session.startCapture(
+                              captureRequest,
+                              (_u, _uu, cameraFrame) -> {
+                                Bitmap bmp = captureRequest.createEmptyBitmap();
+                                cameraFrame.copyToBitmap(bmp);
                                 try {
-                                  final CameraCaptureRequest captureRequest =
-                                          camera.createCaptureRequest(ImageFormat.YUY2, size, fps);
-                                  session.startCapture(
-                                          captureRequest,
-                                          (_u, _uu, cameraFrame) -> {
-                                            Bitmap bmp = captureRequest.createEmptyBitmap();
-                                            cameraFrame.copyToBitmap(bmp);
-                                            try {
-                                              frameQueue.put(bmp);
-                                              deinit();
-                                            } catch (InterruptedException e) {
-                                              Log.e("WEBCAM", "ERROR", e);
-                                            }
-                                          },
-                                          Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));
-                                  synchronizer.finish(session);
-                                } catch (CameraException | RuntimeException e) {
+                                  frameQueue.put(bmp);
+                                  deinit();
+                                } catch (InterruptedException e) {
                                   Log.e("WEBCAM", "ERROR", e);
-                                  session.close();
-                                  synchronizer.finish(null);
                                 }
-                              }
-                            }));
+                              },
+                              Continuation.create(callbackHandler, (_u, _uu, _uuu) -> {}));
+                          synchronizer.finish(session);
+                        } catch (CameraException | RuntimeException e) {
+                          Log.e("WEBCAM", "ERROR", e);
+                          session.close();
+                          synchronizer.finish(null);
+                        }
+                      }
+                    }));
           } catch (CameraException e) {
             Log.e("WEBCAM", "ERROR", e);
             synchronizer.finish(null);
