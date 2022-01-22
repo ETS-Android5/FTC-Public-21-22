@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.hardware.robots.turretbot;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
@@ -44,12 +46,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class TurretBot implements Component {
-  public static final int AUTO_FIRST_JOINT_OFFSET = -7;
+  public static final int AUTO_FIRST_JOINT_OFFSET = 95;
   public static final int TELE_FIRST_JOINT_OFFSET = 230;
   private static final int ELBOW_JOINT_MOVEMENT_DELAY_MS = 250;
 
   private static final int liftTolerance = 8;
-  private static final int turretTolerance = 5;
+  private static final int turretTolerance = 6;
 
   public final int firstJointOffset;
   public final IMecanumDrivetrain drivetrain = new MecanumDrivetrain();
@@ -60,37 +62,48 @@ public class TurretBot implements Component {
   public final ISingleServoGripper gripper = new SingleServoGripper();
   public final AtomicDouble turretAdjustment = new AtomicDouble(0);
   public final AtomicDouble firstJointAdjustment = new AtomicDouble(0);
+
   @SuppressWarnings("unused")
   @AutonomousOnly
   public final FtcCamera webcam = new Webcam();
+
   @SuppressWarnings("unused")
   @AutonomousOnly
   public final InterpolatableRevGyro gyro = new InterpolatableRevGyro(1, 20000000, 3);
+
   @SuppressWarnings("unused")
   @AutonomousOnly
   public final InterpolatableUltrasonic frontRange =
       new InterpolatableUltrasonic(14, 4, "CB_AUTO_FRONT_RANGE");
+
   @SuppressWarnings("unused")
   @AutonomousOnly
   public final InterpolatableUltrasonic leftRange =
       new InterpolatableUltrasonic(14, 4, "CB_AUTO_LEFT_RANGE");
+
   @SuppressWarnings("unused")
   @AutonomousOnly
   public final InterpolatableUltrasonic rightRange =
       new InterpolatableUltrasonic(14, 4, "CB_AUTO_RIGHT_RANGE");
+
   @SuppressWarnings("unused")
   @AutonomousOnly
   public final InterpolatableUltrasonic rearRange =
       new InterpolatableUltrasonic(14, 4, "CB_AUTO_REAR_RANGE");
+
   private final int secondJointSafeMovementLvl;
   private final boolean isForAutonomous;
   private final ScheduledExecutorService executorService =
       Executors.newSingleThreadScheduledExecutor();
   private final List<ScheduledFuture<?>> futures = new LinkedList<>();
   private final AtomicReference<Alliance> alliance = new AtomicReference<>();
-
   private final AtomicReference<TurretBotPosition> setPosition = new AtomicReference<>();
   private final AtomicBoolean gripperIsNearGround = new AtomicBoolean(false);
+
+  @SuppressWarnings("unused")
+  @AutonomousOnly
+  @Hardware(name = "CB_AUTO_DISTANCE_POLL_TRIGGER")
+  public DigitalChannel ultrasonicPollTrigger;
 
   public TurretBot(Alliance alliance, int jointOffset, boolean isForAutonomous) {
     this.alliance.set(alliance);
@@ -272,12 +285,12 @@ public class TurretBot implements Component {
         safeAdjustArms(turretTarget, false);
         ensureTurretIsAt(
             turretTarget,
-            firstJointOffset + 69,
+            firstJointOffset,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             false,
             () -> {
-              lift.setArmTwoPosition(0.63);
-              gripperIsNearGround.set(false);
+              lift.setArmTwoPosition(0.68);
+              gripperIsNearGround.set(true);
             });
         break;
       case SHARED_MIDDLE_POSITION:
@@ -285,12 +298,12 @@ public class TurretBot implements Component {
         safeAdjustArms(turretTarget, false);
         ensureTurretIsAt(
             turretTarget,
-            firstJointOffset + 10,
+            firstJointOffset - 40,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             false,
             () -> {
-              lift.setArmTwoPosition(0.39);
-              gripperIsNearGround.set(false);
+              lift.setArmTwoPosition(0.48);
+              gripperIsNearGround.set(true);
             });
         break;
       case SHARED_FAR_POSITION:
@@ -302,11 +315,11 @@ public class TurretBot implements Component {
             MovementStepStrictness.SECOND_JOINT_SAFE,
             false,
             () -> {
-              lift.setArmTwoPosition(0.13);
+              lift.setArmTwoPosition(0.2);
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
                   () ->
-                      setLiftToPosition(firstJointOffset - 210)
+                      setLiftToPosition(firstJointOffset - 260)
                           .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
@@ -315,12 +328,12 @@ public class TurretBot implements Component {
         safeAdjustArms(turretTarget, true);
         ensureTurretIsAt(
             turretTarget,
-            firstJointOffset + 188,
+            firstJointOffset + 150,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             false,
             () -> {
-              lift.setArmTwoPosition(0.63);
-              gripperIsNearGround.set(false);
+              lift.setArmTwoPosition(0.66);
+              gripperIsNearGround.set(true);
             });
         break;
       case TIPPED_MIDDLE_POSITION:
@@ -328,12 +341,12 @@ public class TurretBot implements Component {
         safeAdjustArms(turretTarget, true);
         ensureTurretIsAt(
             turretTarget,
-            firstJointOffset + 145,
+            firstJointOffset + 15,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             false,
             () -> {
               lift.setArmTwoPosition(0.44);
-              gripperIsNearGround.set(false);
+              gripperIsNearGround.set(true);
             });
         break;
       case TIPPED_FAR_POSITION:
@@ -345,11 +358,11 @@ public class TurretBot implements Component {
             MovementStepStrictness.SECOND_JOINT_SAFE,
             false,
             () -> {
-              lift.setArmTwoPosition(0.13);
+              lift.setArmTwoPosition(0.2);
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
                   () ->
-                      setLiftToPosition(firstJointOffset - 90)
+                      setLiftToPosition(firstJointOffset - 210)
                           .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
@@ -362,11 +375,11 @@ public class TurretBot implements Component {
             MovementStepStrictness.SECOND_JOINT_SAFE,
             false,
             () -> {
-              lift.setArmTwoPosition(0);
+              lift.setArmTwoPosition(0.08);
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
                   () ->
-                      setLiftToPosition(firstJointOffset - 390)
+                      setLiftToPosition(firstJointOffset - 450)
                           .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
@@ -375,11 +388,11 @@ public class TurretBot implements Component {
         safeAdjustArms(turretTarget, false);
         ensureTurretIsAt(
             turretTarget,
-            firstJointOffset - 22,
+            firstJointOffset - 90,
             MovementStepStrictness.SECOND_JOINT_SAFE,
             false,
             () -> {
-              lift.setArmTwoPosition(0.13);
+              lift.setArmTwoPosition(0.23);
               gripperIsNearGround.set(false);
             });
         break;
@@ -392,7 +405,7 @@ public class TurretBot implements Component {
             MovementStepStrictness.SECOND_JOINT_SAFE,
             false,
             () -> {
-              lift.setArmTwoPosition(0.43);
+              lift.setArmTwoPosition(0.52);
               gripperIsNearGround.set(false);
             });
         break;
@@ -405,12 +418,12 @@ public class TurretBot implements Component {
             MovementStepStrictness.ORDERED_LOOSELY,
             false,
             () -> {
-              lift.setArmTwoPosition(0);
+              lift.setArmTwoPosition(0.08);
               gripper.open();
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
                   () ->
-                      setLiftToPosition(firstJointOffset - 520)
+                      setLiftToPosition(firstJointOffset - 560)
                           .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
@@ -423,7 +436,7 @@ public class TurretBot implements Component {
             MovementStepStrictness.ORDERED_LOOSELY,
             false,
             () -> {
-              lift.setArmTwoPosition(0.3);
+              lift.setArmTwoPosition(0.32);
               gripperIsNearGround.set(false);
             });
         break;
@@ -463,12 +476,6 @@ public class TurretBot implements Component {
     } else {
       return 0;
     }
-  }
-
-  public void onTrim() {
-    // After a manual trim, the robot turret/lift positions are in an unknown state
-    // So we mark our setPosition as null
-    setPosition.set(null);
   }
 
   public void clearFutureEvents() {
@@ -530,13 +537,13 @@ public class TurretBot implements Component {
               () -> {
                 double currentDegrees = turret.getState();
                 if (Math.abs(currentDegrees - (turretTarget / Turret.DEGREES_TO_TICKS)) > 45) {
-                  lift.setArmTwoPosition(0.47);
+                  lift.setArmTwoPosition(0.55);
                 }
               });
     } else {
       double currentDegrees = turret.getState();
       if (Math.abs(currentDegrees - (turretTarget / Turret.DEGREES_TO_TICKS)) > 45) {
-        lift.setArmTwoPosition(0.47);
+        lift.setArmTwoPosition(0.55);
       }
     }
   }
@@ -558,8 +565,8 @@ public class TurretBot implements Component {
         currentHeading =
             InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
         turnSpeed = Math.abs(powerCurve.apply(currentHeading, initialHeading, target));
-        leftDirection = currentHeading > target ? -1 : 1;
-        rightDirection = currentHeading < target ? -1 : 1;
+        leftDirection = currentHeading > target ? 1 : -1;
+        rightDirection = currentHeading < target ? 1 : -1;
         drivetrain.setLeftPower(turnSpeed * leftDirection);
         drivetrain.setRightPower(turnSpeed * rightDirection);
         update.run();

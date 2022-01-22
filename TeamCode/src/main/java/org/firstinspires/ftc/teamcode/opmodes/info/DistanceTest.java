@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
-import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InterpolatablePipe;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
@@ -32,7 +31,6 @@ public class DistanceTest extends EnhancedAutonomous {
   public void onStartPressed() {
     robot.frontRange.startSampling();
     robot.gyro.startSampling();
-    robot.drivetrain.setRunMode(RunMode.RUN_USING_ENCODER);
     processChanges();
     robot.turnToHeading(0, 1, super::opModeIsActive, super::processChanges);
     robot.turnToHeading(90, 1, super::opModeIsActive, super::processChanges);

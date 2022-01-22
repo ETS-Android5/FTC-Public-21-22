@@ -42,15 +42,12 @@ public class PollingPipe extends HardwarePipeline implements PollingSubscription
         allDataSourcesDiscovered = true;
       }
     }
-    if (shouldSample) {
-      shouldSample = false;
-    }
     if (isMidPoll) {
       pollingTriggers.forEach(trigger -> ((DigitalChannel) hardware.get(trigger)).setState(false));
       lastPollTime = System.currentTimeMillis();
       isMidPoll = false;
       shouldSample = true;
-    } else if (System.currentTimeMillis() - lastPollTime <= POLLING_RATE) {
+    } else if (lastPollTime == 0 || System.currentTimeMillis() - lastPollTime <= POLLING_RATE) {
       pollingTriggers.forEach(trigger -> ((DigitalChannel) hardware.get(trigger)).setState(true));
       isMidPoll = true;
     }

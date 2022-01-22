@@ -4,7 +4,6 @@ import org.firstinspires.ftc.teamcode.core.annotations.Observable;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.ZeroPowerBehavior;
-import org.firstinspires.ftc.teamcode.core.fn.QuadFunction;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
 import java.util.function.Function;
@@ -45,17 +44,34 @@ public abstract class IMotorState extends State implements Duplicatable<IMotorSt
   public abstract IMotorState withPowerCurve(
       TriFunction<Double, Double, Double, Double> powerCurve);
 
+  @Observable(key = "AdjustmentThreshold")
+  public abstract int getAdjustmentThreshold();
+
+  public abstract IMotorState withAdjustmentThreshold(int adjustmentThreshold);
+
+  @Observable(key = "AdjustmentCurve")
+  public abstract TriFunction<Double, Double, Double, Double> getAdjustmentCurve();
+
+  public abstract IMotorState withAdjustmentCurve(
+      TriFunction<Double, Double, Double, Double> adjustmentCurve);
+
+  @Observable(key = "AdjustmentPowerCorrectionCurve")
+  public abstract TriFunction<Double, Double, Double, Double> getAdjustmentPowerCorrectionCurve();
+
+  public abstract IMotorState withAdjustmentPowerCorrectionCurve(
+      TriFunction<Double, Double, Double, Double> adjustmentPowerCorrectionCurve);
+
   @Observable(key = "PowerAndTickRateRelation")
   public abstract Function<Double, Double> getPowerAndTickRateRelation();
 
   public abstract IMotorState withPowerAndTickRateRelation(
       Function<Double, Double> powerAndTickRateRelation);
 
-  @Observable(key = "CorrectionAggressionCurve")
-  public abstract QuadFunction<Double, Double, Integer, Integer, Double> getPowerCorrection();
+  @Observable(key = "PowerCorrection")
+  public abstract TriFunction<Double, Double, Double, Double> getPowerCorrection();
 
   public abstract IMotorState withPowerCorrection(
-      QuadFunction<Double, Double, Integer, Integer, Double> correctionAggressionCurve);
+      TriFunction<Double, Double, Double, Double> correctionAggressionCurve);
 
   @Observable(key = "EncoderDataSource")
   public abstract String getEncoderDataSource();

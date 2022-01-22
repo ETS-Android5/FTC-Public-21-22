@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
-import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
-import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.RunToPositionTracker;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
@@ -30,13 +28,9 @@ public class RunToPositionPipe extends HardwarePipeline {
               if ((currentState == null || currentState.getRunMode() != RunMode.RUN_TO_POSITION)
                   && nextState.getRunMode() == RunMode.RUN_TO_POSITION) {
                 int currentPosition = MotorTrackerPipe.getInstance().getPositionOf(motorName);
-                TriFunction<Double, Double, Double, Double> powerCurve = nextState.getPowerCurve();
-                if (powerCurve == null) {
-                  powerCurve = PowerCurves.generatePowerCurve(1, 2.33);
-                }
                 trackedMotors.add(
                     new RunToPositionTracker(
-                        motorName, powerCurve, currentPosition, nextState.getTargetPosition()));
+                        motorName, currentPosition, nextState.getTargetPosition()));
               } else if ((currentState == null
                       || currentState.getRunMode() == RunMode.RUN_TO_POSITION)
                   && nextState.getRunMode() != RunMode.RUN_TO_POSITION) {
@@ -67,15 +61,35 @@ public class RunToPositionPipe extends HardwarePipeline {
                 double maxVelocity = nextState.getPowerAndTickRateRelation().apply(1.0);
                 double currentPercentPower = velocity / maxVelocity;
                 if (currentPercentPower != power) {
-                  if (nextState.getPowerCorrection() != null) {
-                    power =
-                        nextState
-                            .getPowerCorrection()
-                            .apply(
-                                currentPercentPower,
-                                power,
-                                currentPosition,
-                                motor.getTargetTicks());
+                  boolean useStdPowerCorrectionIfPossible =
+                      Math.abs(motor.getStartingTicks() - motor.getTargetTicks())
+                          > nextState.getAdjustmentThreshold();
+                  if ((useStdPowerCorrectionIfPossible && nextState.getPowerCorrection() != null)
+                      || (!useStdPowerCorrectionIfPossible
+                          && nextState.getAdjustmentPowerCorrectionCurve() != null)) {
+                    double percentProgress;
+                    if (motor.getStartingTicks() < motor.getTargetTicks()) {
+                      percentProgress =
+                          ((double) currentPosition - (double) motor.getStartingTicks())
+                              / ((double) motor.getTargetTicks()
+                                  - (double) motor.getStartingTicks());
+                    } else {
+                      percentProgress =
+                          ((double) motor.getStartingTicks() - (double) currentPosition)
+                              / ((double) motor.getStartingTicks()
+                                  - (double) motor.getTargetTicks());
+                    }
+                    if (useStdPowerCorrectionIfPossible) {
+                      power =
+                          nextState
+                              .getPowerCorrection()
+                              .apply(currentPercentPower, power, percentProgress);
+                    } else {
+                      power =
+                          nextState
+                              .getAdjustmentPowerCorrectionCurve()
+                              .apply(currentPercentPower, power, percentProgress);
+                    }
                   } else {
                     power -= currentPercentPower - power;
                     power = power > 1 ? 1 : power < -1 ? -1 : power;

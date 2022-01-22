@@ -21,7 +21,8 @@ import java.util.List;
 
 public class DualJointAngularLift implements IDualJointAngularLift {
   public static final String LIFT_JOINT_ONE_MOTOR_NAME = "LIFT_JOINT_ONE_MOTOR";
-  private static final String LIFT_JOINT_TWO_SERVO_NAME = "LIFT_JOINT_TWO_SERVO";
+  public static final String LIFT_JOINT_TWO_SERVO_NAME = "LIFT_JOINT_TWO_SERVO";
+  public static final int DEFAULT_ADJUSTMENT_THRESHOLD = 50;
 
   @Hardware(
       name = LIFT_JOINT_ONE_MOTOR_NAME,
@@ -46,25 +47,44 @@ public class DualJointAngularLift implements IDualJointAngularLift {
         new MotorState(LIFT_JOINT_ONE_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generatePowerCurve(1, .75, 0.005))
-            .withPowerAndTickRateRelation((power) -> power * 2800)
-            .withPowerCorrection(
-                (Double currentPower,
-                    Double idealPower,
-                    Integer currentTicks,
-                    Integer targetTicks) -> {
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, 1))
+            .withAdjustmentThreshold(DEFAULT_ADJUSTMENT_THRESHOLD)
+            .withAdjustmentCurve(PowerCurves.generatePowerCurve(0.05, 0.25))
+            .withAdjustmentPowerCorrectionCurve(
+                (Double currentPower, Double idealPower, Double percentProgress) -> {
                   if (currentPower.equals(idealPower)) return currentPower;
                   double diff = Math.abs(currentPower - idealPower);
                   double adjustment =
-                      Math.min(Math.abs(currentTicks - targetTicks) / 8, 1)
-                          * Math.pow(diff, 1.0 / 1.3);
+                      Math.min(Math.pow(Math.abs(1 - percentProgress), 2), 1)
+                          * .12
+                          * Math.pow(diff, 1.0 / 2);
                   double ret = 0;
                   if (currentPower > idealPower) ret = currentPower - adjustment;
                   if (currentPower < idealPower) ret = currentPower + adjustment;
                   ret = Math.round(ret * 100) / 100.0;
-                  return ret > 1 ? 1 : ret < -1 ? -1 : ret;
+                  double clippedRange = ret > .85 ? .85 : ret < -.85 ? -.85 : ret;
+                  clippedRange = clippedRange == 0 ? Double.MIN_VALUE : clippedRange;
+                  return clippedRange;
+                })
+            .withPowerAndTickRateRelation((power) -> power * 2800)
+            .withPowerCorrection(
+                (Double currentPower, Double idealPower, Double percentProgress) -> {
+                  if (currentPower.equals(idealPower)) return currentPower;
+                  double diff = Math.abs(currentPower - idealPower);
+
+                  double adjustment =
+                      Math.min(Math.pow(Math.abs(1 - percentProgress), 1), 1)
+                          * 2
+                          * Math.pow(diff, 1.0 / 2);
+                  double ret = 0;
+                  if (currentPower > idealPower) ret = currentPower - adjustment;
+                  if (currentPower < idealPower) ret = currentPower + adjustment;
+                  ret = Math.round(ret * 100) / 100.0;
+                  double clippedRange = ret > 1 ? 1 : ret < -1 ? -1 : ret;
+                  clippedRange = clippedRange == 0 ? Double.MIN_VALUE : clippedRange;
+                  return clippedRange;
                 });
-    liftJointTwoServoState = new ServoState(LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, 0.45);
+    liftJointTwoServoState = new ServoState(LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, 0.55);
   }
 
   @Override
@@ -92,5 +112,10 @@ public class DualJointAngularLift implements IDualJointAngularLift {
   @Override
   public synchronized void setArmTwoPosition(double position) {
     liftJointTwoServoState = liftJointTwoServoState.withPosition(position);
+  }
+
+  @Override
+  public synchronized void setAdjustmentThreshold(int ticks) {
+    liftJointOneMotorState = liftJointOneMotorState.withAdjustmentThreshold(ticks);
   }
 }

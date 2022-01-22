@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.blue.warehouse;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
-import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InterpolatablePipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.PollingPipe;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
 import org.firstinspires.ftc.teamcode.cv.CameraPosition;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
@@ -21,13 +21,14 @@ import org.opencv.core.Mat;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Autonomous(name = "CB_AUTO_BlueWInner")
+@Disabled
 @SuppressWarnings("unused")
 public class AutoBlueWarehouseEndInner extends EnhancedAutonomous {
-  private static final double FRONT_DISTANCE_FROM_WALL_0 = 177.8;
+  private static final double FRONT_DISTANCE_FROM_WALL_0 = 448; // Ticks
   private static final double FRONT_DISTANCE_FROM_WALL_1 = 736.6;
-  private static final double FRONT_DISTANCE_FROM_WALL_BOTTOM = 650;
-  private static final double FRONT_DISTANCE_FROM_WALL_MIDDLE = 650;
-  private static final double FRONT_DISTANCE_FROM_WALL_TOP = 850;
+  private static final double FRONT_DISTANCE_FROM_WALL_BOTTOM = 1560; // Ticks
+  private static final double FRONT_DISTANCE_FROM_WALL_MIDDLE = 1560; // Ticks
+  private static final double FRONT_DISTANCE_FROM_WALL_TOP = 2000; // Ticks
   private static final double LEFT_DISTANCE_FROM_WALL_0 = 50.8;
   private static final double LEFT_DISTANCE_FROM_WALL_1 = 609.6;
   private final TurretBot robot;
@@ -35,6 +36,10 @@ public class AutoBlueWarehouseEndInner extends EnhancedAutonomous {
   public AutoBlueWarehouseEndInner() {
     super(new TurretBot(Alliance.BLUE, TurretBot.AUTO_FIRST_JOINT_OFFSET, true));
     this.robot = (TurretBot) super.robotObject;
+    robot.frontRange.subscribe(PollingPipe.getInstance());
+    robot.leftRange.subscribe(PollingPipe.getInstance());
+    robot.rightRange.subscribe(PollingPipe.getInstance());
+    robot.rearRange.subscribe(PollingPipe.getInstance());
   }
 
   @Override
@@ -55,10 +60,8 @@ public class AutoBlueWarehouseEndInner extends EnhancedAutonomous {
               new Thread(robot.webcam::deinit).start();
             });
     worker.start();
-    robot.frontRange.startSampling();
     robot.gyro.startSampling();
-    robot.drivetrain.setRunMode(RunMode.RUN_USING_ENCODER);
-    robot.lift.setArmTwoPosition(0.8);
+    robot.lift.setArmTwoPosition(0.86);
     int delay = robot.grabFreight();
     processChanges();
     sleep(delay);
@@ -77,16 +80,13 @@ public class AutoBlueWarehouseEndInner extends EnhancedAutonomous {
     } catch (InterruptedException e) {
       Log.e("TURRETBOT", "ERROR", e);
     }
-    robot.runAtHeadingUntilCondition(
-        0,
-        90,
-        Direction.REVERSE,
-        () ->
-            InterpolatablePipe.getInstance().currentDataPointOf(robot.frontRange.getName())
-                >= FRONT_DISTANCE_FROM_WALL_0,
-        () -> 0.25,
-        super::opModeIsActive,
-        super::processChanges);
+    robot.drivetrain.setAllPower(-.25);
+    double startAvg = robot.drivetrain.avgEncoderValue();
+    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_0) {
+      processChanges();
+    }
+    robot.drivetrain.setAllPower(0);
+    processChanges();
     robot.turnToHeading(-35, 0.5, super::opModeIsActive, super::processChanges);
     try {
       worker.join();
@@ -117,22 +117,19 @@ public class AutoBlueWarehouseEndInner extends EnhancedAutonomous {
       processChanges();
     }
     robot.setAlliance(Alliance.BLUE);
-    double preMoveFrontDistance =
-        InterpolatablePipe.getInstance().currentDataPointOf(robot.frontRange.getName());
-    robot.runAtHeadingUntilCondition(
-        -35,
-        90,
-        Direction.REVERSE,
-        () ->
-            InterpolatablePipe.getInstance().currentDataPointOf(robot.frontRange.getName())
-                >= FRONT_DISTANCE_FROM_WALL_BOTTOM,
-        () -> 0.25,
-        super::opModeIsActive,
-        super::processChanges);
-    int delay = robot.dropFreight();
+    robot.drivetrain.setAllPower(-.25);
+    double startAvg = robot.drivetrain.avgEncoderValue();
+    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_BOTTOM) {
+      processChanges();
+    }
+    robot.drivetrain.setAllPower(0);
     processChanges();
-    sleep(delay);
-    retreat(preMoveFrontDistance + 320);
+    int delay = robot.dropFreight();
+    start = System.currentTimeMillis();
+    while (opModeIsActive() && System.currentTimeMillis() - start < delay) {
+      processChanges();
+    }
+    retreat(FRONT_DISTANCE_FROM_WALL_BOTTOM);
   }
 
   private void handleMiddlePosition() {
@@ -143,22 +140,19 @@ public class AutoBlueWarehouseEndInner extends EnhancedAutonomous {
       processChanges();
     }
     robot.setAlliance(Alliance.BLUE);
-    double preMoveFrontDistance =
-        InterpolatablePipe.getInstance().currentDataPointOf(robot.frontRange.getName());
-    robot.runAtHeadingUntilCondition(
-        -35,
-        90,
-        Direction.REVERSE,
-        () ->
-            InterpolatablePipe.getInstance().currentDataPointOf(robot.frontRange.getName())
-                >= FRONT_DISTANCE_FROM_WALL_MIDDLE,
-        () -> 0.25,
-        super::opModeIsActive,
-        super::processChanges);
-    int delay = robot.dropFreight();
+    robot.drivetrain.setAllPower(-.25);
+    double startAvg = robot.drivetrain.avgEncoderValue();
+    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_BOTTOM) {
+      processChanges();
+    }
+    robot.drivetrain.setAllPower(0);
     processChanges();
-    sleep(delay);
-    retreat(preMoveFrontDistance + 360);
+    int delay = robot.dropFreight();
+    start = System.currentTimeMillis();
+    while (opModeIsActive() && System.currentTimeMillis() - start < delay) {
+      processChanges();
+    }
+    retreat(FRONT_DISTANCE_FROM_WALL_MIDDLE);
   }
 
   private void handleTopPosition() {
@@ -169,22 +163,19 @@ public class AutoBlueWarehouseEndInner extends EnhancedAutonomous {
       processChanges();
     }
     robot.setAlliance(Alliance.BLUE);
-    double preMoveFrontDistance =
-        InterpolatablePipe.getInstance().currentDataPointOf(robot.frontRange.getName());
-    robot.runAtHeadingUntilCondition(
-        -35,
-        90,
-        Direction.REVERSE,
-        () ->
-            InterpolatablePipe.getInstance().currentDataPointOf(robot.frontRange.getName())
-                >= FRONT_DISTANCE_FROM_WALL_TOP,
-        () -> 0.25,
-        super::opModeIsActive,
-        super::processChanges);
-    int delay = robot.dropFreight();
+    robot.drivetrain.setAllPower(-.25);
+    double startAvg = robot.drivetrain.avgEncoderValue();
+    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_BOTTOM) {
+      processChanges();
+    }
+    robot.drivetrain.setAllPower(0);
     processChanges();
-    sleep(delay);
-    retreat(preMoveFrontDistance + 180);
+    int delay = robot.dropFreight();
+    start = System.currentTimeMillis();
+    while (opModeIsActive() && System.currentTimeMillis() - start < delay) {
+      processChanges();
+    }
+    retreat(FRONT_DISTANCE_FROM_WALL_TOP);
   }
 
   private void retreat(double preMoveFrontDistance) {
@@ -193,16 +184,12 @@ public class AutoBlueWarehouseEndInner extends EnhancedAutonomous {
     while (opModeIsActive() && System.currentTimeMillis() - turretStart < 2000) {
       processChanges();
     }
-    robot.runAtHeadingUntilCondition(
-        -35,
-        90,
-        Direction.FORWARD,
-        () ->
-            InterpolatablePipe.getInstance().currentDataPointOf(robot.frontRange.getName())
-                <= preMoveFrontDistance,
-        () -> 0.25,
-        super::opModeIsActive,
-        super::processChanges);
+    double startAvg = robot.drivetrain.avgEncoderValue();
+    while (opModeIsActive() && startAvg + preMoveFrontDistance <= robot.drivetrain.avgEncoderValue()) {
+      processChanges();
+    }
+    robot.drivetrain.setAllPower(0);
+    processChanges();
     robot.grabTeamMarker();
     robot.goToPosition(TurretBotPosition.INTAKE_POSITION);
     robot.turnToHeading(-90, 0.5, super::opModeIsActive, super::processChanges);
@@ -211,7 +198,6 @@ public class AutoBlueWarehouseEndInner extends EnhancedAutonomous {
       processChanges();
     }
     robot.drivetrain.driveBySticks(-0.5, 0, 0);
-    robot.frontRange.stopSampling();
     robot.leftRange.startSampling();
     processChanges();
     while (opModeIsActive()

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp(name = "DigTest")
+@Disabled
 public class DigTest extends OpMode {
   private static final double VOLTS_TO_INCHES_CONVERSION = (1 / 0.0049);
 

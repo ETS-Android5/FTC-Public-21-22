@@ -1,24 +1,21 @@
 package org.firstinspires.ftc.teamcode.core.hardware.state;
 
 import org.firstinspires.ftc.teamcode.core.Namable;
-import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
 public class RunToPositionTracker implements Namable {
   private final String name;
-  private final TriFunction<Double, Double, Double, Double> powerCurve;
   private int startingTicks;
   private int targetTicks;
   private double lastPower;
 
-  public RunToPositionTracker(
-      String name,
-      TriFunction<Double, Double, Double, Double> powerCurve,
-      int startingTicks,
-      int targetTicks) {
+  public RunToPositionTracker(String name, int startingTicks, int targetTicks) {
     this.name = name;
-    this.powerCurve = powerCurve;
     this.startingTicks = startingTicks;
     this.targetTicks = targetTicks;
+  }
+
+  public int getStartingTicks() {
+    return startingTicks;
   }
 
   public int getTargetTicks() {
@@ -35,8 +32,22 @@ public class RunToPositionTracker implements Namable {
   }
 
   public double getTargetPowerPercentage(int currentTicks) {
-    double ret =
-        powerCurve.apply((double) currentTicks, (double) startingTicks, (double) targetTicks);
+    double ret;
+    IMotorState motorState = State.nextStateOf(name);
+    if (motorState == null) motorState = State.currentStateOf(name);
+    if (motorState == null) return 0;
+    if (motorState.getAdjustmentCurve() != null
+        && Math.abs(startingTicks - targetTicks) < motorState.getAdjustmentThreshold()) {
+      ret =
+          motorState
+              .getAdjustmentCurve()
+              .apply((double) currentTicks, (double) startingTicks, (double) targetTicks);
+    } else {
+      ret =
+          motorState
+              .getPowerCurve()
+              .apply((double) currentTicks, (double) startingTicks, (double) targetTicks);
+    }
     return ret < -1 ? -1 : ret > 1 ? 1 : ret;
   }
 

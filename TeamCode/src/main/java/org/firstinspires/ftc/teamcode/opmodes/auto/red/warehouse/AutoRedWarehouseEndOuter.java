@@ -3,11 +3,12 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.red.warehouse;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
-import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.InterpolatablePipe;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.PollingPipe;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
 import org.firstinspires.ftc.teamcode.cv.CameraPosition;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
@@ -20,9 +21,10 @@ import org.opencv.core.Mat;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Autonomous(name = "CB_AUTO_RedWOuter")
+@Disabled
 @SuppressWarnings("unused")
 public class AutoRedWarehouseEndOuter extends EnhancedAutonomous {
-  private static final double FRONT_DISTANCE_FROM_WALL_0 = 177.8;
+  private static final double FRONT_DISTANCE_FROM_WALL_0 = 448;
   private static final double FRONT_DISTANCE_FROM_WALL_1 = 736.6;
   private static final double FRONT_DISTANCE_FROM_WALL_BOTTOM = 750;
   private static final double FRONT_DISTANCE_FROM_WALL_MIDDLE = 750;
@@ -33,6 +35,10 @@ public class AutoRedWarehouseEndOuter extends EnhancedAutonomous {
   public AutoRedWarehouseEndOuter() {
     super(new TurretBot(Alliance.RED, TurretBot.AUTO_FIRST_JOINT_OFFSET, true));
     this.robot = (TurretBot) super.robotObject;
+    robot.frontRange.subscribe(PollingPipe.getInstance());
+    robot.leftRange.subscribe(PollingPipe.getInstance());
+    robot.rightRange.subscribe(PollingPipe.getInstance());
+    robot.rearRange.subscribe(PollingPipe.getInstance());
   }
 
   @Override
@@ -55,8 +61,7 @@ public class AutoRedWarehouseEndOuter extends EnhancedAutonomous {
     worker.start();
     robot.frontRange.startSampling();
     robot.gyro.startSampling();
-    robot.drivetrain.setRunMode(RunMode.RUN_USING_ENCODER);
-    robot.lift.setArmTwoPosition(0.8);
+    robot.lift.setArmTwoPosition(0.86);
     int delay = robot.grabFreight();
     processChanges();
     sleep(delay);
@@ -75,16 +80,13 @@ public class AutoRedWarehouseEndOuter extends EnhancedAutonomous {
     } catch (InterruptedException e) {
       Log.e("TURRETBOT", "ERROR", e);
     }
-    robot.runAtHeadingUntilCondition(
-        0,
-        90,
-        Direction.REVERSE,
-        () ->
-            InterpolatablePipe.getInstance().currentDataPointOf(robot.frontRange.getName())
-                >= FRONT_DISTANCE_FROM_WALL_0,
-        () -> 0.25,
-        super::opModeIsActive,
-        super::processChanges);
+    robot.drivetrain.setAllPower(-.25);
+    double startAvg = robot.drivetrain.avgEncoderValue();
+    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_0) {
+      processChanges();
+    }
+    robot.drivetrain.setAllPower(0);
+    processChanges();
     robot.turnToHeading(35, 0.5, super::opModeIsActive, super::processChanges);
     try {
       worker.join();

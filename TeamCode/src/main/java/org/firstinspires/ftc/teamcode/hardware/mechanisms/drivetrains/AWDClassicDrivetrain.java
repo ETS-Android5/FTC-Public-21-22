@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.MotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
@@ -101,6 +102,16 @@ public class AWDClassicDrivetrain implements IAWDClassicDrivetrain {
     frontRightMotorState = frontRightMotorState.withRunMode(runMode);
     rearLeftMotorState = rearLeftMotorState.withRunMode(runMode);
     rearRightMotorState = rearRightMotorState.withRunMode(runMode);
+  }
+
+  @Override
+  public double avgEncoderValue() {
+    return (
+            MotorTrackerPipe.getInstance().getPositionOf(FRONT_LEFT_MOTOR_NAME)
+            + MotorTrackerPipe.getInstance().getPositionOf(FRONT_RIGHT_MOTOR_NAME)
+            + MotorTrackerPipe.getInstance().getPositionOf(REAR_LEFT_MOTOR_NAME)
+            + MotorTrackerPipe.getInstance().getPositionOf(REAR_RIGHT_MOTOR_NAME)
+    ) / 4.0;
   }
 
   @Override

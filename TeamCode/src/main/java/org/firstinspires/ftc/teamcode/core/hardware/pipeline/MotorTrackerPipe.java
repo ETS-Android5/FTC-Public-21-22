@@ -14,6 +14,7 @@ public class MotorTrackerPipe extends HardwarePipeline {
   private static MotorTrackerPipe instance;
   private final Map<String, MotorPositionData> motorPositions = new HashMap<>();
   private List<CallbackData<Integer>> motorPositionCallbacks = new LinkedList<>();
+  private Map<String, Object> lastHardware;
 
   public MotorTrackerPipe(String name, HardwarePipeline nextPipe) {
     super(name, nextPipe);
@@ -37,7 +38,13 @@ public class MotorTrackerPipe extends HardwarePipeline {
     if (motorPositionData != null) {
       return (int) motorPositionData.getTicks();
     }
-    throw new IllegalArgumentException("That Motor is not tracked!");
+    if (lastHardware != null) {
+      DcMotorEx motor = (DcMotorEx) lastHardware.get(motorName);
+      if (motor != null) {
+        return motor.getCurrentPosition();
+      }
+    }
+    throw new IllegalArgumentException("Data Unavailable!");
   }
 
   public double getVelocity(String motorName) throws IllegalArgumentException {
@@ -45,20 +52,27 @@ public class MotorTrackerPipe extends HardwarePipeline {
     if (motorPositionData != null) {
       return motorPositionData.getVelocity();
     }
-    throw new IllegalArgumentException("That Motor is not tracked!");
+    if (lastHardware != null) {
+      DcMotorEx motor = (DcMotorEx) lastHardware.get(motorName);
+      if (motor != null) {
+        return motor.getVelocity();
+      }
+    }
+    throw new IllegalArgumentException("Data Unavailable!");
   }
 
   @Override
   @SuppressWarnings("all")
   public StateFilterResult process(Map<String, Object> hardware, StateFilterResult r) {
+    synchronized (this) {
+      lastHardware = hardware;
+    }
     r.getNextMotorStates()
         .forEach(
             (m) -> {
               boolean proxyEncoder =
                   (m.getEncoderDataSource() != null && !m.getEncoderDataSource().isEmpty());
-              if (m.getRunMode() == RunMode.RUN_TO_POSITION
-                  || m.getRunMode() == RunMode.RUN_USING_ENCODER
-                  || proxyEncoder) {
+              if (m.getRunMode() == RunMode.RUN_TO_POSITION || proxyEncoder) {
                 String encoder = proxyEncoder ? m.getEncoderDataSource() : m.getName();
                 DcMotorEx motor = ((DcMotorEx) hardware.get(encoder));
                 MotorPositionData data = motorPositions.get(m.getName());
