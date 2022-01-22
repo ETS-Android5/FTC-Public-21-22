@@ -19,4 +19,6 @@ public interface IAWDClassicDrivetrain extends Component {
   void reset();
 
   void setRunMode(RunMode runMode);
+
+  double avgEncoderValue();
 }

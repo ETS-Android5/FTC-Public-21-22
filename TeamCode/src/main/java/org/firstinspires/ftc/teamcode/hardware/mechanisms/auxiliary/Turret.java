@@ -16,6 +16,7 @@ import java.util.List;
 
 public class Turret implements ITurret {
   public static final String TURRET_MOTOR_NAME = "TURRET_MOTOR";
+  public static final int DEFAULT_ADJUSTMENT_THRESHOLD = 40;
   public static final double DEGREES_FRONT = 0;
   public static final int DEGREES_RIGHT = 90;
   public static final int DEGREES_BACK = 180;
@@ -41,13 +42,28 @@ public class Turret implements ITurret {
         new MotorState(TURRET_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generatePowerCurve(1, 1))
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, 2))
+            .withAdjustmentThreshold(DEFAULT_ADJUSTMENT_THRESHOLD)
+            .withAdjustmentCurve(PowerCurves.generatePowerCurve(0.05, 0.25))
+            .withAdjustmentPowerCorrectionCurve(
+                (Double currentPower, Double idealPower, Double percentProgress) -> {
+                  if (currentPower.equals(idealPower)) return currentPower;
+                  double diff = Math.abs(currentPower - idealPower);
+                  double adjustment =
+                      Math.min(Math.pow(Math.abs(1 - percentProgress), 4), 1)
+                          * Math.pow(diff, 1.0 / 1.75)
+                          * .1;
+                  double ret = 0;
+                  if (currentPower > idealPower) ret = idealPower - adjustment;
+                  if (currentPower < idealPower) ret = idealPower + adjustment;
+                  ret = Math.round(ret * 100) / 100.0;
+                  double clippedRange = ret > .25 ? .25 : ret < -.25 ? -.25 : ret;
+                  clippedRange = clippedRange == 0 ? Double.MIN_VALUE : clippedRange;
+                  return clippedRange;
+                })
             .withPowerAndTickRateRelation((power) -> power * 2786.2) // Ticks / second at 100% power
             .withPowerCorrection(
-                (Double currentPower,
-                    Double idealPower,
-                    Integer currentTicks,
-                    Integer targetTicks) -> {
+                (Double currentPower, Double idealPower, Double percentProgress) -> {
                   if (currentPower.equals(idealPower)) return currentPower;
                   // If the turret is moving faster than full speed, why slow it down?
                   if ((idealPower == 1 && currentPower >= 1)
@@ -55,9 +71,10 @@ public class Turret implements ITurret {
                     return idealPower;
                   }
                   double diff = Math.abs(currentPower - idealPower);
+
                   double adjustment =
-                      Math.min(Math.pow(Math.abs(currentTicks - targetTicks) / 7.0, 2.2), 1)
-                          * Math.pow(diff, 1.0 / 3);
+                      Math.min(Math.pow(Math.abs(1 - percentProgress), 4), 1)
+                          * Math.pow(diff, 1.0 / 1.75);
                   double ret = 0;
                   if (currentPower > idealPower) ret = idealPower - adjustment;
                   if (currentPower < idealPower) ret = idealPower + adjustment;
@@ -137,5 +154,10 @@ public class Turret implements ITurret {
     } else {
       turnCWToBack();
     }
+  }
+
+  @Override
+  public synchronized void setAdjustmentThreshold(int ticks) {
+    turretMotorState = turretMotorState.withAdjustmentThreshold(ticks);
   }
 }

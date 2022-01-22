@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.core.magic.runtime;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -26,7 +28,13 @@ import java.util.stream.Collectors;
 public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRuntime {
   private static final Class<?>[] KNOWN_INJECTABLE_HARDWARE =
       new Class<?>[] {
-        DcMotorEx.class, Servo.class, WebcamName.class, Rev2mDistanceSensor.class, BNO055IMU.class
+        DcMotorEx.class,
+        Servo.class,
+        WebcamName.class,
+        Rev2mDistanceSensor.class,
+        BNO055IMU.class,
+        AnalogInput.class,
+        DigitalChannel.class
       };
 
   private static final Class<?>[][] HARDWARE_PRIORITY_GROUPS =
@@ -38,7 +46,11 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
           Servo.class,
         },
         {
-          WebcamName.class, Rev2mDistanceSensor.class, BNO055IMU.class,
+          WebcamName.class,
+          Rev2mDistanceSensor.class,
+          BNO055IMU.class,
+          AnalogInput.class,
+          DigitalChannel.class
         },
       };
 
@@ -157,6 +169,24 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
         field.getAnnotationTargetField().set(field.getAnnotationContainer(), sensor);
         initializedObjects.put(annotation.name(), field.getAnnotationContainer());
         completePostInit(field, sensor, BNO055IMU.class);
+      } catch (IllegalAccessException ignored) {
+      }
+    } else if (hardwareObj == AnalogInput.class
+        && field.getAnnotationContainer() instanceof Namable) {
+      String name = ((Namable) field.getAnnotationContainer()).getName();
+      AnalogInput analogInput = hardwareMap.analogInput.get(name);
+      try {
+        field.getAnnotationTargetField().set(field.getAnnotationContainer(), analogInput);
+        initializedObjects.put(name, field.getAnnotationContainer());
+        completePostInit(field, analogInput, AnalogInput.class);
+      } catch (IllegalAccessException ignored) {
+      }
+    } else if (hardwareObj == DigitalChannel.class) {
+      DigitalChannel channel = hardwareMap.digitalChannel.get(annotation.name());
+      try {
+        field.getAnnotationTargetField().set(field.getAnnotationContainer(), channel);
+        initializedObjects.put(annotation.name(), channel);
+        completePostInit(field, channel, DigitalChannel.class);
       } catch (IllegalAccessException ignored) {
       }
     }

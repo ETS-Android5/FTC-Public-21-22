@@ -43,9 +43,9 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
     Imgproc.cvtColor(cropped, hsvMat, Imgproc.COLOR_RGB2HSV);
     // Create a binary image highlighting the areas of the image containing the marker color
     Mat mask = new Mat();
-    Core.inRange(hsvMat, new Scalar(15, 35, 0), new Scalar(45, 150, 255), mask);
+    Core.inRange(hsvMat, new Scalar(16, 90, 40), new Scalar(26, 180, 200), mask);
     // Remove noise by eroding and dilating the image with this kernel
-    Mat kernel = Mat.ones(5, 5, CvType.CV_8UC1);
+    Mat kernel = Mat.ones(1, 1, CvType.CV_8UC1);
     Imgproc.erode(mask, mask, kernel);
     Imgproc.dilate(mask, mask, kernel);
     // Find the average x coordinate and return a marker position based off of it

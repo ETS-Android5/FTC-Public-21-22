@@ -22,19 +22,25 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   private static final String REAR_LEFT_MOTOR_NAME = "REAR_LEFT_MOTOR";
   private static final String REAR_RIGHT_MOTOR_NAME = "REAR_RIGHT_MOTOR";
 
-  @Hardware(name = FRONT_LEFT_MOTOR_NAME)
+  @Hardware(
+      name = FRONT_LEFT_MOTOR_NAME,
+      direction = Direction.REVERSE,
+      runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx frontLeftMotor;
 
-  @Hardware(name = FRONT_RIGHT_MOTOR_NAME, direction = Direction.REVERSE)
+  @Hardware(name = FRONT_RIGHT_MOTOR_NAME, runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx frontRightMotor;
 
-  @Hardware(name = REAR_LEFT_MOTOR_NAME)
+  @Hardware(
+      name = REAR_LEFT_MOTOR_NAME,
+      direction = Direction.REVERSE,
+      runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx rearLeftMotor;
 
-  @Hardware(name = REAR_RIGHT_MOTOR_NAME, direction = Direction.REVERSE)
+  @Hardware(name = REAR_RIGHT_MOTOR_NAME, runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx rearRightMotor;
 
@@ -49,10 +55,18 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   private void initialize() {
-    frontLeftMotorState = new MotorState(FRONT_LEFT_MOTOR_NAME, Direction.FORWARD);
-    frontRightMotorState = new MotorState(FRONT_RIGHT_MOTOR_NAME, Direction.REVERSE);
-    rearLeftMotorState = new MotorState(REAR_LEFT_MOTOR_NAME, Direction.FORWARD);
-    rearRightMotorState = new MotorState(REAR_RIGHT_MOTOR_NAME, Direction.REVERSE);
+    frontLeftMotorState =
+        new MotorState(FRONT_LEFT_MOTOR_NAME, Direction.REVERSE)
+            .withRunMode(RunMode.RUN_USING_ENCODER);
+    frontRightMotorState =
+        new MotorState(FRONT_RIGHT_MOTOR_NAME, Direction.FORWARD)
+            .withRunMode(RunMode.RUN_USING_ENCODER);
+    rearLeftMotorState =
+        new MotorState(REAR_LEFT_MOTOR_NAME, Direction.REVERSE)
+            .withRunMode(RunMode.RUN_USING_ENCODER);
+    rearRightMotorState =
+        new MotorState(REAR_RIGHT_MOTOR_NAME, Direction.FORWARD)
+            .withRunMode(RunMode.RUN_USING_ENCODER);
   }
 
   @Override
@@ -107,6 +121,16 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
     frontRightMotorState = frontRightMotorState.withRunMode(runMode);
     rearLeftMotorState = rearLeftMotorState.withRunMode(runMode);
     rearRightMotorState = rearRightMotorState.withRunMode(runMode);
+  }
+
+  @Override
+  public double avgEncoderValue() {
+    return (
+            MotorTrackerPipe.getInstance().getPositionOf(FRONT_LEFT_MOTOR_NAME)
+                    + MotorTrackerPipe.getInstance().getPositionOf(FRONT_RIGHT_MOTOR_NAME)
+                    + MotorTrackerPipe.getInstance().getPositionOf(REAR_LEFT_MOTOR_NAME)
+                    + MotorTrackerPipe.getInstance().getPositionOf(REAR_RIGHT_MOTOR_NAME)
+    ) / 4.0;
   }
 
   @Override
@@ -208,8 +232,8 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
   @Override
   public void driveBySticks(double lateral, double longitudinal, double turn) {
-    double wheelPower = Math.hypot(-lateral, -longitudinal);
-    double stickAngleRadians = Math.atan2(-longitudinal, -lateral) - Math.PI / 4;
+    double wheelPower = Math.hypot(lateral, longitudinal);
+    double stickAngleRadians = Math.atan2(longitudinal, lateral) - Math.PI / 4;
 
     double sinAngleRadians = Math.sin(stickAngleRadians);
     double cosAngleRadians = Math.cos(stickAngleRadians);
@@ -217,12 +241,12 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
     double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
 
     frontLeftMotorState =
-        frontLeftMotorState.withPower(wheelPower * cosAngleRadians * factor - turn);
+        frontLeftMotorState.withPower(wheelPower * cosAngleRadians * factor + turn);
     frontRightMotorState =
-        frontRightMotorState.withPower(wheelPower * sinAngleRadians * factor + turn);
-    rearLeftMotorState = rearLeftMotorState.withPower(wheelPower * sinAngleRadians * factor - turn);
+        frontRightMotorState.withPower(wheelPower * sinAngleRadians * factor - turn);
+    rearLeftMotorState = rearLeftMotorState.withPower(wheelPower * sinAngleRadians * factor + turn);
     rearRightMotorState =
-        rearRightMotorState.withPower(wheelPower * cosAngleRadians * factor + turn);
+        rearRightMotorState.withPower(wheelPower * cosAngleRadians * factor - turn);
   }
 
   @Override

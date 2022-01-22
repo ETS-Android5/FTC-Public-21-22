@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele.turretbot;
 
-import android.util.Log;
-
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
@@ -223,26 +221,21 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     double turnValue = controller1.rightStickX();
     double speed = halfSpeed.get() ? 0.5 : 0.9;
     robot.drivetrain.driveBySticks(
-        controller1.leftStickX(), controller1.leftStickY() * speed, turnValue * speed);
+        controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
     if (controller2.rightStickY() < -0.02 || controller2.rightStickY() > 0.02) {
-      robot.onTrim();
       robot.lift.setArmTwoPosition(
           robot.lift.getState().second
               + (-controller2.rightStickY() * MAX_SECOND_JOINT_ADJUSTMENT));
     }
 
     if (controller2.leftStickX() < -0.02 || controller2.leftStickX() > 0.02) {
-      robot.turretAdjustment.getAndAdd(controller2.leftStickX() / 10);
-      Log.d("TURRETBOT", "TURRET ADJUSTMENT: " + robot.turretAdjustment.get());
+      robot.turretAdjustment.getAndAdd(controller2.leftStickX() / 2);
       robot.syncPosition();
-      Log.d("TURRETBOT", "RESYNC");
     }
 
     if (controller2.leftStickY() < -0.02 || controller2.leftStickY() > 0.02) {
-      robot.firstJointAdjustment.getAndAdd(controller2.leftStickY() / 10);
-      Log.d("TURRETBOT", "FIRST JOINT ADJUSTMENT: " + robot.firstJointAdjustment.get());
+      robot.firstJointAdjustment.getAndAdd(controller2.leftStickY() / 2);
       robot.syncPosition();
-      Log.d("TURRETBOT", "RESYNC");
     }
   }
 
@@ -283,9 +276,9 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private Runnable carouselMoveForAlliance(Alliance alliance) {
     switch (alliance) {
       case RED:
-        return robot.carouselSpinner::spinBackward;
-      case BLUE:
         return robot.carouselSpinner::spinForward;
+      case BLUE:
+        return robot.carouselSpinner::spinBackward;
       default:
         return null;
     }

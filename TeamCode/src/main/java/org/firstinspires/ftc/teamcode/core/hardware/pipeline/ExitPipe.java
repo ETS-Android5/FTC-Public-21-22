@@ -62,9 +62,6 @@ public class ExitPipe extends HardwarePipeline {
     if (noState || currentState.getPower() != nextState.getPower()) {
       motorObj.setPower(nextState.getPower());
     }
-    if (noState || currentState.getTargetPosition() != nextState.getTargetPosition()) {
-      motorObj.setTargetPosition(nextState.getTargetPosition());
-    }
     nextState.makeCurrent();
   }
 
