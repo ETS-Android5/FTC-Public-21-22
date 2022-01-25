@@ -177,7 +177,7 @@ public class Webcam implements FtcCamera {
   }
 
   private void saveBitmap(Bitmap bitmap) {
-    File file = new File(AppUtil.ROBOT_DATA_DIR, "Capture");
+    File file = new File(AppUtil.ROBOT_DATA_DIR, "Capture.jpg");
     try {
       try (FileOutputStream outputStream = new FileOutputStream(file)) {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);

@@ -25,6 +25,30 @@ public class PowerCurves {
         }
       };
 
+  public static final TriFunction<Double, Double, Double, Double> CAROUSEL_CURVE_SLOW =
+          (Double currentTicks, Double startingTicks, Double targetTicks) -> {
+            if (startingTicks.equals(targetTicks)) return 0.0;
+            if (currentTicks.equals(targetTicks)) return 0.0;
+            // We haven't reached our target
+            if (startingTicks < targetTicks) {
+              // Motor should spin forward
+              if (currentTicks > targetTicks) return 0.0; // We're past it, stop
+              if (currentTicks < startingTicks) return 0.3;
+              double percentProgress = (currentTicks - startingTicks) / (targetTicks - startingTicks);
+              if (percentProgress > .65) return 1.0;
+              if (percentProgress > .1) return 0.4;
+              return 0.3;
+            } else {
+              // Motor should spin backward
+              if (currentTicks < targetTicks) return 0.0;
+              if (currentTicks > startingTicks) return -0.3;
+              double percentProgress = (startingTicks - currentTicks) / (startingTicks - targetTicks);
+              if (percentProgress > .65) return -1.0;
+              if (percentProgress > .1) return -0.4;
+              return -0.3;
+            }
+          };
+
   public static TriFunction<Double, Double, Double, Double> generatePowerCurve(
       double maxPower, double rampSlope) {
     return (Double currentTicks, Double startingTicks, Double targetTicks) -> {

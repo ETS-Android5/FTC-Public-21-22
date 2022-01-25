@@ -36,16 +36,24 @@ public class CarouselSpinner implements ICarouselSpinner {
   private IMotorState spinnerMotorState;
   private CarouselSpinnerState carouselSpinnerState = CarouselSpinnerState.STOPPED;
 
-  public CarouselSpinner() {
-    initialize();
+  public CarouselSpinner(boolean slow) {
+    initialize(slow);
   }
 
-  private void initialize() {
-    spinnerMotorState =
-        new MotorState(CAROUSEL_SPINNER_MOTOR_NAME, Direction.FORWARD)
-            .withRunMode(RunMode.RUN_TO_POSITION)
-            .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.CAROUSEL_CURVE);
+  private void initialize(boolean slow) {
+    if (slow) {
+      spinnerMotorState =
+              new MotorState(CAROUSEL_SPINNER_MOTOR_NAME, Direction.FORWARD)
+                      .withRunMode(RunMode.RUN_TO_POSITION)
+                      .withTargetPosition(0)
+                      .withPowerCurve(PowerCurves.CAROUSEL_CURVE_SLOW);
+    } else {
+      spinnerMotorState =
+              new MotorState(CAROUSEL_SPINNER_MOTOR_NAME, Direction.FORWARD)
+                      .withRunMode(RunMode.RUN_TO_POSITION)
+                      .withTargetPosition(0)
+                      .withPowerCurve(PowerCurves.CAROUSEL_CURVE);
+    }
   }
 
   @Override

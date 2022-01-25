@@ -51,12 +51,14 @@ public class TurretBot implements Component {
   private static final int ELBOW_JOINT_MOVEMENT_DELAY_MS = 250;
 
   private static final int liftTolerance = 8;
+  private static final int nonIntakeLiftTolerance = 24;
   private static final int turretTolerance = 6;
+  private static final int nonIntakeTurretTolerance = 18;
 
   public final int firstJointOffset;
   public final IMecanumDrivetrain drivetrain = new MecanumDrivetrain();
   public final IIntake<IntakeState> intake = new Intake();
-  public final ICarouselSpinner carouselSpinner = new CarouselSpinner();
+  public final ICarouselSpinner carouselSpinner;
   public final ITurret turret = new Turret();
   public final IDualJointAngularLift lift = new DualJointAngularLift();
   public final ISingleServoGripper gripper = new SingleServoGripper();
@@ -110,6 +112,7 @@ public class TurretBot implements Component {
     this.firstJointOffset = jointOffset;
     this.secondJointSafeMovementLvl = firstJointOffset + 300;
     this.isForAutonomous = isForAutonomous;
+    this.carouselSpinner = new CarouselSpinner(isForAutonomous);
   }
 
   @Override
@@ -148,29 +151,29 @@ public class TurretBot implements Component {
     }
   }
 
-  private MotorPositionReachedCallback setLiftToPosition(int position) {
+  private MotorPositionReachedCallback setLiftToPosition(int position, int tolerance) {
     int target = position + (int) Math.round(firstJointAdjustment.get());
     lift.setArmOnePosition(target);
     return new MotorPositionReachedCallback(
         DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME,
         target,
-        TurretBot.liftTolerance,
+        tolerance,
         Math.abs(
                 target
                     - MotorTrackerPipe.getInstance()
                         .getPositionOf(DualJointAngularLift.LIFT_JOINT_ONE_MOTOR_NAME))
-            <= TurretBot.liftTolerance);
+            <= tolerance);
   }
 
-  private MotorPositionReachedCallback setTurretToPosition(int position) {
+  private MotorPositionReachedCallback setTurretToPosition(int position, int tolerance) {
     int target = position + (int) Math.round(turretAdjustment.get());
     turret.turnToPosition(target);
     return new MotorPositionReachedCallback(
         Turret.TURRET_MOTOR_NAME,
         target,
-        TurretBot.turretTolerance,
+        tolerance,
         Math.abs(target - MotorTrackerPipe.getInstance().getPositionOf(Turret.TURRET_MOTOR_NAME))
-            <= TurretBot.turretTolerance);
+            <= tolerance);
   }
 
   private void ensureTurretIsAt(
@@ -181,25 +184,25 @@ public class TurretBot implements Component {
       Runnable andThen) {
     double currentTurretPosition = turret.getState();
     if (Math.abs((position + (int) Math.round(turretAdjustment.get())) - currentTurretPosition)
-        <= TurretBot.turretTolerance) {
-      setTurretToPosition(position);
+        <= TurretBot.turretTolerance(isForIntake)) {
+      setTurretToPosition(position, TurretBot.turretTolerance(isForIntake));
       if (isForIntake) {
-        setLiftToPosition(liftJointOneTarget).andThen(andThen);
+        setLiftToPosition(liftJointOneTarget, TurretBot.liftTolerance(true)).andThen(andThen);
       } else {
-        setLiftToPosition(liftJointOneTarget);
+        setLiftToPosition(liftJointOneTarget, TurretBot.liftTolerance(false));
         andThen.run();
       }
     } else {
       int liftJointOneMaximizedTarget =
           Math.max(liftJointOneTarget, firstJointOffset + (isForIntake ? 107 : 0));
-      setLiftToPosition(liftJointOneMaximizedTarget)
+      setLiftToPosition(liftJointOneMaximizedTarget, TurretBot.liftTolerance(isForIntake))
           .andAfterMotorIsBeyond(
               firstJointOffset + (int) Math.round(firstJointAdjustment.get()),
-              TurretBot.liftTolerance,
+              TurretBot.liftTolerance(isForIntake),
               () -> {
                 if (stepStrictness == MovementStepStrictness.ORDERED_STRICTLY) {
-                  setTurretToPosition(position)
-                      .andThen(() -> setLiftToPosition(liftJointOneTarget).andThen(andThen));
+                  setTurretToPosition(position, TurretBot.turretTolerance(isForIntake))
+                      .andThen(() -> setLiftToPosition(liftJointOneTarget, TurretBot.liftTolerance(isForIntake)).andThen(andThen));
                   return;
                 }
                 if (liftJointOneTarget
@@ -212,8 +215,8 @@ public class TurretBot implements Component {
                                     - position)
                             / Turret.DEGREES_TO_TICKS
                         < 45) {
-                  setTurretToPosition(position);
-                  setLiftToPosition(liftJointOneTarget);
+                  setTurretToPosition(position, TurretBot.turretTolerance(isForIntake));
+                  setLiftToPosition(liftJointOneTarget, TurretBot.liftTolerance(isForIntake));
                   andThen.run();
                 } else {
                   int currentTicks =
@@ -221,22 +224,22 @@ public class TurretBot implements Component {
                   int ticksInFortyFiveDegrees = (int) Math.round(Turret.DEGREES_TO_TICKS * 45);
                   if (currentTicks < position) {
                     int safeTicksForLiftMovements = position - ticksInFortyFiveDegrees;
-                    setTurretToPosition(position)
+                    setTurretToPosition(position, TurretBot.turretTolerance(isForIntake))
                         .andAfterMotorIsBeyond(
                             safeTicksForLiftMovements + (int) Math.round(turretAdjustment.get()),
-                            TurretBot.turretTolerance,
+                            TurretBot.turretTolerance(isForIntake),
                             () -> {
-                              setLiftToPosition(liftJointOneTarget);
+                              setLiftToPosition(liftJointOneTarget, TurretBot.liftTolerance(isForIntake));
                               andThen.run();
                             });
                   } else {
                     int safeTicksForLiftMovements = position + ticksInFortyFiveDegrees;
-                    setTurretToPosition(position)
+                    setTurretToPosition(position, TurretBot.turretTolerance(isForIntake))
                         .andAfterMotorIsBelow(
                             safeTicksForLiftMovements + (int) Math.round(turretAdjustment.get()),
-                            TurretBot.turretTolerance,
+                            TurretBot.turretTolerance(isForIntake),
                             () -> {
-                              setLiftToPosition(liftJointOneTarget);
+                              setLiftToPosition(liftJointOneTarget, TurretBot.liftTolerance(isForIntake));
                               andThen.run();
                             });
                   }
@@ -254,7 +257,7 @@ public class TurretBot implements Component {
     switch (position) {
       case INTAKE_POSITION:
         turretTarget = Turret.TICKS_FRONT;
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, true);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset - 230,
@@ -272,7 +275,7 @@ public class TurretBot implements Component {
         break;
       case INTAKE_HOVER_POSITION:
         turretTarget = Turret.TICKS_FRONT;
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset,
@@ -282,7 +285,7 @@ public class TurretBot implements Component {
         break;
       case SHARED_CLOSE_POSITION:
         turretTarget = turretPositionForShared();
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset,
@@ -295,7 +298,7 @@ public class TurretBot implements Component {
         break;
       case SHARED_MIDDLE_POSITION:
         turretTarget = turretPositionForShared();
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset - 40,
@@ -308,7 +311,7 @@ public class TurretBot implements Component {
         break;
       case SHARED_FAR_POSITION:
         turretTarget = turretPositionForShared();
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset,
@@ -319,13 +322,13 @@ public class TurretBot implements Component {
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
                   () ->
-                      setLiftToPosition(firstJointOffset - 260)
+                      setLiftToPosition(firstJointOffset - 260, TurretBot.liftTolerance(false))
                           .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
       case TIPPED_CLOSE_POSITION:
         turretTarget = turretPositionForShared();
-        safeAdjustArms(turretTarget, true);
+        safeAdjustArms(turretTarget, true, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset + 150,
@@ -338,7 +341,7 @@ public class TurretBot implements Component {
         break;
       case TIPPED_MIDDLE_POSITION:
         turretTarget = turretPositionForShared();
-        safeAdjustArms(turretTarget, true);
+        safeAdjustArms(turretTarget, true, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset + 15,
@@ -351,7 +354,7 @@ public class TurretBot implements Component {
         break;
       case TIPPED_FAR_POSITION:
         turretTarget = turretPositionForShared();
-        safeAdjustArms(turretTarget, true);
+        safeAdjustArms(turretTarget, true, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset,
@@ -362,13 +365,13 @@ public class TurretBot implements Component {
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
                   () ->
-                      setLiftToPosition(firstJointOffset - 210)
+                      setLiftToPosition(firstJointOffset - 210, TurretBot.liftTolerance(false))
                           .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
       case ALLIANCE_BOTTOM_POSITION:
         turretTarget = turretPositionForAllianceHub();
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset,
@@ -379,13 +382,13 @@ public class TurretBot implements Component {
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
                   () ->
-                      setLiftToPosition(firstJointOffset - 450)
+                      setLiftToPosition(firstJointOffset - 450, TurretBot.liftTolerance(false))
                           .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
       case ALLIANCE_MIDDLE_POSITION:
         turretTarget = turretPositionForAllianceHub();
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset - 90,
@@ -398,7 +401,7 @@ public class TurretBot implements Component {
         break;
       case ALLIANCE_TOP_POSITION:
         turretTarget = turretPositionForAllianceHub();
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset + 550,
@@ -411,7 +414,7 @@ public class TurretBot implements Component {
         break;
       case TEAM_MARKER_GRAB_POSITION:
         turretTarget = turretPositionForTeamMarkerGrab();
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset,
@@ -423,13 +426,13 @@ public class TurretBot implements Component {
               afterTimedAction(
                   ELBOW_JOINT_MOVEMENT_DELAY_MS,
                   () ->
-                      setLiftToPosition(firstJointOffset - 560)
+                      setLiftToPosition(firstJointOffset - 560, TurretBot.liftTolerance(false))
                           .andThen(() -> gripperIsNearGround.set(true)));
             });
         break;
       case TEAM_MARKER_DEPOSIT_POSITION:
         turretTarget = turretPositionForTeamMarkerDeposit();
-        safeAdjustArms(turretTarget, false);
+        safeAdjustArms(turretTarget, false, false);
         ensureTurretIsAt(
             turretTarget,
             firstJointOffset + 570,
@@ -529,23 +532,31 @@ public class TurretBot implements Component {
     return 0;
   }
 
-  private void safeAdjustArms(int nextTurretPosition, boolean inTippedMode) {
+  private void safeAdjustArms(int nextTurretPosition, boolean inTippedMode, boolean approachingIntake) {
     int turretTarget = nextTurretPosition + (int) Math.round(turretAdjustment.get());
     if (gripperIsNearGround.get()) {
-      setLiftToPosition(firstJointOffset + (inTippedMode ? 100 : 0))
+      setLiftToPosition(firstJointOffset + (inTippedMode ? 100 : 0), TurretBot.liftTolerance(approachingIntake))
           .andThen(
               () -> {
                 double currentDegrees = turret.getState();
                 if (Math.abs(currentDegrees - (turretTarget / Turret.DEGREES_TO_TICKS)) > 45) {
-                  lift.setArmTwoPosition(0.55);
+                  lift.setArmTwoPosition(DualJointAngularLift.LIFT_JOINT_TWO_INTAKE_POSITION);
                 }
               });
     } else {
       double currentDegrees = turret.getState();
       if (Math.abs(currentDegrees - (turretTarget / Turret.DEGREES_TO_TICKS)) > 45) {
-        lift.setArmTwoPosition(0.55);
+        lift.setArmTwoPosition(DualJointAngularLift.LIFT_JOINT_TWO_INTAKE_POSITION);
       }
     }
+  }
+
+  private static int turretTolerance(boolean forIntake) {
+    return forIntake ? turretTolerance : nonIntakeTurretTolerance;
+  }
+
+  private static int liftTolerance(boolean forIntake) {
+    return forIntake ? liftTolerance : nonIntakeLiftTolerance;
   }
 
   // Auto methods
