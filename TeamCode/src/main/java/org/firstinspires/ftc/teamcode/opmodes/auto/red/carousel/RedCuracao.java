@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
+import org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts.DualJointAngularLift;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBot;
 
 @Autonomous(name = "CB_AUTO_RedCuracao")
@@ -48,10 +49,10 @@ public class RedCuracao extends EnhancedAutonomous {
     processChanges();
     robot.carouselSpinner.spinForward();
     long spinStart = System.currentTimeMillis();
-    while (opModeIsActive() && System.currentTimeMillis() - spinStart < 2500) {
+    while (opModeIsActive() && System.currentTimeMillis() - spinStart < 4000) {
       processChanges();
     }
-    robot.lift.setArmTwoPosition(0.55);
+    robot.lift.setArmTwoPosition(DualJointAngularLift.LIFT_JOINT_TWO_INTAKE_POSITION);
     robot.drivetrain.setAllPower(0.25);
     startAvg = robot.drivetrain.avgEncoderValue();
     while (opModeIsActive() && robot.drivetrain.avgEncoderValue() - startAvg <= 640) {

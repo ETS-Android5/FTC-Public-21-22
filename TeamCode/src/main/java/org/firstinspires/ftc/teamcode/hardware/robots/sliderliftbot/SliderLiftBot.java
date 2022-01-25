@@ -28,7 +28,7 @@ public class SliderLiftBot implements Component {
   public final IRampedIntake intake = new RampedIntake();
   public final IFourHeightLift fourHeightLift = new FourHeightLift();
   public final IOuttakeBucket outtakeBucket = new OuttakeBucket();
-  public final ICarouselSpinner carouselSpinner = new CarouselSpinner();
+  public final ICarouselSpinner carouselSpinner = new CarouselSpinner(false);
 
   @AutonomousOnly public final FtcCamera webcam = new Webcam();
 
