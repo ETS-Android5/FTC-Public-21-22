@@ -64,7 +64,7 @@ public class AutoBlueWarehouseEndOuter extends EnhancedAutonomous {
     int delay = robot.grabFreight();
     processChanges();
     sleep(delay);
-    robot.lift.setArmOnePosition(robot.firstJointOffset + 550);
+    robot.lift.setArmOnePosition(550);
     processChanges();
     try {
       worker.join();
@@ -81,7 +81,8 @@ public class AutoBlueWarehouseEndOuter extends EnhancedAutonomous {
     }
     robot.drivetrain.setAllPower(-.25);
     double startAvg = robot.drivetrain.avgEncoderValue();
-    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_0) {
+    while (opModeIsActive()
+        && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_0) {
       processChanges();
     }
     robot.drivetrain.setAllPower(0);
@@ -110,7 +111,7 @@ public class AutoBlueWarehouseEndOuter extends EnhancedAutonomous {
 
   private void handleBottomPosition() {
     robot.setAlliance(Alliance.RED);
-    robot.goToPosition(TurretBotPosition.ALLIANCE_BOTTOM_POSITION);
+    robot.goToPosition(TurretBotPosition.ALLIANCE_BOTTOM_POSITION, false);
     long start = System.currentTimeMillis();
     while (opModeIsActive() && System.currentTimeMillis() - start < 3000) {
       processChanges();
@@ -118,7 +119,8 @@ public class AutoBlueWarehouseEndOuter extends EnhancedAutonomous {
     robot.setAlliance(Alliance.BLUE);
     robot.drivetrain.setAllPower(-.25);
     double startAvg = robot.drivetrain.avgEncoderValue();
-    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_BOTTOM) {
+    while (opModeIsActive()
+        && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_BOTTOM) {
       processChanges();
     }
     robot.drivetrain.setAllPower(0);
@@ -131,7 +133,7 @@ public class AutoBlueWarehouseEndOuter extends EnhancedAutonomous {
 
   private void handleMiddlePosition() {
     robot.setAlliance(Alliance.RED);
-    robot.goToPosition(TurretBotPosition.ALLIANCE_MIDDLE_POSITION);
+    robot.goToPosition(TurretBotPosition.ALLIANCE_MIDDLE_POSITION, false);
     long start = System.currentTimeMillis();
     while (opModeIsActive() && System.currentTimeMillis() - start < 3000) {
       processChanges();
@@ -139,7 +141,8 @@ public class AutoBlueWarehouseEndOuter extends EnhancedAutonomous {
     robot.setAlliance(Alliance.BLUE);
     robot.drivetrain.setAllPower(-.25);
     double startAvg = robot.drivetrain.avgEncoderValue();
-    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_MIDDLE) {
+    while (opModeIsActive()
+        && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_MIDDLE) {
       processChanges();
     }
     robot.drivetrain.setAllPower(0);
@@ -152,7 +155,7 @@ public class AutoBlueWarehouseEndOuter extends EnhancedAutonomous {
 
   private void handleTopPosition() {
     robot.setAlliance(Alliance.RED);
-    robot.goToPosition(TurretBotPosition.ALLIANCE_TOP_POSITION);
+    robot.goToPosition(TurretBotPosition.ALLIANCE_TOP_POSITION, false);
     long start = System.currentTimeMillis();
     while (opModeIsActive() && System.currentTimeMillis() - start < 3000) {
       processChanges();
@@ -160,7 +163,8 @@ public class AutoBlueWarehouseEndOuter extends EnhancedAutonomous {
     robot.setAlliance(Alliance.BLUE);
     robot.drivetrain.setAllPower(-.25);
     double startAvg = robot.drivetrain.avgEncoderValue();
-    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_TOP) {
+    while (opModeIsActive()
+        && startAvg - robot.drivetrain.avgEncoderValue() <= FRONT_DISTANCE_FROM_WALL_TOP) {
       processChanges();
     }
     robot.drivetrain.setAllPower(0);
@@ -178,13 +182,14 @@ public class AutoBlueWarehouseEndOuter extends EnhancedAutonomous {
       processChanges();
     }
     double startAvg = robot.drivetrain.avgEncoderValue();
-    while (opModeIsActive() && startAvg + preMoveFrontDistance <= robot.drivetrain.avgEncoderValue()) {
+    while (opModeIsActive()
+        && startAvg + preMoveFrontDistance <= robot.drivetrain.avgEncoderValue()) {
       processChanges();
     }
     robot.drivetrain.setAllPower(0);
     processChanges();
     robot.grabTeamMarker();
-    robot.goToPosition(TurretBotPosition.INTAKE_POSITION);
+    robot.goToPosition(TurretBotPosition.INTAKE_POSITION, false);
     robot.turnToHeading(-90, 0.5, super::opModeIsActive, super::processChanges);
     long intakeStart = System.currentTimeMillis();
     while (opModeIsActive() && System.currentTimeMillis() - intakeStart < 1000) {

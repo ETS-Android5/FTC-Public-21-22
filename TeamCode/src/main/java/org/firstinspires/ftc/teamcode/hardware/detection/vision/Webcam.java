@@ -182,6 +182,7 @@ public class Webcam implements FtcCamera {
       try (FileOutputStream outputStream = new FileOutputStream(file)) {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
       }
-    } catch (IOException ignored) {}
+    } catch (IOException ignored) {
+    }
   }
 }

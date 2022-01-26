@@ -125,12 +125,11 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
   @Override
   public double avgEncoderValue() {
-    return (
-            MotorTrackerPipe.getInstance().getPositionOf(FRONT_LEFT_MOTOR_NAME)
-                    + MotorTrackerPipe.getInstance().getPositionOf(FRONT_RIGHT_MOTOR_NAME)
-                    + MotorTrackerPipe.getInstance().getPositionOf(REAR_LEFT_MOTOR_NAME)
-                    + MotorTrackerPipe.getInstance().getPositionOf(REAR_RIGHT_MOTOR_NAME)
-    ) / 4.0;
+    return (MotorTrackerPipe.getInstance().getPositionOf(FRONT_LEFT_MOTOR_NAME)
+            + MotorTrackerPipe.getInstance().getPositionOf(FRONT_RIGHT_MOTOR_NAME)
+            + MotorTrackerPipe.getInstance().getPositionOf(REAR_LEFT_MOTOR_NAME)
+            + MotorTrackerPipe.getInstance().getPositionOf(REAR_RIGHT_MOTOR_NAME))
+        / 4.0;
   }
 
   @Override

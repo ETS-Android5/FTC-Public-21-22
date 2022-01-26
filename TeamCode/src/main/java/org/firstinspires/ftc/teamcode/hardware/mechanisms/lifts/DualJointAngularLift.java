@@ -39,7 +39,10 @@ public class DualJointAngularLift implements IDualJointAngularLift {
   private IMotorState liftJointOneMotorState;
   private IServoState liftJointTwoServoState;
 
-  public DualJointAngularLift() {
+  public final int offset;
+
+  public DualJointAngularLift(int offset) {
+    this.offset = offset;
     initialize();
   }
 
@@ -85,7 +88,9 @@ public class DualJointAngularLift implements IDualJointAngularLift {
                   clippedRange = clippedRange == 0 ? Double.MIN_VALUE : clippedRange;
                   return clippedRange;
                 });
-    liftJointTwoServoState = new ServoState(LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, LIFT_JOINT_TWO_INTAKE_POSITION);
+    liftJointTwoServoState =
+        new ServoState(
+            LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, LIFT_JOINT_TWO_INTAKE_POSITION);
   }
 
   @Override
@@ -107,12 +112,17 @@ public class DualJointAngularLift implements IDualJointAngularLift {
 
   @Override
   public synchronized void setArmOnePosition(int ticks) {
-    liftJointOneMotorState = liftJointOneMotorState.withTargetPosition(ticks);
+    liftJointOneMotorState = liftJointOneMotorState.withTargetPosition(offset + ticks);
   }
 
   @Override
   public synchronized void setArmTwoPosition(double position) {
     liftJointTwoServoState = liftJointTwoServoState.withPosition(position);
+  }
+
+  @Override
+  public int getArmOneOffset() {
+    return offset;
   }
 
   @Override

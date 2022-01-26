@@ -11,4 +11,6 @@ public interface IDualJointAngularLift
   void setArmOnePosition(int ticks);
 
   void setArmTwoPosition(double position);
+
+  int getArmOneOffset();
 }

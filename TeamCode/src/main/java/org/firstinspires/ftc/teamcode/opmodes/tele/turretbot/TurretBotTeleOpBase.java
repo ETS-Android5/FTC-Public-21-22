@@ -85,14 +85,14 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           if (firstTime
               || currentPosition == TurretBotPosition.INTAKE_HOVER_POSITION
               || currentPosition == TurretBotPosition.INTAKE_POSITION) {
-            robot.goToPosition(TurretBotPosition.INTAKE_POSITION);
+            robot.goToPosition(TurretBotPosition.INTAKE_POSITION, tippedMode.get());
             firstTime = false;
           } else {
             robot.afterTimedAction(
                 robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
                 () -> {
                   robot.grabTeamMarker();
-                  robot.goToPosition(TurretBotPosition.INTAKE_POSITION);
+                  robot.goToPosition(TurretBotPosition.INTAKE_POSITION, tippedMode.get());
                 });
           }
         },
@@ -107,7 +107,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(TurretBotPosition.INTAKE_HOVER_POSITION);
+                robot.goToPosition(TurretBotPosition.INTAKE_HOVER_POSITION, tippedMode.get());
               });
         },
         true,
@@ -150,7 +150,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(position);
+                robot.goToPosition(position, tippedMode.get());
               });
         },
         true,
@@ -164,7 +164,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(position);
+                robot.goToPosition(position, tippedMode.get());
               });
         },
         true,
@@ -178,7 +178,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(position);
+                robot.goToPosition(position, tippedMode.get());
               });
         },
         true,
@@ -189,7 +189,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
             firstTime = false;
             robot.clearFutureEvents();
             robot.intake.stop();
-            robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION);
+            robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION, tippedMode.get());
           }
         },
         true,
@@ -203,7 +203,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabTeamMarker(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(position);
+                robot.goToPosition(position, tippedMode.get());
               });
         },
         true,
@@ -230,12 +230,12 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
     if (controller2.leftStickX() < -0.02 || controller2.leftStickX() > 0.02) {
       robot.turretAdjustment.getAndAdd(controller2.leftStickX() / 2);
-      robot.syncPosition();
+      robot.syncPosition(tippedMode.get());
     }
 
     if (controller2.leftStickY() < -0.02 || controller2.leftStickY() > 0.02) {
       robot.firstJointAdjustment.getAndAdd(controller2.leftStickY() / 2);
-      robot.syncPosition();
+      robot.syncPosition(tippedMode.get());
     }
   }
 
