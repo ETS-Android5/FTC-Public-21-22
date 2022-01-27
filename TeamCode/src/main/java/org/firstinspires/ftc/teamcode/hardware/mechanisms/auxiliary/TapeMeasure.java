@@ -18,6 +18,7 @@ public class TapeMeasure implements ITapeMeasure {
     private static final String PITCH_SERVO_NAME = "TAPE_MEASURE_PITCH_SERVO";
     private static final String LENGTH_SERVO_NAME = "TAPE_MEASURE_LENGTH_SERVO";
     private static final double SERVO_INIT_SPEED = 0.5; // 0 is full reverse and 1 is full forwards
+    private static final double ADJUSTMENT_RATE = 0.001;
 
     @Hardware(name = YAW_SERVO_NAME)
     public Servo yawServo;
@@ -60,13 +61,13 @@ public class TapeMeasure implements ITapeMeasure {
     }
 
     @Override
-    public synchronized void setYawRate(double amt) {
-        yawServoState = yawServoState.withPosition(centerStickValueForServo(amt));
+    public void adjustYaw(double amt) {
+        yawServoState = yawServoState.withPosition(yawServoState.getPosition() + (amt * ADJUSTMENT_RATE));
     }
 
     @Override
-    public synchronized void setPitchRate(double amt) {
-        pitchServoState = pitchServoState.withPosition(centerStickValueForServo(amt));
+    public void adjustPitch(double amt) {
+        pitchServoState = pitchServoState.withPosition(pitchServoState.getPosition() + (amt * ADJUSTMENT_RATE));
     }
 
     @Override

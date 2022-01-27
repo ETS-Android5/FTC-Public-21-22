@@ -62,7 +62,7 @@ public class TurretBot implements Component {
   public final IMecanumDrivetrain drivetrain = new MecanumDrivetrain();
   public final IIntake<IntakeState> intake = new Intake();
   public final ICarouselSpinner carouselSpinner;
-  // public final ITapeMeasure tapeMeasure = new TapeMeasure();
+  public final ITapeMeasure tapeMeasure = new TapeMeasure();
   public final ITurret turret = new Turret();
   public final IDualJointAngularLift lift;
   public final ISingleServoGripper gripper = new SingleServoGripper();
