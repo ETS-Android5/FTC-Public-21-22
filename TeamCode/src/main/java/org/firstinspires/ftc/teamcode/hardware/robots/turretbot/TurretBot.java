@@ -24,9 +24,11 @@ import org.firstinspires.ftc.teamcode.hardware.detection.vision.Webcam;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.CarouselSpinner;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.ICarouselSpinner;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.ISingleServoGripper;
+import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.ITapeMeasure;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.ITurret;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.SingleServoGripper;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.SingleServoGripperState;
+import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.TapeMeasure;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.Turret;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.drivetrains.IMecanumDrivetrain;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.drivetrains.MecanumDrivetrain;
@@ -60,9 +62,11 @@ public class TurretBot implements Component {
   public final IMecanumDrivetrain drivetrain = new MecanumDrivetrain();
   public final IIntake<IntakeState> intake = new Intake();
   public final ICarouselSpinner carouselSpinner;
+  // public final ITapeMeasure tapeMeasure = new TapeMeasure();
   public final ITurret turret = new Turret();
   public final IDualJointAngularLift lift;
   public final ISingleServoGripper gripper = new SingleServoGripper();
+
   public final AtomicDouble turretAdjustment = new AtomicDouble(0);
   public final AtomicDouble firstJointAdjustment = new AtomicDouble(0);
 
@@ -218,7 +222,9 @@ public class TurretBot implements Component {
           .andAfterMotorIsBeyond((int) Math.round(liftJointOneMaximizedTarget + firstJointAdjustment.get()),
               TurretBot.liftTolerance(isForIntake),
               () -> {
+                Log.d("TURRETBOT", "LIFT TARGET REACHED");
                 if (stepStrictness == MovementStepStrictness.ORDERED_STRICTLY) {
+                  Log.d("TURRETBOT", "FOLLOWING STRICT STEPS");
                   setTurretToPosition(position, TurretBot.turretTolerance(isForIntake))
                       .andThen(
                           () ->
@@ -237,14 +243,17 @@ public class TurretBot implements Component {
                                     - position)
                             / Turret.DEGREES_TO_TICKS
                         < 45) {
+                  Log.d("TURRETBOT", "FOLLOWING 2ND JOINT SAFE STEPS C1");
                   setTurretToPosition(position, TurretBot.turretTolerance(isForIntake));
                   setLiftToPosition(liftJointOneTarget, TurretBot.liftTolerance(isForIntake));
                   andThen.run();
                 } else {
+                  Log.d("TURRETBOT", "FOLLOWING 2ND JOINT SAFE STEPS C2");
                   int currentTicks =
                       MotorTrackerPipe.getInstance().getPositionOf(Turret.TURRET_MOTOR_NAME);
                   int ticksInFortyFiveDegrees = (int) Math.round(Turret.DEGREES_TO_TICKS * 45);
                   if (currentTicks < position) {
+                    Log.d("TURRETBOT", "HERE0");
                     int safeTicksForLiftMovements = position - ticksInFortyFiveDegrees;
                     setTurretToPosition(position, TurretBot.turretTolerance(isForIntake))
                         .andAfterMotorIsBeyond(
@@ -256,6 +265,7 @@ public class TurretBot implements Component {
                               andThen.run();
                             });
                   } else {
+                    Log.d("TURRETBOT", "HERE1");
                     int safeTicksForLiftMovements = position + ticksInFortyFiveDegrees;
                     setTurretToPosition(position, TurretBot.turretTolerance(isForIntake))
                         .andAfterMotorIsBelow(
