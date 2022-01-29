@@ -22,7 +22,7 @@ import java.util.List;
 public class DualJointAngularLift implements IDualJointAngularLift {
   public static final String LIFT_JOINT_ONE_MOTOR_NAME = "LIFT_JOINT_ONE_MOTOR";
   public static final String LIFT_JOINT_TWO_SERVO_NAME = "LIFT_JOINT_TWO_SERVO";
-  public static final double LIFT_JOINT_TWO_INTAKE_POSITION = 0.55;
+  public static final double LIFT_JOINT_TWO_INTAKE_POSITION = 0.554;
   public static final int DEFAULT_ADJUSTMENT_THRESHOLD = 50;
 
   @Hardware(

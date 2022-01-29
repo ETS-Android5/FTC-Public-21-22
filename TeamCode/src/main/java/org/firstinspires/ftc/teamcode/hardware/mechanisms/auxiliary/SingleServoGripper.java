@@ -15,9 +15,9 @@ import java.util.List;
 public class SingleServoGripper implements ISingleServoGripper {
   public static final int GRIPPER_ACTION_DELAY_MS = 250;
   private static final String SINGLE_SERVO_GRIPPER_SERVO_NAME = "SINGLE_SERVO_GRIPPER_SERVO";
-  private static final double OPEN_POSITION = 0.54;
-  private static final double CLOSED_ON_FREIGHT_POSITION = 0.69;
-  private static final double CLOSED_ON_TEAM_MARKER_POSITION = 0.73;
+  private static final double OPEN_POSITION = 0.72;
+  private static final double CLOSED_ON_FREIGHT_POSITION = 0.94;
+  private static final double CLOSED_ON_TEAM_MARKER_POSITION = 0.94;
 
   @Hardware(name = SINGLE_SERVO_GRIPPER_SERVO_NAME)
   @SuppressWarnings("unused")
