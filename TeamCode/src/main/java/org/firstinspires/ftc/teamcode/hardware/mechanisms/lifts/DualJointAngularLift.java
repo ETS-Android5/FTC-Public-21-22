@@ -24,6 +24,7 @@ public class DualJointAngularLift implements IDualJointAngularLift {
   public static final String LIFT_JOINT_TWO_SERVO_NAME = "LIFT_JOINT_TWO_SERVO";
   public static final double LIFT_JOINT_TWO_INTAKE_POSITION = 0.554;
   public static final int DEFAULT_ADJUSTMENT_THRESHOLD = 50;
+  public final int offset;
 
   @Hardware(
       name = LIFT_JOINT_ONE_MOTOR_NAME,
@@ -38,8 +39,6 @@ public class DualJointAngularLift implements IDualJointAngularLift {
 
   private IMotorState liftJointOneMotorState;
   private IServoState liftJointTwoServoState;
-
-  public final int offset;
 
   public DualJointAngularLift(int offset) {
     this.offset = offset;

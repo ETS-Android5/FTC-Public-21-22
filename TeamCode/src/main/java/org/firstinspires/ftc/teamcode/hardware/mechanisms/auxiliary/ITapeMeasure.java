@@ -6,7 +6,9 @@ import org.firstinspires.ftc.teamcode.core.hardware.state.StatefulMechanism;
 import kotlin.Triple;
 
 public interface ITapeMeasure extends Component, StatefulMechanism<Triple<Double, Double, Double>> {
-    void adjustYaw(double amt);
-    void adjustPitch(double amt);
-    void setLengthRate(double amt);
+  void adjustYaw(double amt);
+
+  void adjustPitch(double amt);
+
+  void setLengthRate(double amt);
 }

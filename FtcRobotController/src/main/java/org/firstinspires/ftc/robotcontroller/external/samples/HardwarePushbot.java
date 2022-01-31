@@ -52,6 +52,7 @@ public class HardwarePushbot {
   public static final double MID_SERVO = 0.5;
   public static final double ARM_UP_POWER = 0.45;
   public static final double ARM_DOWN_POWER = -0.45;
+  private final ElapsedTime period = new ElapsedTime();
   /* Public OpMode members. */
   public DcMotor leftDrive = null;
   public DcMotor rightDrive = null;
@@ -60,7 +61,6 @@ public class HardwarePushbot {
   public Servo rightClaw = null;
   /* local OpMode members. */
   HardwareMap hwMap = null;
-  private final ElapsedTime period = new ElapsedTime();
 
   /* Constructor */
   public HardwarePushbot() {}

@@ -88,25 +88,19 @@ public class ConceptWebcam extends LinearOpMode {
    * wait indefinitely
    */
   private static final int secondsPermissionTimeout = Integer.MAX_VALUE;
-
+  private final File captureDirectory = AppUtil.ROBOT_DATA_DIR;
   /** State regarding our interaction with the camera */
   private CameraManager cameraManager;
-
   private WebcamName cameraName;
   private Camera camera;
   private CameraCaptureSession cameraCaptureSession;
-
   /**
    * The queue into which all frames from the camera are placed as they become available. Frames
    * which are not processed by the OpMode are automatically discarded.
    */
   private EvictingBlockingQueue<Bitmap> frameQueue;
-
   /** State regarding where and how to save frames when the 'A' button is pressed. */
   private int captureCounter = 0;
-
-  private final File captureDirectory = AppUtil.ROBOT_DATA_DIR;
-
   /**
    * A utility object that indicates where the asynchronous callbacks from the camera infrastructure
    * are to run. In this OpMode, that's all hidden from you (but see {@link #startCamera} if you're

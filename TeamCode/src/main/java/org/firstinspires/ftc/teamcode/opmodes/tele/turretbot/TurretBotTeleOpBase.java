@@ -15,11 +15,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.0055; // 1.5 degrees
+  public final AtomicBoolean tapeMeasureMode = new AtomicBoolean(false);
   private final TurretBot robot;
   private final AtomicBoolean halfSpeed = new AtomicBoolean(true);
   private final AtomicBoolean allianceHubMode = new AtomicBoolean(false);
   private final AtomicBoolean tippedMode = new AtomicBoolean(false);
-  public final AtomicBoolean tapeMeasureMode = new AtomicBoolean(false);
   private final List<ScheduledFuture<?>> futures = new LinkedList<>();
   private boolean firstTime = true;
 
@@ -93,8 +93,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         BooleanSurface.A);
 
     controller1.registerOnPressedCallback(
-            () -> tapeMeasureMode.set(!tapeMeasureMode.get()),
-            true, BooleanSurface.DPAD_DOWN);
+        () -> tapeMeasureMode.set(!tapeMeasureMode.get()), true, BooleanSurface.DPAD_DOWN);
 
     controller2.registerOnPressedCallback(
         () -> {
@@ -180,18 +179,16 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         },
         true,
         BooleanSurface.Y);
-    controller2.registerOnPressedCallback(
+    controller1.registerOnPressedCallback(
         () -> {
-          if (allianceHubMode.get()) {
-            firstTime = false;
-            robot.clearFutureEvents();
-            robot.intake.stop();
-            robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION, tippedMode.get());
-          }
+          firstTime = false;
+          robot.clearFutureEvents();
+          robot.intake.stop();
+          robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION, tippedMode.get());
         },
         true,
         BooleanSurface.DPAD_LEFT);
-    controller2.registerOnPressedCallback(
+    controller1.registerOnPressedCallback(
         () -> {
           firstTime = false;
           robot.clearFutureEvents();
@@ -215,16 +212,16 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onLoop() {
-      if (tapeMeasureMode.get()) {
-          robot.tapeMeasure.adjustPitch(controller1.leftStickY());
-          robot.tapeMeasure.adjustYaw(controller1.rightStickX());
-          robot.tapeMeasure.setLengthRate(controller1.rightTrigger() - controller1.leftTrigger());
-      } else {
-          double turnValue = controller1.rightStickX();
-          double speed = halfSpeed.get() ? 0.5 : 0.9;
-          robot.drivetrain.driveBySticks(
-                  controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
-      }
+    if (tapeMeasureMode.get()) {
+      robot.tapeMeasure.adjustPitch(controller1.leftStickY());
+      robot.tapeMeasure.adjustYaw(controller1.rightStickX());
+      robot.tapeMeasure.setLengthRate(controller1.rightTrigger() - controller1.leftTrigger());
+    } else {
+      double turnValue = controller1.rightStickX();
+      double speed = halfSpeed.get() ? 0.5 : 0.9;
+      robot.drivetrain.driveBySticks(
+          controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
+    }
     if (controller2.rightStickY() < -0.02 || controller2.rightStickY() > 0.02) {
       robot.lift.setArmTwoPosition(
           robot.lift.getState().second

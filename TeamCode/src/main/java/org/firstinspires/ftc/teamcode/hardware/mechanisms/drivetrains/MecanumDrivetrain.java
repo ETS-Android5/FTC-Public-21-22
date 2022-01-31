@@ -24,21 +24,29 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
   @Hardware(
       name = FRONT_LEFT_MOTOR_NAME,
+      direction = Direction.REVERSE,
       runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx frontLeftMotor;
 
-  @Hardware(name = FRONT_RIGHT_MOTOR_NAME, direction = Direction.REVERSE, runMode = RunMode.RUN_USING_ENCODER)
+  @Hardware(
+      name = FRONT_RIGHT_MOTOR_NAME,
+      direction = Direction.FORWARD,
+      runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx frontRightMotor;
 
   @Hardware(
       name = REAR_LEFT_MOTOR_NAME,
+      direction = Direction.FORWARD,
       runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx rearLeftMotor;
 
-  @Hardware(name = REAR_RIGHT_MOTOR_NAME, direction = Direction.REVERSE, runMode = RunMode.RUN_USING_ENCODER)
+  @Hardware(
+      name = REAR_RIGHT_MOTOR_NAME,
+      direction = Direction.FORWARD,
+      runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx rearRightMotor;
 
@@ -54,16 +62,16 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
   private void initialize() {
     frontLeftMotorState =
-        new MotorState(FRONT_LEFT_MOTOR_NAME, Direction.FORWARD)
+        new MotorState(FRONT_LEFT_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_USING_ENCODER);
     frontRightMotorState =
-        new MotorState(FRONT_RIGHT_MOTOR_NAME, Direction.REVERSE)
+        new MotorState(FRONT_RIGHT_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_USING_ENCODER);
     rearLeftMotorState =
-        new MotorState(REAR_LEFT_MOTOR_NAME, Direction.FORWARD)
+        new MotorState(REAR_LEFT_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_USING_ENCODER);
     rearRightMotorState =
-        new MotorState(REAR_RIGHT_MOTOR_NAME, Direction.REVERSE)
+        new MotorState(REAR_RIGHT_MOTOR_NAME, Direction.FORWARD)
             .withRunMode(RunMode.RUN_USING_ENCODER);
   }
 
