@@ -106,12 +106,11 @@ public class AWDClassicDrivetrain implements IAWDClassicDrivetrain {
 
   @Override
   public double avgEncoderValue() {
-    return (
-            MotorTrackerPipe.getInstance().getPositionOf(FRONT_LEFT_MOTOR_NAME)
+    return (MotorTrackerPipe.getInstance().getPositionOf(FRONT_LEFT_MOTOR_NAME)
             + MotorTrackerPipe.getInstance().getPositionOf(FRONT_RIGHT_MOTOR_NAME)
             + MotorTrackerPipe.getInstance().getPositionOf(REAR_LEFT_MOTOR_NAME)
-            + MotorTrackerPipe.getInstance().getPositionOf(REAR_RIGHT_MOTOR_NAME)
-    ) / 4.0;
+            + MotorTrackerPipe.getInstance().getPositionOf(REAR_RIGHT_MOTOR_NAME))
+        / 4.0;
   }
 
   @Override

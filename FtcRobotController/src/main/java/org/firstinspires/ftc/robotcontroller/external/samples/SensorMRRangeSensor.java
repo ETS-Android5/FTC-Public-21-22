@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -38,13 +37,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
- * {@link SensorMRRangeSensor} illustrates how to use the Modern Robotics
- * Range Sensor.
+ * {@link SensorMRRangeSensor} illustrates how to use the Modern Robotics Range Sensor.
  *
- * The op mode assumes that the range sensor is configured with a name of "sensor_range".
+ * <p>The op mode assumes that the range sensor is configured with a name of "sensor_range".
  *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ * <p>Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new
+ * name. Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode
+ * list
  *
  * @see <a href="http://modernroboticsinc.com/range-sensor">MR Range Sensor</a>
  */
@@ -52,31 +51,31 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Disabled
 public class SensorMRRangeSensor extends LinearOpMode {
 
-    Rev2mDistanceSensor frontSensor;
-    Rev2mDistanceSensor backSensor;
-    Rev2mDistanceSensor leftSensor;
-    Rev2mDistanceSensor rightSensor;
+  Rev2mDistanceSensor frontSensor;
+  Rev2mDistanceSensor backSensor;
+  Rev2mDistanceSensor leftSensor;
+  Rev2mDistanceSensor rightSensor;
 
-    @Override public void runOpMode() {
+  @Override
+  public void runOpMode() {
 
-        // get a reference to our compass
-        frontSensor = hardwareMap.get(Rev2mDistanceSensor.class, "FRONT_RANGE");
-        backSensor = hardwareMap.get(Rev2mDistanceSensor.class, "REAR_RANGE");
-        leftSensor = hardwareMap.get(Rev2mDistanceSensor.class, "LEFT_RANGE");
-        rightSensor = hardwareMap.get(Rev2mDistanceSensor.class, "RIGHT_RANGE");
+    // get a reference to our compass
+    frontSensor = hardwareMap.get(Rev2mDistanceSensor.class, "FRONT_RANGE");
+    backSensor = hardwareMap.get(Rev2mDistanceSensor.class, "REAR_RANGE");
+    leftSensor = hardwareMap.get(Rev2mDistanceSensor.class, "LEFT_RANGE");
+    rightSensor = hardwareMap.get(Rev2mDistanceSensor.class, "RIGHT_RANGE");
 
-        // wait for the start button to be pressed
-        waitForStart();
+    // wait for the start button to be pressed
+    waitForStart();
 
-        while (opModeIsActive()) {
+    while (opModeIsActive()) {
 
-            telemetry.addData("front cm", frontSensor.getDistance(DistanceUnit.CM));
-            telemetry.addData("back cm", backSensor.getDistance(DistanceUnit.CM));
-            telemetry.addData("left cm", leftSensor.getDistance(DistanceUnit.CM));
-            telemetry.addData("right cm", rightSensor.getDistance(DistanceUnit.CM));
+      telemetry.addData("front cm", frontSensor.getDistance(DistanceUnit.CM));
+      telemetry.addData("back cm", backSensor.getDistance(DistanceUnit.CM));
+      telemetry.addData("left cm", leftSensor.getDistance(DistanceUnit.CM));
+      telemetry.addData("right cm", rightSensor.getDistance(DistanceUnit.CM));
 
-
-            telemetry.update();
-        }
+      telemetry.update();
     }
+  }
 }

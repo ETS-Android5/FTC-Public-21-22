@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto.blue.carousel;
 
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
@@ -27,7 +26,7 @@ public class BlueCuracao extends EnhancedAutonomous {
     int delay = robot.grabFreight();
     processChanges();
     sleep(delay);
-    robot.lift.setArmOnePosition(robot.firstJointOffset + 550);
+    robot.lift.setArmOnePosition(550);
     processChanges();
     robot.drivetrain.setAllPower(0.25);
     double startAvg = robot.drivetrain.avgEncoderValue();

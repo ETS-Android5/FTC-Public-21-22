@@ -29,18 +29,24 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   @SuppressWarnings("unused")
   public DcMotorEx frontLeftMotor;
 
-  @Hardware(name = FRONT_RIGHT_MOTOR_NAME, runMode = RunMode.RUN_USING_ENCODER)
+  @Hardware(
+      name = FRONT_RIGHT_MOTOR_NAME,
+      direction = Direction.FORWARD,
+      runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx frontRightMotor;
 
   @Hardware(
       name = REAR_LEFT_MOTOR_NAME,
-      direction = Direction.REVERSE,
+      direction = Direction.FORWARD,
       runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx rearLeftMotor;
 
-  @Hardware(name = REAR_RIGHT_MOTOR_NAME, runMode = RunMode.RUN_USING_ENCODER)
+  @Hardware(
+      name = REAR_RIGHT_MOTOR_NAME,
+      direction = Direction.FORWARD,
+      runMode = RunMode.RUN_USING_ENCODER)
   @SuppressWarnings("unused")
   public DcMotorEx rearRightMotor;
 
@@ -125,12 +131,11 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
   @Override
   public double avgEncoderValue() {
-    return (
-            MotorTrackerPipe.getInstance().getPositionOf(FRONT_LEFT_MOTOR_NAME)
-                    + MotorTrackerPipe.getInstance().getPositionOf(FRONT_RIGHT_MOTOR_NAME)
-                    + MotorTrackerPipe.getInstance().getPositionOf(REAR_LEFT_MOTOR_NAME)
-                    + MotorTrackerPipe.getInstance().getPositionOf(REAR_RIGHT_MOTOR_NAME)
-    ) / 4.0;
+    return (MotorTrackerPipe.getInstance().getPositionOf(FRONT_LEFT_MOTOR_NAME)
+            + MotorTrackerPipe.getInstance().getPositionOf(FRONT_RIGHT_MOTOR_NAME)
+            + MotorTrackerPipe.getInstance().getPositionOf(REAR_LEFT_MOTOR_NAME)
+            + MotorTrackerPipe.getInstance().getPositionOf(REAR_RIGHT_MOTOR_NAME))
+        / 4.0;
   }
 
   @Override

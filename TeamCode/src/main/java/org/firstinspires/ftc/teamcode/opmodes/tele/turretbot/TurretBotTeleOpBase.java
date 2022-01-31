@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele.turretbot;
 
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
-import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
@@ -16,6 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.0055; // 1.5 degrees
+  public final AtomicBoolean tapeMeasureMode = new AtomicBoolean(false);
   private final TurretBot robot;
   private final AtomicBoolean halfSpeed = new AtomicBoolean(true);
   private final AtomicBoolean allianceHubMode = new AtomicBoolean(false);
@@ -26,10 +26,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   public TurretBotTeleOpBase(Alliance alliance) {
     super(new TurretBot(alliance, TurretBot.TELE_FIRST_JOINT_OFFSET, false));
     this.robot = (TurretBot) super.robotObject;
-  }
-
-  private static double THIRD_MANIPULATION(double in) {
-    return Math.pow(in, 3);
   }
 
   @Override
@@ -72,9 +68,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
                 87,
                 TimeUnit.SECONDS));
 
-    controller1.setManipulation(
-        TurretBotTeleOpBase::THIRD_MANIPULATION, ScalarSurface.LEFT_STICK_Y);
-
     controller1.registerOnPressedCallback(
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
@@ -85,19 +78,22 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           if (firstTime
               || currentPosition == TurretBotPosition.INTAKE_HOVER_POSITION
               || currentPosition == TurretBotPosition.INTAKE_POSITION) {
-            robot.goToPosition(TurretBotPosition.INTAKE_POSITION);
+            robot.goToPosition(TurretBotPosition.INTAKE_POSITION, tippedMode.get());
             firstTime = false;
           } else {
             robot.afterTimedAction(
                 robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
                 () -> {
                   robot.grabTeamMarker();
-                  robot.goToPosition(TurretBotPosition.INTAKE_POSITION);
+                  robot.goToPosition(TurretBotPosition.INTAKE_POSITION, tippedMode.get());
                 });
           }
         },
         true,
         BooleanSurface.A);
+
+    controller1.registerOnPressedCallback(
+        () -> tapeMeasureMode.set(!tapeMeasureMode.get()), true, BooleanSurface.DPAD_DOWN);
 
     controller2.registerOnPressedCallback(
         () -> {
@@ -107,7 +103,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(TurretBotPosition.INTAKE_HOVER_POSITION);
+                robot.goToPosition(TurretBotPosition.INTAKE_HOVER_POSITION, tippedMode.get());
               });
         },
         true,
@@ -150,7 +146,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(position);
+                robot.goToPosition(position, tippedMode.get());
               });
         },
         true,
@@ -164,7 +160,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(position);
+                robot.goToPosition(position, tippedMode.get());
               });
         },
         true,
@@ -178,23 +174,21 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabFreight(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(position);
+                robot.goToPosition(position, tippedMode.get());
               });
         },
         true,
         BooleanSurface.Y);
-    controller2.registerOnPressedCallback(
+    controller1.registerOnPressedCallback(
         () -> {
-          if (allianceHubMode.get()) {
-            firstTime = false;
-            robot.clearFutureEvents();
-            robot.intake.stop();
-            robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION);
-          }
+          firstTime = false;
+          robot.clearFutureEvents();
+          robot.intake.stop();
+          robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION, tippedMode.get());
         },
         true,
         BooleanSurface.DPAD_LEFT);
-    controller2.registerOnPressedCallback(
+    controller1.registerOnPressedCallback(
         () -> {
           firstTime = false;
           robot.clearFutureEvents();
@@ -203,7 +197,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
               robot.grabTeamMarker(),
               () -> {
                 robot.intake.stop();
-                robot.goToPosition(position);
+                robot.goToPosition(position, tippedMode.get());
               });
         },
         true,
@@ -218,10 +212,16 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onLoop() {
-    double turnValue = controller1.rightStickX();
-    double speed = halfSpeed.get() ? 0.5 : 0.9;
-    robot.drivetrain.driveBySticks(
-        controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
+    if (tapeMeasureMode.get()) {
+      robot.tapeMeasure.adjustPitch(controller1.leftStickY());
+      robot.tapeMeasure.adjustYaw(controller1.rightStickX());
+      robot.tapeMeasure.setLengthRate(controller1.rightTrigger() - controller1.leftTrigger());
+    } else {
+      double turnValue = controller1.rightStickX();
+      double speed = halfSpeed.get() ? 0.5 : 0.9;
+      robot.drivetrain.driveBySticks(
+          controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
+    }
     if (controller2.rightStickY() < -0.02 || controller2.rightStickY() > 0.02) {
       robot.lift.setArmTwoPosition(
           robot.lift.getState().second
@@ -230,12 +230,12 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
     if (controller2.leftStickX() < -0.02 || controller2.leftStickX() > 0.02) {
       robot.turretAdjustment.getAndAdd(controller2.leftStickX() / 2);
-      robot.syncPosition();
+      robot.syncPosition(tippedMode.get());
     }
 
     if (controller2.leftStickY() < -0.02 || controller2.leftStickY() > 0.02) {
       robot.firstJointAdjustment.getAndAdd(controller2.leftStickY() / 2);
-      robot.syncPosition();
+      robot.syncPosition(tippedMode.get());
     }
   }
 
