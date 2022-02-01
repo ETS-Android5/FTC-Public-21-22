@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.cv.CameraPosition;
 import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPosition;
 import org.firstinspires.ftc.teamcode.cv.TeamMarkerPositionDetector;
+import org.firstinspires.ftc.teamcode.cv.ViewPortDescription;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.Turret;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBot;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBotPosition;
@@ -65,7 +66,7 @@ public class AutoBlueWarehouseEndBarrier extends EnhancedAutonomous {
                   teamMarkerPosition.set(
                       new TeamMarkerPositionDetector()
                           .calculateTeamMarkerPosition(
-                              img.get(), CameraPosition.REAR_LOW_AND_CENTERED)));
+                              img.get(), CameraPosition.REAR_LOW_AND_CENTERED, ViewPortDescription.THREE_IN_VIEW)));
       worker.start();
     } catch (InterruptedException e) {
       Log.e("TURRETBOT", "ERROR", e);

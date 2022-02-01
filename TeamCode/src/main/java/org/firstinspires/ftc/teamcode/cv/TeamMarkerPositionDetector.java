@@ -13,7 +13,7 @@ import java.util.List;
 
 public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
   @Override
-  public TeamMarkerPosition calculateTeamMarkerPosition(Mat frame, CameraPosition position) {
+  public TeamMarkerPosition calculateTeamMarkerPosition(Mat frame, CameraPosition position, ViewPortDescription viewPortDescription) {
     // Resize the image to a fraction of the original resolution, because we don't need high res
     Mat resized = new Mat();
     Imgproc.resize(
@@ -57,15 +57,37 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
         }
       }
     }
+    return findTeamMarker(xPositions, mask.width(), viewPortDescription);
+  }
+
+  private TeamMarkerPosition findTeamMarker(List<Integer> xPositions, int width, ViewPortDescription viewPortDescription) {
     double xLength = xPositions.size();
-    double avgX = xPositions.stream().reduce(0, Integer::sum) / xLength;
-    double third = (double) mask.width() / 3.0;
-    double middleThirdTop = third * 2;
-    if (avgX < third) {
-      return TeamMarkerPosition.LEFT;
-    }
-    if (avgX >= third && avgX <= middleThirdTop) {
-      return TeamMarkerPosition.CENTER;
+    double avgX = xLength > 0 ? xPositions.stream().reduce(0, Integer::sum) / xLength : 0;
+    double third;
+    double half;
+    switch (viewPortDescription) {
+      case THREE_IN_VIEW:
+        third = (double) width / 3.0;
+        double middleThirdTop = third * 2;
+        if (avgX < third) {
+          return TeamMarkerPosition.LEFT;
+        }
+        if (avgX >= third && avgX <= middleThirdTop) {
+          return TeamMarkerPosition.CENTER;
+        }
+        return TeamMarkerPosition.RIGHT;
+      case LEFT_TWO_IN_VIEW:
+        half = (double) width / 2.0;
+        if (xLength > 0) {
+          return avgX < half ? TeamMarkerPosition.LEFT : TeamMarkerPosition.CENTER;
+        }
+        return TeamMarkerPosition.RIGHT;
+      case RIGHT_TWO_IN_VIEW:
+        half = (double) width / 2.0;
+        if (xLength > 0) {
+          return avgX < half ? TeamMarkerPosition.CENTER : TeamMarkerPosition.RIGHT;
+        }
+        return TeamMarkerPosition.LEFT;
     }
     return TeamMarkerPosition.RIGHT;
   }
