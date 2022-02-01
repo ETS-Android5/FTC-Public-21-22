@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.cv;
 
+import android.util.Log;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -13,7 +15,8 @@ import java.util.List;
 
 public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
   @Override
-  public TeamMarkerPosition calculateTeamMarkerPosition(Mat frame, CameraPosition position, ViewPortDescription viewPortDescription) {
+  public TeamMarkerPosition calculateTeamMarkerPosition(
+      Mat frame, CameraPosition position, ViewPortDescription viewPortDescription) {
     // Resize the image to a fraction of the original resolution, because we don't need high res
     Mat resized = new Mat();
     Imgproc.resize(
@@ -57,10 +60,12 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
         }
       }
     }
+    Log.d("CV", "Discovered " + xPositions.size() + " matching pixels");
     return findTeamMarker(xPositions, mask.width(), viewPortDescription);
   }
 
-  private TeamMarkerPosition findTeamMarker(List<Integer> xPositions, int width, ViewPortDescription viewPortDescription) {
+  private TeamMarkerPosition findTeamMarker(
+      List<Integer> xPositions, int width, ViewPortDescription viewPortDescription) {
     double xLength = xPositions.size();
     double avgX = xLength > 0 ? xPositions.stream().reduce(0, Integer::sum) / xLength : 0;
     double third;

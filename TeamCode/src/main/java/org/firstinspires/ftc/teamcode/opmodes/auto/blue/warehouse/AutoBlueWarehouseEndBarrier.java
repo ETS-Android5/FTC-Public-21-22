@@ -66,7 +66,9 @@ public class AutoBlueWarehouseEndBarrier extends EnhancedAutonomous {
                   teamMarkerPosition.set(
                       new TeamMarkerPositionDetector()
                           .calculateTeamMarkerPosition(
-                              img.get(), CameraPosition.REAR_LOW_AND_CENTERED, ViewPortDescription.THREE_IN_VIEW)));
+                              img.get(),
+                              CameraPosition.REAR_LOW_AND_CENTERED,
+                              ViewPortDescription.THREE_IN_VIEW)));
       worker.start();
     } catch (InterruptedException e) {
       Log.e("TURRETBOT", "ERROR", e);
