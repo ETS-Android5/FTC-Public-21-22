@@ -22,6 +22,11 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   private static final String REAR_LEFT_MOTOR_NAME = "REAR_LEFT_MOTOR";
   private static final String REAR_RIGHT_MOTOR_NAME = "REAR_RIGHT_MOTOR";
 
+  private static final double THEORETICAL_TICKS_PER_INCH = 43.4734038779;
+  private static final double DRIVETRAIN_MECHANICAL_EFFICIENCY_COEFFICIENT = 1;
+  public static final double TICKS_PER_INCH =
+      THEORETICAL_TICKS_PER_INCH * DRIVETRAIN_MECHANICAL_EFFICIENCY_COEFFICIENT;
+
   @Hardware(
       name = FRONT_LEFT_MOTOR_NAME,
       direction = Direction.REVERSE,

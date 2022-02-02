@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.AtomicDouble;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
-import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
@@ -647,25 +646,28 @@ public class TurretBot implements Component {
     update.run();
   }
 
-  public void runAtHeadingUntilCondition(
-      double targetHeading,
-      int adjustmentAggression,
-      Direction direction,
-      Supplier<Boolean> condition,
-      Supplier<Double> basePower,
+  public void driveForward(
+      double distanceInches, double tolerance, Supplier<Boolean> opModeIsActive, Runnable update) {
+    driveForward(0.5, 1, distanceInches, tolerance, opModeIsActive, update);
+  }
+
+  public void driveForward(
+      double maxPower,
+      double rampSlope,
+      double distanceInches,
+      double tolerance,
       Supplier<Boolean> opModeIsActive,
       Runnable update) {
-    double directionAdjustment = direction == Direction.FORWARD ? -1 : 1;
-    while (opModeIsActive.get() && !condition.get()) {
-      double currentHeading =
-          InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
-      double turnSpeed = Math.abs(currentHeading - targetHeading) / adjustmentAggression;
-      double leftDiff = turnSpeed * (currentHeading > targetHeading ? -1 : 1) * directionAdjustment;
-      double rightDiff =
-          turnSpeed * (currentHeading < targetHeading ? -1 : 1) * directionAdjustment;
-      double basePowerVal = basePower.get();
-      drivetrain.setLeftPower((basePowerVal * directionAdjustment) + leftDiff);
-      drivetrain.setRightPower((basePowerVal * directionAdjustment) + rightDiff);
+    TriFunction<Double, Double, Double, Double> powerCurve =
+        PowerCurves.generatePowerCurve(maxPower, rampSlope);
+    double initEncoderValue = drivetrain.avgEncoderValue();
+    while (opModeIsActive.get()
+        && Math.abs(drivetrain.avgEncoderValue() - initEncoderValue) > tolerance) {
+      drivetrain.setAllPower(
+          powerCurve.apply(
+              drivetrain.avgEncoderValue(),
+              initEncoderValue,
+              distanceInches * MecanumDrivetrain.TICKS_PER_INCH));
       update.run();
     }
     drivetrain.setAllPower(0);
