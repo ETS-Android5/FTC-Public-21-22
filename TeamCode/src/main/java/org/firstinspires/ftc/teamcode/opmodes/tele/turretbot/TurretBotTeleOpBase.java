@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TurretBotTeleOpBase extends EnhancedTeleOp {
-  private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.0055; // 1.5 degrees
+  private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.002;
   public final AtomicBoolean tapeMeasureMode = new AtomicBoolean(false);
   private final TurretBot robot;
   private final AtomicBoolean halfSpeed = new AtomicBoolean(true);
@@ -72,6 +72,15 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
 
     controller1.registerOnPressedCallback(
+        () -> robot.lift.setArmTwoPosition(robot.lift.getState().second - .001),
+        true,
+        BooleanSurface.LEFT_BUMPER);
+    controller1.registerOnPressedCallback(
+        () -> robot.lift.setArmTwoPosition(robot.lift.getState().second + .001),
+        true,
+        BooleanSurface.RIGHT_BUMPER);
+
+    controller1.registerOnPressedCallback(
         () -> {
           robot.clearFutureEvents();
           TurretBotPosition currentPosition = robot.getSetPosition();
@@ -91,6 +100,8 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         },
         true,
         BooleanSurface.A);
+
+    controller2.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
 
     controller1.registerOnPressedCallback(
         () -> tapeMeasureMode.set(!tapeMeasureMode.get()), true, BooleanSurface.DPAD_DOWN);
