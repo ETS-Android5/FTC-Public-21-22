@@ -73,11 +73,11 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
     controller1.registerOnPressedCallback(
         () -> robot.lift.setArmTwoPosition(robot.lift.getState().second - .001),
-        true,
+        false,
         BooleanSurface.LEFT_BUMPER);
     controller1.registerOnPressedCallback(
         () -> robot.lift.setArmTwoPosition(robot.lift.getState().second + .001),
-        true,
+        false,
         BooleanSurface.RIGHT_BUMPER);
 
     controller1.registerOnPressedCallback(
@@ -101,7 +101,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         true,
         BooleanSurface.A);
 
-    controller2.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
+    controller1.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
 
     controller1.registerOnPressedCallback(
         () -> tapeMeasureMode.set(!tapeMeasureMode.get()), true, BooleanSurface.DPAD_DOWN);

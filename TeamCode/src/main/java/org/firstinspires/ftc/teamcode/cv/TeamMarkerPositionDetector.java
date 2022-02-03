@@ -14,6 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
+  private static final int MIN_MATCHING_THRESHOLD = 10;
+
   @Override
   public TeamMarkerPosition calculateTeamMarkerPosition(
       Mat frame, CameraPosition position, ViewPortDescription viewPortDescription) {
@@ -83,13 +85,13 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
         return TeamMarkerPosition.RIGHT;
       case LEFT_TWO_IN_VIEW:
         half = (double) width / 2.0;
-        if (xLength > 0) {
+        if (xLength > MIN_MATCHING_THRESHOLD) {
           return avgX < half ? TeamMarkerPosition.LEFT : TeamMarkerPosition.CENTER;
         }
         return TeamMarkerPosition.RIGHT;
       case RIGHT_TWO_IN_VIEW:
         half = (double) width / 2.0;
-        if (xLength > 0) {
+        if (xLength > MIN_MATCHING_THRESHOLD) {
           return avgX < half ? TeamMarkerPosition.CENTER : TeamMarkerPosition.RIGHT;
         }
         return TeamMarkerPosition.LEFT;
