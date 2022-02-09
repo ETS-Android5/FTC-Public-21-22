@@ -4,6 +4,7 @@ import org.firstinspires.ftc.teamcode.core.annotations.Observable;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.ZeroPowerBehavior;
+import org.firstinspires.ftc.teamcode.core.fn.QuadFunction;
 import org.firstinspires.ftc.teamcode.core.fn.TriFunction;
 
 import java.util.function.Function;
@@ -72,6 +73,11 @@ public abstract class IMotorState extends State implements Duplicatable<IMotorSt
 
   public abstract IMotorState withPowerCorrection(
       TriFunction<Double, Double, Double, Double> correctionAggressionCurve);
+
+  @Observable(key = "AdvPowerCorrection")
+  public abstract QuadFunction<Double, Double, Double, Double, Double> getAdvPowerCorrection();
+
+  public abstract IMotorState withAdvPowerCorrection(QuadFunction<Double, Double, Double, Double, Double> advPowerCorrection);
 
   @Observable(key = "EncoderDataSource")
   public abstract String getEncoderDataSource();

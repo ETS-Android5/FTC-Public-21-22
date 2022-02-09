@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
@@ -64,7 +66,7 @@ public class RunToPositionPipe extends HardwarePipeline {
                   boolean useStdPowerCorrectionIfPossible =
                       Math.abs(motor.getStartingTicks() - motor.getTargetTicks())
                           > nextState.getAdjustmentThreshold();
-                  if ((useStdPowerCorrectionIfPossible && nextState.getPowerCorrection() != null)
+                  if ((useStdPowerCorrectionIfPossible && (nextState.getPowerCorrection() != null || nextState.getAdvPowerCorrection() != null))
                       || (!useStdPowerCorrectionIfPossible
                           && nextState.getAdjustmentPowerCorrectionCurve() != null)) {
                     double percentProgress;
@@ -80,10 +82,14 @@ public class RunToPositionPipe extends HardwarePipeline {
                                   - (double) motor.getTargetTicks());
                     }
                     if (useStdPowerCorrectionIfPossible) {
-                      power =
-                          nextState
-                              .getPowerCorrection()
-                              .apply(currentPercentPower, power, percentProgress);
+                      if (nextState.getAdvPowerCorrection() != null) {
+                          power = nextState.getAdvPowerCorrection().apply(currentPercentPower, power, (double) currentPosition, (double) motor.getTargetTicks());
+                      } else {
+                        power =
+                            nextState
+                                .getPowerCorrection()
+                                .apply(currentPercentPower, power, percentProgress);
+                      }
                     } else {
                       power =
                           nextState
@@ -95,6 +101,19 @@ public class RunToPositionPipe extends HardwarePipeline {
                     power = power > 1 ? 1 : power < -1 ? -1 : power;
                   }
                 }
+              }
+              if (motor.getName().equals("LIFT_JOINT_ONE_MOTOR")) {
+                Log.d(
+                    "RTP",
+                    "VELOCITY: " + (MotorTrackerPipe.getInstance().getVelocity(motor.getName())));
+                Log.d("RTP", "POWER: " + power);
+                Log.d("RTP", "INITIAL: " + motor.getStartingTicks());
+                Log.d(
+                    "RTP",
+                    "CURRENT POSITION: "
+                        + (MotorTrackerPipe.getInstance().getPositionOf(motor.getName())));
+                Log.d("RTP", "TARGET: " + motor.getTargetTicks());
+                Log.d("RTP", "***************************");
               }
               ((DcMotorEx) motorObj).setPower(power);
               motor.setLastPower(power);

@@ -52,7 +52,7 @@ public class TurretBot implements Component {
   private static final int ELBOW_JOINT_MOVEMENT_DELAY_MS = 250;
 
   private static final int liftTolerance = 8;
-  private static final int nonIntakeLiftTolerance = 24;
+  private static final int nonIntakeLiftTolerance = 32;
   private static final int turretTolerance = 6;
   private static final int nonIntakeTurretTolerance = 18;
 
@@ -199,12 +199,12 @@ public class TurretBot implements Component {
         andThen.run();
       }
     } else {
-      int liftJointOneMaximizedTarget = Math.max(liftJointOneTarget, forIntake ? 107 : 0);
+      int liftJointOneMaximizedTarget = Math.max(liftJointOneTarget, forIntake ? 90 : 0);
       setLiftToPosition(liftJointOneMaximizedTarget, TurretBot.liftTolerance(forIntake))
           .andAfterMotorIsBeyond(
               (int)
                   Math.round(
-                      liftJointOneMaximizedTarget
+                      Math.min(liftJointOneMaximizedTarget, 90)
                           + lift.getArmOneOffset()
                           + firstJointAdjustment.get()),
               TurretBot.liftTolerance(forIntake),
@@ -380,7 +380,7 @@ public class TurretBot implements Component {
         () ->
             ensureTurretIsAt(
                 turretTarget,
-                0,
+                10,
                 false,
                 () -> {
                   lift.setArmTwoPosition(0.68);
@@ -395,7 +395,7 @@ public class TurretBot implements Component {
         () ->
             ensureTurretIsAt(
                 turretTarget,
-                -40,
+                10,
                 false,
                 () -> {
                   lift.setArmTwoPosition(0.48);
@@ -417,7 +417,7 @@ public class TurretBot implements Component {
                   afterTimedAction(
                       ELBOW_JOINT_MOVEMENT_DELAY_MS,
                       () ->
-                          setLiftToPosition(-260, TurretBot.liftTolerance(false))
+                          setLiftToPosition(-250, TurretBot.liftTolerance(false))
                               .andThen(() -> gripperIsNearGround.set(true)));
                 }));
   }
@@ -429,7 +429,7 @@ public class TurretBot implements Component {
         () ->
             ensureTurretIsAt(
                 turretTarget,
-                150,
+                160,
                 false,
                 () -> {
                   lift.setArmTwoPosition(0.66);
@@ -444,7 +444,7 @@ public class TurretBot implements Component {
         () ->
             ensureTurretIsAt(
                 turretTarget,
-                15,
+                25,
                 false,
                 () -> {
                   lift.setArmTwoPosition(0.44);
@@ -466,7 +466,7 @@ public class TurretBot implements Component {
                   afterTimedAction(
                       ELBOW_JOINT_MOVEMENT_DELAY_MS,
                       () ->
-                          setLiftToPosition(-210, TurretBot.liftTolerance(false))
+                          setLiftToPosition(-200, TurretBot.liftTolerance(false))
                               .andThen(() -> gripperIsNearGround.set(true)));
                 }));
   }
@@ -478,7 +478,7 @@ public class TurretBot implements Component {
         () ->
             ensureTurretIsAt(
                 turretTarget,
-                -20,
+                -10,
                 false,
                 () -> {
                   lift.setArmTwoPosition(0.08);
@@ -497,7 +497,7 @@ public class TurretBot implements Component {
         () ->
             ensureTurretIsAt(
                 turretTarget,
-                -110,
+                -100,
                 false,
                 () -> {
                   lift.setArmTwoPosition(0.23);
@@ -512,7 +512,7 @@ public class TurretBot implements Component {
         () ->
             ensureTurretIsAt(
                 turretTarget,
-                530,
+                540,
                 false,
                 () -> {
                   lift.setArmTwoPosition(0.52);
@@ -544,10 +544,10 @@ public class TurretBot implements Component {
     int turretTarget = turretPositionForTeamMarkerDeposit();
     ensureTurretIsAt(
         turretTarget,
-        570,
+        500,
         false,
         () -> {
-          lift.setArmTwoPosition(0.32);
+          lift.setArmTwoPosition(0.38);
           gripperIsNearGround.set(false);
         });
   }
@@ -575,9 +575,9 @@ public class TurretBot implements Component {
   private int turretPositionForTeamMarkerGrab() {
     switch (alliance.get()) {
       case RED:
-        return Turret.TICKS_LEFT;
+        return Turret.TICKS_CCW_BACK;
       case BLUE:
-        return Turret.TICKS_RIGHT;
+        return Turret.TICKS_CW_BACK;
     }
     return 0;
   }

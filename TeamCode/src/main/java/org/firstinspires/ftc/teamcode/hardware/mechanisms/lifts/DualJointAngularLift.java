@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
 import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
+import org.firstinspires.ftc.teamcode.core.hardware.pipeline.MotorTrackerPipe;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IMotorState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IServoState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.MotorState;
@@ -23,8 +24,9 @@ public class DualJointAngularLift implements IDualJointAngularLift {
   public static final String LIFT_JOINT_ONE_MOTOR_NAME = "LIFT_JOINT_ONE_MOTOR";
   public static final String LIFT_JOINT_TWO_SERVO_NAME = "LIFT_JOINT_TWO_SERVO";
   public static final double LIFT_JOINT_TWO_INTAKE_POSITION = 0.554;
-  public static final int DEFAULT_ADJUSTMENT_THRESHOLD = 50;
+  public static final double TICKS_IN_90_DEGREES = 896;
   public final int offset;
+  public final int degrees90Position;
 
   @Hardware(
       name = LIFT_JOINT_ONE_MOTOR_NAME,
@@ -42,6 +44,7 @@ public class DualJointAngularLift implements IDualJointAngularLift {
 
   public DualJointAngularLift(int offset) {
     this.offset = offset;
+    this.degrees90Position = offset - 90;
     initialize();
   }
 
@@ -50,39 +53,28 @@ public class DualJointAngularLift implements IDualJointAngularLift {
         new MotorState(LIFT_JOINT_ONE_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generatePowerCurve(1, 1))
-            .withAdjustmentThreshold(DEFAULT_ADJUSTMENT_THRESHOLD)
-            .withAdjustmentCurve(PowerCurves.generatePowerCurve(0.05, 0.25))
-            .withAdjustmentPowerCorrectionCurve(
-                (Double currentPower, Double idealPower, Double percentProgress) -> {
-                  if (currentPower.equals(idealPower)) return currentPower;
-                  double diff = Math.abs(currentPower - idealPower);
-                  double adjustment =
-                      Math.min(Math.pow(Math.abs(1 - percentProgress), 2), 1)
-                          * .12
-                          * Math.pow(diff, 1.0 / 2);
-                  double ret = 0;
-                  if (currentPower > idealPower) ret = currentPower - adjustment;
-                  if (currentPower < idealPower) ret = currentPower + adjustment;
-                  ret = Math.round(ret * 100) / 100.0;
-                  double clippedRange = ret > .85 ? .85 : ret < -.85 ? -.85 : ret;
-                  clippedRange = clippedRange == 0 ? Double.MIN_VALUE : clippedRange;
-                  return clippedRange;
-                })
+            .withPowerCurve(PowerCurves.generatePowerCurve(1, 2).andThen((Double powerResult) -> {
+              double anglePower = Math.cos((Math.abs(MotorTrackerPipe.getInstance().getPositionOf(LIFT_JOINT_ONE_MOTOR_NAME) - degrees90Position) / TICKS_IN_90_DEGREES) * Math.PI * 0.5);
+              anglePower += 0.04;
+              return powerResult * anglePower * (powerResult < 0 ? 0.333333 : 1);
+            }))
             .withPowerAndTickRateRelation((power) -> power * 2800)
-            .withPowerCorrection(
-                (Double currentPower, Double idealPower, Double percentProgress) -> {
+            .withAdvPowerCorrection(
+                (Double currentPower, Double idealPower, Double currentTicks, Double targetTicks) -> {
                   if (currentPower.equals(idealPower)) return currentPower;
-                  double diff = Math.abs(currentPower - idealPower);
 
-                  double adjustment =
-                      Math.min(Math.pow(Math.abs(1 - percentProgress), 1), 1)
-                          * 2
-                          * Math.pow(diff, 1.0 / 2);
+                  double diff = Math.abs(currentTicks - targetTicks);
+                  double pow = Math.pow(Math.abs(1 - (diff / (TICKS_IN_90_DEGREES * 0.01))), 3);
+                  double adjustment = Math.min(pow, 1) * .1;
                   double ret = 0;
-                  if (currentPower > idealPower) ret = currentPower - adjustment;
-                  if (currentPower < idealPower) ret = currentPower + adjustment;
-                  ret = Math.round(ret * 100) / 100.0;
+                  if (currentPower > idealPower) {
+                      ret = currentPower - adjustment;
+                      if (ret > 0) ret = -0.01;
+                  } else if (currentPower < idealPower) {
+                      ret = currentPower + adjustment;
+                      if (ret < 0) ret = 0.01;
+                  }
+                  ret = Math.round(ret * 1000) / 1000.0;
                   double clippedRange = ret > 1 ? 1 : ret < -1 ? -1 : ret;
                   clippedRange = clippedRange == 0 ? Double.MIN_VALUE : clippedRange;
                   return clippedRange;
