@@ -30,10 +30,13 @@ public class OutreachBot extends LinearOpMode {
         final double tapeMeasureUDServoTickMS = 200; // This is milliseconds between allowed movements of each tick
         final double tapeMeasureUDServoTick = .005; // This is amount of each tick
 
-        // init RL servo to tapeMeasureRLServoPosition
+        Servo rlServo = hardwareMap.servo.get("YAW_SERVO");
+        Servo udServo = hardwareMap.servo.get("PITCH_SERVO");
+        Servo extensionServo = hardwareMap.servo.get("EXTENSION_SERVO");
 
-        // init UD servo to tapeMeasureUDServoPosition
-
+        // init RL and UD servos
+        rlServo.setPosition(tapeMeasureRLServoPosition);
+        udServo.setPosition(tapeMeasureUDServoPosition);
 
         // Declare our motors
         // Make sure your ID's match your configuration
@@ -47,11 +50,8 @@ public class OutreachBot extends LinearOpMode {
         motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Servo yawServo = hardwareMap.servo.get("YAW_SERVO");
-        Servo pitchServo = hardwareMap.servo.get("PITCH_SERVO");
 
-
-        waitForStart();
+      waitForStart();
 
         while (opModeIsActive()) {
 
@@ -60,27 +60,34 @@ public class OutreachBot extends LinearOpMode {
 
             if (gamepad1.a && buttonTimerSinceLastButton > tapeMeasureUDServoTickMS) {    // gamepad A is up
                 tapeMeasureUDServoPosition += tapeMeasureUDServoTick;
-                // set UD server to tapeMeasureUDServoPosition
+                udServo.setPosition(tapeMeasureUDServoPosition);
                 buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
             }
 
             if (gamepad1.y && buttonTimerSinceLastButton > tapeMeasureUDServoTickMS) {    // gamepad A is up
                 tapeMeasureUDServoPosition -= tapeMeasureUDServoTick;
-                // set UD server to tapeMeasureUDServoPosition
+                udServo.setPosition(tapeMeasureUDServoPosition);
                 buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
             }
 
             if (gamepad1.dpad_right && buttonTimerSinceLastButton > tapeMeasureRLServoTickMS) {    // gamepad dpad_right is right
                 tapeMeasureRLServoPosition += tapeMeasureRLServoTick;
-                // set RL server to tapeMeasureRLServoPosition
+                rlServo.setPosition(tapeMeasureRLServoPosition);
                 buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
             }
 
             if (gamepad1.dpad_left && buttonTimerSinceLastButton > tapeMeasureRLServoTickMS) {    // gamepad dpad_left is left
                 tapeMeasureRLServoPosition -= tapeMeasureRLServoTick;
-                // set RL server to tapeMeasureRLServoPosition
+                rlServo.setPosition(tapeMeasureRLServoPosition);
                 buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
             }
+
+            if (gamepad1.dpad_up) {    // gamepad dpad_up extends the tape measure
+                extensionServo.setPosition(1);
+            } else if (gamepad1.dpad_down) {     // gamepad dpad_down retracts the tape measure
+                extensionServo.setPosition(0);
+            } else
+                extensionServo.setPosition(.5);  // stopped
 
             double y = -gamepad1.left_stick_y; // Remember, this is reversed!
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
@@ -100,8 +107,8 @@ public class OutreachBot extends LinearOpMode {
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
 
-            yawServo.setPosition(tapeMeasureRLServoPosition);
-            pitchServo.setPosition(tapeMeasureUDServoPosition);
+
+
         }
     }
 }
