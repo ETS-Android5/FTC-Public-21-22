@@ -56,18 +56,24 @@ public class Webcam implements FtcCamera {
   }
 
   @Override
-  public synchronized void init() {
+  public void init() {
     try {
       if (cameraName == null) return;
       if (cameraManager == null) {
-        cameraManager = ClassFactory.getInstance().getCameraManager();
+        synchronized (this) {
+          cameraManager = ClassFactory.getInstance().getCameraManager();
+        }
       }
       if (camera == null) {
-        camera =
-            cameraManager.requestPermissionAndOpenCamera(
-                new Deadline(secondsPermissionTimeout, TimeUnit.SECONDS), cameraName, null);
+        synchronized (this) {
+          camera =
+              cameraManager.requestPermissionAndOpenCamera(
+                  new Deadline(secondsPermissionTimeout, TimeUnit.SECONDS), cameraName, null);
+        }
       }
-      characteristics = cameraName.getCameraCharacteristics();
+      synchronized (this) {
+        characteristics = cameraName.getCameraCharacteristics();
+      }
       initializationQueue.add(true);
     } catch (Exception e) {
       initializationQueue.add(false);
@@ -87,12 +93,8 @@ public class Webcam implements FtcCamera {
       try {
         ContinuationSynchronizer<CameraCaptureSession> synchronizer =
             new ContinuationSynchronizer<>();
-        Size size;
-        int fps;
-        synchronized (this) {
-          size = characteristics.getDefaultSize(ImageFormat.YUY2);
-          fps = characteristics.getMaxFramesPerSecond(ImageFormat.YUY2, size);
-        }
+        Size size = characteristics.getDefaultSize(ImageFormat.YUY2);
+        int fps = characteristics.getMaxFramesPerSecond(ImageFormat.YUY2, size);
         synchronized (this) {
           try {
             camera.createCaptureSession(
@@ -146,16 +148,20 @@ public class Webcam implements FtcCamera {
   }
 
   @Override
-  public synchronized void deinit() {
+  public void deinit() {
     try {
       if (session != null) {
         session.stopCapture();
         session.close();
-        session = null;
+        synchronized (this) {
+          session = null;
+        }
       }
       if (camera != null) {
         camera.close();
-        camera = null;
+        synchronized (this) {
+          camera = null;
+        }
       }
     } catch (Exception e) {
       Log.e("WEBCAM", "ERROR", e);
@@ -163,7 +169,7 @@ public class Webcam implements FtcCamera {
   }
 
   @Override
-  public synchronized Mat grabFrame() {
+  public Mat grabFrame() {
     if (cameraName == null) return null;
     Mat mat = new Mat();
     try {

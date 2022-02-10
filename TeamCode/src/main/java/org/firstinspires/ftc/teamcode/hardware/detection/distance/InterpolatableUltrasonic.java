@@ -49,7 +49,9 @@ public class InterpolatableUltrasonic implements Interpolatable {
         nextQueue.add(element);
       }
     }
-    dataPoints = nextQueue;
+    synchronized (this) {
+      dataPoints = nextQueue;
+    }
   }
 
   @Override
@@ -66,7 +68,7 @@ public class InterpolatableUltrasonic implements Interpolatable {
   }
 
   @Override
-  public void setPolynomialDegree(int polynomialDegree) {
+  public synchronized void setPolynomialDegree(int polynomialDegree) {
     this.polynomialDegree = polynomialDegree;
   }
 
@@ -95,17 +97,21 @@ public class InterpolatableUltrasonic implements Interpolatable {
   @Override
   public void startSampling() {
     dataPoints.clear();
-    isSampling = true;
+    synchronized (this) {
+      isSampling = true;
+    }
   }
 
   @Override
   public void stopSampling() {
     dataPoints.clear();
-    isSampling = false;
+    synchronized (this) {
+      isSampling = false;
+    }
   }
 
   @Override
-  public void subscribe(PollingSubscription subscription) {
+  public synchronized void subscribe(PollingSubscription subscription) {
     this.pollingSubscription = subscription;
   }
 

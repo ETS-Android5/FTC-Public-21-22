@@ -61,7 +61,9 @@ public class InterpolatableRevGyro implements Interpolatable {
         nextQueue.add(element);
       }
     }
-    dataPoints = nextQueue;
+    synchronized (this) {
+      dataPoints = nextQueue;
+    }
   }
 
   @Override
@@ -70,7 +72,7 @@ public class InterpolatableRevGyro implements Interpolatable {
   }
 
   @Override
-  public void setSampleRateNs(long sampleRateNs) {
+  public synchronized void setSampleRateNs(long sampleRateNs) {
     this.sampleRateNs = sampleRateNs;
   }
 
@@ -80,7 +82,7 @@ public class InterpolatableRevGyro implements Interpolatable {
   }
 
   @Override
-  public void setPolynomialDegree(int polynomialDegree) {
+  public synchronized void setPolynomialDegree(int polynomialDegree) {
     this.polynomialDegree = polynomialDegree;
   }
 
@@ -98,7 +100,9 @@ public class InterpolatableRevGyro implements Interpolatable {
     double angle =
         gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES)
             .firstAngle;
-    lastSampleTime = System.nanoTime();
+    synchronized (this) {
+      lastSampleTime = System.nanoTime();
+    }
     dataPoints.add(new DataPoint(angle, lastSampleTime));
   }
 
@@ -121,17 +125,21 @@ public class InterpolatableRevGyro implements Interpolatable {
   @Override
   public void startSampling() {
     dataPoints.clear();
-    isSampling = true;
+    synchronized (this) {
+      isSampling = true;
+    }
   }
 
   @Override
   public void stopSampling() {
     dataPoints.clear();
-    isSampling = false;
+    synchronized (this) {
+      isSampling = false;
+    }
   }
 
   @Override
-  public void subscribe(PollingSubscription subscription) {
+  public synchronized void subscribe(PollingSubscription subscription) {
     pollingSubscription = subscription;
   }
 

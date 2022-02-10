@@ -51,7 +51,9 @@ public class InterpolatableRev2m implements Interpolatable {
         nextQueue.add(element);
       }
     }
-    dataPoints = nextQueue;
+    synchronized (this) {
+      dataPoints = nextQueue;
+    }
   }
 
   @Override
@@ -60,7 +62,7 @@ public class InterpolatableRev2m implements Interpolatable {
   }
 
   @Override
-  public void setSampleRateNs(long sampleRateNs) {
+  public synchronized void setSampleRateNs(long sampleRateNs) {
     this.sampleRateNs = sampleRateNs;
   }
 
@@ -70,7 +72,7 @@ public class InterpolatableRev2m implements Interpolatable {
   }
 
   @Override
-  public void setPolynomialDegree(int polynomialDegree) {
+  public synchronized void setPolynomialDegree(int polynomialDegree) {
     this.polynomialDegree = polynomialDegree;
   }
 
@@ -88,7 +90,9 @@ public class InterpolatableRev2m implements Interpolatable {
     double distance = distanceSensor.getDistance(DistanceUnit.MM);
     distance = distance > 2000 ? 2000 : distance;
     distance = distance < 0 ? 0 : distance;
-    lastSampleTime = System.nanoTime();
+    synchronized (this) {
+      lastSampleTime = System.nanoTime();
+    }
     dataPoints.add(new DataPoint(distance, lastSampleTime));
   }
 
@@ -103,17 +107,21 @@ public class InterpolatableRev2m implements Interpolatable {
   @Override
   public void startSampling() {
     dataPoints.clear();
-    isSampling = true;
+    synchronized (this) {
+      isSampling = true;
+    }
   }
 
   @Override
   public void stopSampling() {
     dataPoints.clear();
-    isSampling = false;
+    synchronized (this) {
+      isSampling = false;
+    }
   }
 
   @Override
-  public void subscribe(PollingSubscription subscription) {
+  public synchronized void subscribe(PollingSubscription subscription) {
     this.pollingSubscription = subscription;
   }
 
