@@ -53,14 +53,28 @@ public class DualJointAngularLift implements IDualJointAngularLift {
         new MotorState(LIFT_JOINT_ONE_MOTOR_NAME, Direction.REVERSE)
             .withRunMode(RunMode.RUN_TO_POSITION)
             .withTargetPosition(0)
-            .withPowerCurve(PowerCurves.generatePowerCurve(1, 2).andThen((Double powerResult) -> {
-              double anglePower = Math.cos((Math.abs(MotorTrackerPipe.getInstance().getPositionOf(LIFT_JOINT_ONE_MOTOR_NAME) - degrees90Position) / TICKS_IN_90_DEGREES) * Math.PI * 0.5);
-              anglePower += 0.04;
-              return powerResult * anglePower * (powerResult < 0 ? 0.333333 : 1);
-            }))
+            .withPowerCurve(
+                PowerCurves.generatePowerCurve(1, 2)
+                    .andThen(
+                        (Double powerResult) -> {
+                          double anglePower =
+                              Math.cos(
+                                  (Math.abs(
+                                              MotorTrackerPipe.getInstance()
+                                                      .getPositionOf(LIFT_JOINT_ONE_MOTOR_NAME)
+                                                  - degrees90Position)
+                                          / TICKS_IN_90_DEGREES)
+                                      * Math.PI
+                                      * 0.5);
+                          anglePower += 0.04;
+                          return powerResult * anglePower * (powerResult < 0 ? 0.333333 : 1);
+                        }))
             .withPowerAndTickRateRelation((power) -> power * 2800)
             .withAdvPowerCorrection(
-                (Double currentPower, Double idealPower, Double currentTicks, Double targetTicks) -> {
+                (Double currentPower,
+                    Double idealPower,
+                    Double currentTicks,
+                    Double targetTicks) -> {
                   if (currentPower.equals(idealPower)) return currentPower;
 
                   double diff = Math.abs(currentTicks - targetTicks);
@@ -68,11 +82,11 @@ public class DualJointAngularLift implements IDualJointAngularLift {
                   double adjustment = Math.min(pow, 1) * .1;
                   double ret = 0;
                   if (currentPower > idealPower) {
-                      ret = currentPower - adjustment;
-                      if (ret > 0) ret = -0.01;
+                    ret = currentPower - adjustment;
+                    if (ret > 0) ret = -0.01;
                   } else if (currentPower < idealPower) {
-                      ret = currentPower + adjustment;
-                      if (ret < 0) ret = 0.01;
+                    ret = currentPower + adjustment;
+                    if (ret < 0) ret = 0.01;
                   }
                   ret = Math.round(ret * 1000) / 1000.0;
                   double clippedRange = ret > 1 ? 1 : ret < -1 ? -1 : ret;

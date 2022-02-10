@@ -66,7 +66,9 @@ public class RunToPositionPipe extends HardwarePipeline {
                   boolean useStdPowerCorrectionIfPossible =
                       Math.abs(motor.getStartingTicks() - motor.getTargetTicks())
                           > nextState.getAdjustmentThreshold();
-                  if ((useStdPowerCorrectionIfPossible && (nextState.getPowerCorrection() != null || nextState.getAdvPowerCorrection() != null))
+                  if ((useStdPowerCorrectionIfPossible
+                          && (nextState.getPowerCorrection() != null
+                              || nextState.getAdvPowerCorrection() != null))
                       || (!useStdPowerCorrectionIfPossible
                           && nextState.getAdjustmentPowerCorrectionCurve() != null)) {
                     double percentProgress;
@@ -83,7 +85,14 @@ public class RunToPositionPipe extends HardwarePipeline {
                     }
                     if (useStdPowerCorrectionIfPossible) {
                       if (nextState.getAdvPowerCorrection() != null) {
-                          power = nextState.getAdvPowerCorrection().apply(currentPercentPower, power, (double) currentPosition, (double) motor.getTargetTicks());
+                        power =
+                            nextState
+                                .getAdvPowerCorrection()
+                                .apply(
+                                    currentPercentPower,
+                                    power,
+                                    (double) currentPosition,
+                                    (double) motor.getTargetTicks());
                       } else {
                         power =
                             nextState

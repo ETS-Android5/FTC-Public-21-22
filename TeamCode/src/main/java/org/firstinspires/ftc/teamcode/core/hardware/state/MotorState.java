@@ -116,7 +116,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -140,7 +140,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -164,7 +164,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -188,7 +188,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -212,7 +212,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -236,7 +236,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -261,7 +261,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -286,7 +286,7 @@ public class MotorState extends IMotorState {
         adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -311,7 +311,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -336,7 +336,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         this.encoderDataSource);
   }
 
@@ -346,22 +346,23 @@ public class MotorState extends IMotorState {
   }
 
   @Override
-  public IMotorState withAdvPowerCorrection(QuadFunction<Double, Double, Double, Double, Double> advPowerCorrection) {
+  public IMotorState withAdvPowerCorrection(
+      QuadFunction<Double, Double, Double, Double, Double> advPowerCorrection) {
     return new MotorState(
-            this.name,
-            this.direction,
-            this.runMode,
-            this.zeroPowerBehavior,
-            this.power,
-            this.targetPosition,
-            this.powerCurve,
-            this.adjustmentThreshold,
-            this.adjustmentCurve,
-            this.adjustmentPowerCorrectionCurve,
-            this.powerAndTickRateRelation,
-            this.powerCorrection,
-            advPowerCorrection,
-            this.encoderDataSource);
+        this.name,
+        this.direction,
+        this.runMode,
+        this.zeroPowerBehavior,
+        this.power,
+        this.targetPosition,
+        this.powerCurve,
+        this.adjustmentThreshold,
+        this.adjustmentCurve,
+        this.adjustmentPowerCorrectionCurve,
+        this.powerAndTickRateRelation,
+        this.powerCorrection,
+        advPowerCorrection,
+        this.encoderDataSource);
   }
 
   @Override
@@ -384,7 +385,7 @@ public class MotorState extends IMotorState {
         this.adjustmentPowerCorrectionCurve,
         this.powerAndTickRateRelation,
         this.powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         encoderDataSource);
   }
 
@@ -403,7 +404,7 @@ public class MotorState extends IMotorState {
         adjustmentPowerCorrectionCurve,
         powerAndTickRateRelation,
         powerCorrection,
-            this.advPowerCorrection,
+        this.advPowerCorrection,
         encoderDataSource);
   }
 }

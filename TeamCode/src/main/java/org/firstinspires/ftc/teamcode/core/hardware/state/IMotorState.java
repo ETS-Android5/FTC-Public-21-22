@@ -77,7 +77,8 @@ public abstract class IMotorState extends State implements Duplicatable<IMotorSt
   @Observable(key = "AdvPowerCorrection")
   public abstract QuadFunction<Double, Double, Double, Double, Double> getAdvPowerCorrection();
 
-  public abstract IMotorState withAdvPowerCorrection(QuadFunction<Double, Double, Double, Double, Double> advPowerCorrection);
+  public abstract IMotorState withAdvPowerCorrection(
+      QuadFunction<Double, Double, Double, Double, Double> advPowerCorrection);
 
   @Observable(key = "EncoderDataSource")
   public abstract String getEncoderDataSource();

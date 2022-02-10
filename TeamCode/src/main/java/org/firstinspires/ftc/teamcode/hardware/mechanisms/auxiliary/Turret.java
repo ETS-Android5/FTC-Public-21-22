@@ -18,14 +18,19 @@ public class Turret implements ITurret {
   public static final String TURRET_MOTOR_NAME = "TURRET_MOTOR";
   public static final int DEFAULT_ADJUSTMENT_THRESHOLD = 40;
   public static final double DEGREES_FRONT = 0;
+  public static final int DEGREES_DIAGONAL = 135;
   public static final int DEGREES_RIGHT = 90;
   public static final int DEGREES_BACK = 180;
   public static final double DEGREES_TO_TICKS = 7.7394444444;
   public static final int TICKS_FRONT = 0;
-  public static final int TICKS_RIGHT = (int) ((DEGREES_RIGHT * DEGREES_TO_TICKS) + 0.5);
-  public static final int TICKS_LEFT = (int) ((-DEGREES_RIGHT * DEGREES_TO_TICKS) - 0.5);
-  public static final int TICKS_CW_BACK = (int) ((DEGREES_BACK * DEGREES_TO_TICKS) + 0.5);
-  public static final int TICKS_CCW_BACK = (int) ((-DEGREES_BACK * DEGREES_TO_TICKS) - 0.5);
+  public static final int TICKS_RIGHT = (int) Math.round(DEGREES_RIGHT * DEGREES_TO_TICKS);
+  public static final int TICKS_LEFT = (int) Math.round(-DEGREES_RIGHT * DEGREES_TO_TICKS);
+  public static final int TICKS_DIAGONAL_RIGHT =
+      (int) Math.round(DEGREES_DIAGONAL * DEGREES_TO_TICKS);
+  public static final int TICKS_DIAGONAL_LEFT =
+      (int) Math.round(-DEGREES_DIAGONAL * DEGREES_TO_TICKS);
+  public static final int TICKS_CW_BACK = (int) Math.round(DEGREES_BACK * DEGREES_TO_TICKS);
+  public static final int TICKS_CCW_BACK = (int) Math.round(-DEGREES_BACK * DEGREES_TO_TICKS);
 
   @Hardware(name = TURRET_MOTOR_NAME, runMode = RunMode.RUN_TO_POSITION)
   @SuppressWarnings("unused")
@@ -135,6 +140,16 @@ public class Turret implements ITurret {
   @Override
   public synchronized void turnToRight() {
     turnToDegrees(DEGREES_RIGHT);
+  }
+
+  @Override
+  public void turnToDiagonalLeft() {
+    turnToDegrees(-DEGREES_DIAGONAL);
+  }
+
+  @Override
+  public void turnToDiagonalRight() {
+    turnToDegrees(DEGREES_DIAGONAL);
   }
 
   @Override

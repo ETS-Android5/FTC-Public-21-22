@@ -15,6 +15,10 @@ public interface ITurret extends Component, ManuallyAdjustable, StatefulMechanis
 
   void turnToRight();
 
+  void turnToDiagonalLeft();
+
+  void turnToDiagonalRight();
+
   void turnCWToBack();
 
   void turnCCWToBack();

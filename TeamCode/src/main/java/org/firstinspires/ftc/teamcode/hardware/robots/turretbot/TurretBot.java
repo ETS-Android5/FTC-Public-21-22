@@ -263,43 +263,51 @@ public class TurretBot implements Component {
     setPosition.set(position);
     switch (position) {
       case INTAKE_POSITION:
-        goToIntakePosition(inTippedMode);
+        goToIntakePosition(position, inTippedMode);
         return;
       case INTAKE_HOVER_POSITION:
-        goToIntakeHoverPosition(inTippedMode);
+        goToIntakeHoverPosition(position, inTippedMode);
         return;
       case SHARED_CLOSE_POSITION:
-        goToSharedClosePosition(inTippedMode);
+        goToSharedClosePosition(position, inTippedMode);
         return;
       case SHARED_MIDDLE_POSITION:
-        goToSharedMiddlePosition(inTippedMode);
+        goToSharedMiddlePosition(position, inTippedMode);
         return;
       case SHARED_FAR_POSITION:
-        goToSharedFarPosition(inTippedMode);
+        goToSharedFarPosition(position, inTippedMode);
         return;
       case TIPPED_CLOSE_POSITION:
-        goToTippedClosePosition(inTippedMode);
+        goToTippedClosePosition(position, inTippedMode);
         return;
       case TIPPED_MIDDLE_POSITION:
-        goToTippedMiddlePosition(inTippedMode);
+        goToTippedMiddlePosition(position, inTippedMode);
         return;
       case TIPPED_FAR_POSITION:
-        goToTippedFarPosition(inTippedMode);
+        goToTippedFarPosition(position, inTippedMode);
         return;
       case ALLIANCE_BOTTOM_POSITION:
-        goToAllianceBottomPosition(inTippedMode);
+        goToAllianceBottomPosition(position, inTippedMode);
         return;
       case ALLIANCE_MIDDLE_POSITION:
-        goToAllianceMiddlePosition(inTippedMode);
+        goToAllianceMiddlePosition(position, inTippedMode);
         return;
       case ALLIANCE_TOP_POSITION:
-        goToAllianceTopPosition(inTippedMode);
+        goToAllianceTopPosition(position, inTippedMode);
         return;
       case TEAM_MARKER_GRAB_POSITION:
-        goToTeamMarkerGrabPosition(inTippedMode);
+        goToTeamMarkerGrabPosition(position, inTippedMode);
         return;
       case TEAM_MARKER_DEPOSIT_POSITION:
-        goToTeamMarkerDepositPosition();
+        goToTeamMarkerDepositPosition(position);
+        return;
+      case AUTO_REACH_LEFT_BOTTOM:
+      case AUTO_REACH_LEFT_MIDDLE:
+      case AUTO_REACH_LEFT_TOP:
+      case AUTO_REACH_RIGHT_BOTTOM:
+      case AUTO_REACH_RIGHT_MIDDLE:
+      case AUTO_REACH_RIGHT_TOP:
+        goToAutoReachPosition(position);
     }
   }
 
@@ -346,14 +354,13 @@ public class TurretBot implements Component {
     return executorService;
   }
 
-  private void goToIntakePosition(boolean inTippedMode) {
-    int turretTarget = Turret.TICKS_FRONT;
+  private void goToIntakePosition(TurretBotPosition position, boolean inTippedMode) {
     afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, true),
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, true),
         () ->
             ensureTurretIsAt(
-                turretTarget,
-                -230,
+                position.turretTarget(alliance.get()),
+                position.firstJointTarget(),
                 true,
                 () ->
                     afterTimedAction(
@@ -366,230 +373,201 @@ public class TurretBot implements Component {
                         })));
   }
 
-  private void goToIntakeHoverPosition(boolean inTippedMode) {
-    int turretTarget = Turret.TICKS_FRONT;
+  private void goToIntakeHoverPosition(TurretBotPosition position, boolean inTippedMode) {
     afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
-        () -> ensureTurretIsAt(turretTarget, 0, false, () -> gripperIsNearGround.set(false)));
-  }
-
-  private void goToSharedClosePosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForShared();
-    afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
         () ->
             ensureTurretIsAt(
-                turretTarget,
-                10,
+                position.turretTarget(alliance.get()),
+                position.firstJointTarget(),
+                false,
+                () -> gripperIsNearGround.set(false)));
+  }
+
+  private void goToSharedClosePosition(TurretBotPosition position, boolean inTippedMode) {
+    afterTimedAction(
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
+        () ->
+            ensureTurretIsAt(
+                position.turretTarget(alliance.get()),
+                position.firstJointTarget(),
                 false,
                 () -> {
-                  lift.setArmTwoPosition(0.68);
+                  lift.setArmTwoPosition(position.secondJointTarget());
                   gripperIsNearGround.set(false);
                 }));
   }
 
-  private void goToSharedMiddlePosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForShared();
+  private void goToSharedMiddlePosition(TurretBotPosition position, boolean inTippedMode) {
     afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
         () ->
             ensureTurretIsAt(
-                turretTarget,
-                10,
+                position.turretTarget(alliance.get()),
+                position.firstJointTarget(),
                 false,
                 () -> {
-                  lift.setArmTwoPosition(0.48);
+                  lift.setArmTwoPosition(position.secondJointTarget());
                   gripperIsNearGround.set(false);
                 }));
   }
 
-  private void goToSharedFarPosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForShared();
+  private void goToSharedFarPosition(TurretBotPosition position, boolean inTippedMode) {
     afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
         () ->
             ensureTurretIsAt(
-                turretTarget,
+                position.turretTarget(alliance.get()),
                 0,
                 false,
                 () -> {
-                  lift.setArmTwoPosition(0.2);
+                  lift.setArmTwoPosition(position.secondJointTarget());
                   afterTimedAction(
                       ELBOW_JOINT_MOVEMENT_DELAY_MS,
                       () ->
-                          setLiftToPosition(-250, TurretBot.liftTolerance(false))
+                          setLiftToPosition(
+                                  position.firstJointTarget(), TurretBot.liftTolerance(false))
                               .andThen(() -> gripperIsNearGround.set(true)));
                 }));
   }
 
-  private void goToTippedClosePosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForShared();
+  private void goToTippedClosePosition(TurretBotPosition position, boolean inTippedMode) {
     afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
         () ->
             ensureTurretIsAt(
-                turretTarget,
-                160,
+                position.turretTarget(alliance.get()),
+                position.firstJointTarget(),
                 false,
                 () -> {
-                  lift.setArmTwoPosition(0.66);
+                  lift.setArmTwoPosition(position.secondJointTarget());
                   gripperIsNearGround.set(true);
                 }));
   }
 
-  private void goToTippedMiddlePosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForShared();
+  private void goToTippedMiddlePosition(TurretBotPosition position, boolean inTippedMode) {
     afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
         () ->
             ensureTurretIsAt(
-                turretTarget,
-                25,
+                position.turretTarget(alliance.get()),
+                position.firstJointTarget(),
                 false,
                 () -> {
-                  lift.setArmTwoPosition(0.44);
+                  lift.setArmTwoPosition(position.secondJointTarget());
                   gripperIsNearGround.set(true);
                 }));
   }
 
-  private void goToTippedFarPosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForShared();
+  private void goToTippedFarPosition(TurretBotPosition position, boolean inTippedMode) {
     afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
         () ->
             ensureTurretIsAt(
-                turretTarget,
-                -20,
-                false,
-                () -> {
-                  lift.setArmTwoPosition(0.2);
-                  afterTimedAction(
-                      ELBOW_JOINT_MOVEMENT_DELAY_MS,
-                      () ->
-                          setLiftToPosition(-200, TurretBot.liftTolerance(false))
-                              .andThen(() -> gripperIsNearGround.set(true)));
-                }));
-  }
-
-  private void goToAllianceBottomPosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForAllianceHub();
-    afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
-        () ->
-            ensureTurretIsAt(
-                turretTarget,
-                -10,
-                false,
-                () -> {
-                  lift.setArmTwoPosition(0.08);
-                  afterTimedAction(
-                      ELBOW_JOINT_MOVEMENT_DELAY_MS,
-                      () ->
-                          setLiftToPosition(-460, TurretBot.liftTolerance(false))
-                              .andThen(() -> gripperIsNearGround.set(true)));
-                }));
-  }
-
-  private void goToAllianceMiddlePosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForAllianceHub();
-    afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
-        () ->
-            ensureTurretIsAt(
-                turretTarget,
-                -100,
-                false,
-                () -> {
-                  lift.setArmTwoPosition(0.23);
-                  gripperIsNearGround.set(false);
-                }));
-  }
-
-  private void goToAllianceTopPosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForAllianceHub();
-    afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
-        () ->
-            ensureTurretIsAt(
-                turretTarget,
-                540,
-                false,
-                () -> {
-                  lift.setArmTwoPosition(0.52);
-                  gripperIsNearGround.set(false);
-                }));
-  }
-
-  private void goToTeamMarkerGrabPosition(boolean inTippedMode) {
-    int turretTarget = turretPositionForTeamMarkerGrab();
-    afterTimedAction(
-        safeAdjustArms(turretTarget, inTippedMode, false),
-        () ->
-            ensureTurretIsAt(
-                turretTarget,
+                position.turretTarget(alliance.get()),
                 0,
                 false,
                 () -> {
-                  lift.setArmTwoPosition(0.08);
+                  lift.setArmTwoPosition(position.secondJointTarget());
+                  afterTimedAction(
+                      ELBOW_JOINT_MOVEMENT_DELAY_MS,
+                      () ->
+                          setLiftToPosition(
+                                  position.firstJointTarget(), TurretBot.liftTolerance(false))
+                              .andThen(() -> gripperIsNearGround.set(true)));
+                }));
+  }
+
+  private void goToAllianceBottomPosition(TurretBotPosition position, boolean inTippedMode) {
+    afterTimedAction(
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
+        () ->
+            ensureTurretIsAt(
+                position.turretTarget(alliance.get()),
+                0,
+                false,
+                () -> {
+                  lift.setArmTwoPosition(position.secondJointTarget());
+                  afterTimedAction(
+                      ELBOW_JOINT_MOVEMENT_DELAY_MS,
+                      () ->
+                          setLiftToPosition(
+                                  position.firstJointTarget(), TurretBot.liftTolerance(false))
+                              .andThen(() -> gripperIsNearGround.set(true)));
+                }));
+  }
+
+  private void goToAllianceMiddlePosition(TurretBotPosition position, boolean inTippedMode) {
+    afterTimedAction(
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
+        () ->
+            ensureTurretIsAt(
+                position.turretTarget(alliance.get()),
+                position.firstJointTarget(),
+                false,
+                () -> {
+                  lift.setArmTwoPosition(position.secondJointTarget());
+                  gripperIsNearGround.set(false);
+                }));
+  }
+
+  private void goToAllianceTopPosition(TurretBotPosition position, boolean inTippedMode) {
+    afterTimedAction(
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
+        () ->
+            ensureTurretIsAt(
+                position.turretTarget(alliance.get()),
+                position.firstJointTarget(),
+                false,
+                () -> {
+                  lift.setArmTwoPosition(position.secondJointTarget());
+                  gripperIsNearGround.set(false);
+                }));
+  }
+
+  private void goToTeamMarkerGrabPosition(TurretBotPosition position, boolean inTippedMode) {
+    afterTimedAction(
+        safeAdjustArms(position.turretTarget(alliance.get()), inTippedMode, false),
+        () ->
+            ensureTurretIsAt(
+                position.turretTarget(alliance.get()),
+                0,
+                false,
+                () -> {
+                  lift.setArmTwoPosition(position.secondJointTarget());
                   gripper.open();
                   afterTimedAction(
                       ELBOW_JOINT_MOVEMENT_DELAY_MS,
                       () ->
-                          setLiftToPosition(-570, TurretBot.liftTolerance(false))
+                          setLiftToPosition(
+                                  position.firstJointTarget(), TurretBot.liftTolerance(false))
                               .andThen(() -> gripperIsNearGround.set(true)));
                 }));
   }
 
-  private void goToTeamMarkerDepositPosition() {
-    int turretTarget = turretPositionForTeamMarkerDeposit();
+  private void goToTeamMarkerDepositPosition(TurretBotPosition position) {
     ensureTurretIsAt(
-        turretTarget,
-        500,
+        position.turretTarget(alliance.get()),
+        position.firstJointTarget(),
         false,
         () -> {
-          lift.setArmTwoPosition(0.38);
+          lift.setArmTwoPosition(position.secondJointTarget());
           gripperIsNearGround.set(false);
         });
   }
 
-  private int turretPositionForShared() {
-    switch (alliance.get()) {
-      case RED:
-        return Turret.TICKS_RIGHT;
-      case BLUE:
-        return Turret.TICKS_LEFT;
-    }
-    return 0;
-  }
-
-  private int turretPositionForAllianceHub() {
-    switch (alliance.get()) {
-      case RED:
-        return Turret.TICKS_CCW_BACK;
-      case BLUE:
-        return Turret.TICKS_CW_BACK;
-    }
-    return 0;
-  }
-
-  private int turretPositionForTeamMarkerGrab() {
-    switch (alliance.get()) {
-      case RED:
-        return Turret.TICKS_CCW_BACK;
-      case BLUE:
-        return Turret.TICKS_CW_BACK;
-    }
-    return 0;
-  }
-
-  private int turretPositionForTeamMarkerDeposit() {
-    switch (alliance.get()) {
-      case RED:
-        return Turret.TICKS_CCW_BACK;
-      case BLUE:
-        return Turret.TICKS_CW_BACK;
-    }
-    return 0;
+  private void goToAutoReachPosition(TurretBotPosition position) {
+    ensureTurretIsAt(
+        position.turretTarget(alliance.get()),
+        position.firstJointTarget(),
+        false,
+        () -> {
+          lift.setArmTwoPosition(position.secondJointTarget());
+          if (position == TurretBotPosition.AUTO_REACH_LEFT_BOTTOM
+              || position == TurretBotPosition.AUTO_REACH_RIGHT_BOTTOM) {
+            gripperIsNearGround.set(true);
+          }
+        });
   }
 
   private int safeAdjustArms(
@@ -641,11 +619,6 @@ public class TurretBot implements Component {
     }
     drivetrain.setAllPower(0);
     update.run();
-  }
-
-  public void driveForward(
-      double distanceInches, double tolerance, Supplier<Boolean> opModeIsActive, Runnable update) {
-    driveForward(0.5, 1, distanceInches, tolerance, opModeIsActive, update);
   }
 
   public void driveForward(
