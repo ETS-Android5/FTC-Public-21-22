@@ -563,10 +563,9 @@ public class TurretBot implements Component {
         false,
         () -> {
           lift.setArmTwoPosition(position.secondJointTarget());
-          if (position == TurretBotPosition.AUTO_REACH_LEFT_BOTTOM
-              || position == TurretBotPosition.AUTO_REACH_RIGHT_BOTTOM) {
-            gripperIsNearGround.set(true);
-          }
+          gripperIsNearGround.set(
+              position == TurretBotPosition.AUTO_REACH_LEFT_BOTTOM
+                  || position == TurretBotPosition.AUTO_REACH_RIGHT_BOTTOM);
         });
   }
 
