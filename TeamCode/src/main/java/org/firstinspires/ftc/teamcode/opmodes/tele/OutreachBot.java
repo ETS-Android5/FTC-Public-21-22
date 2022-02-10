@@ -63,14 +63,14 @@ public class OutreachBot extends LinearOpMode {
 
       if (gamepad1.dpad_up
           && buttonTimerSinceLastButton > tapeMeasureUDServoTickMS) { // tips tape up
-        tapeMeasureUDServoPosition -= tapeMeasureUDServoTick;
+        tapeMeasureUDServoPosition += tapeMeasureUDServoTick;
         udServo.setPosition(tapeMeasureUDServoPosition);
         buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
       }
 
       if (gamepad1.dpad_down
           && buttonTimerSinceLastButton > tapeMeasureUDServoTickMS) { // tips tape down
-        tapeMeasureUDServoPosition += tapeMeasureUDServoTick;
+        tapeMeasureUDServoPosition -= tapeMeasureUDServoTick;
         udServo.setPosition(tapeMeasureUDServoPosition);
         buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
       }
