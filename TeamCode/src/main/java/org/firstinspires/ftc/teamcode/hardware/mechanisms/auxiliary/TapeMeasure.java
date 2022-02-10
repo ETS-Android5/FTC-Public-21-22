@@ -60,13 +60,13 @@ public class TapeMeasure implements ITapeMeasure {
   }
 
   @Override
-  public void adjustYaw(double amt) {
+  public synchronized void adjustYaw(double amt) {
     yawServoState =
         yawServoState.withPosition(yawServoState.getPosition() + (amt * ADJUSTMENT_RATE));
   }
 
   @Override
-  public void adjustPitch(double amt) {
+  public synchronized void adjustPitch(double amt) {
     pitchServoState =
         pitchServoState.withPosition(pitchServoState.getPosition() + (amt * ADJUSTMENT_RATE));
   }

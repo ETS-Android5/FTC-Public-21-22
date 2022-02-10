@@ -128,17 +128,17 @@ public class Turret implements ITurret {
   }
 
   @Override
-  public synchronized void turnToFront() {
+  public void turnToFront() {
     turnToDegrees(DEGREES_FRONT);
   }
 
   @Override
-  public synchronized void turnToLeft() {
+  public void turnToLeft() {
     turnToDegrees(-DEGREES_RIGHT);
   }
 
   @Override
-  public synchronized void turnToRight() {
+  public void turnToRight() {
     turnToDegrees(DEGREES_RIGHT);
   }
 
@@ -153,17 +153,17 @@ public class Turret implements ITurret {
   }
 
   @Override
-  public synchronized void turnCWToBack() {
+  public void turnCWToBack() {
     turnToDegrees(DEGREES_BACK);
   }
 
   @Override
-  public synchronized void turnCCWToBack() {
+  public void turnCCWToBack() {
     turnToDegrees(-DEGREES_BACK);
   }
 
   @Override
-  public synchronized void turnToBackNearest() {
+  public void turnToBackNearest() {
     if (turretMotorState.getTargetPosition() < 0) {
       turnCCWToBack();
     } else {

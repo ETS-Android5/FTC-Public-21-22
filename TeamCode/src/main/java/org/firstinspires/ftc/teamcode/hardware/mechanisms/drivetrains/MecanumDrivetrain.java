@@ -81,7 +81,7 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public void setAllPower(double power) {
+  public synchronized void setAllPower(double power) {
     frontLeftMotorState = frontLeftMotorState.withPower(power);
     frontRightMotorState = frontRightMotorState.withPower(power);
     rearLeftMotorState = rearLeftMotorState.withPower(power);
@@ -89,19 +89,19 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public void setLeftPower(double power) {
+  public synchronized void setLeftPower(double power) {
     frontLeftMotorState = frontLeftMotorState.withPower(power);
     rearLeftMotorState = rearLeftMotorState.withPower(power);
   }
 
   @Override
-  public void setRightPower(double power) {
+  public synchronized void setRightPower(double power) {
     frontRightMotorState = frontRightMotorState.withPower(power);
     rearRightMotorState = rearRightMotorState.withPower(power);
   }
 
   @Override
-  public void setAllTarget(int ticks) {
+  public synchronized void setAllTarget(int ticks) {
     frontLeftMotorState = frontLeftMotorState.withTargetPosition(ticks);
     frontRightMotorState = frontRightMotorState.withTargetPosition(ticks);
     rearLeftMotorState = rearLeftMotorState.withTargetPosition(ticks);
@@ -109,13 +109,13 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public void setLeftTarget(int ticks) {
+  public synchronized void setLeftTarget(int ticks) {
     frontLeftMotorState = frontLeftMotorState.withTargetPosition(ticks);
     rearLeftMotorState = rearLeftMotorState.withTargetPosition(ticks);
   }
 
   @Override
-  public void setRightTarget(int ticks) {
+  public synchronized void setRightTarget(int ticks) {
     frontRightMotorState = frontRightMotorState.withTargetPosition(ticks);
     rearRightMotorState = rearRightMotorState.withTargetPosition(ticks);
   }
@@ -126,7 +126,7 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public void setRunMode(RunMode runMode) {
+  public synchronized void setRunMode(RunMode runMode) {
     autoMode = runMode == RunMode.RUN_TO_POSITION;
     frontLeftMotorState = frontLeftMotorState.withRunMode(runMode);
     frontRightMotorState = frontRightMotorState.withRunMode(runMode);
@@ -166,7 +166,7 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public void setFrontLeftDirection(Direction direction) {
+  public synchronized void setFrontLeftDirection(Direction direction) {
     frontLeftMotorState = frontLeftMotorState.withDirection(direction);
   }
 
@@ -176,7 +176,7 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public void setFrontRightDirection(Direction direction) {
+  public synchronized void setFrontRightDirection(Direction direction) {
     frontRightMotorState = frontRightMotorState.withDirection(direction);
   }
 
@@ -186,7 +186,7 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public void setRearLeftDirection(Direction direction) {
+  public synchronized void setRearLeftDirection(Direction direction) {
     rearLeftMotorState = rearLeftMotorState.withDirection(direction);
   }
 
@@ -196,47 +196,47 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
   }
 
   @Override
-  public void setRearRightDirection(Direction direction) {
+  public synchronized void setRearRightDirection(Direction direction) {
     rearRightMotorState = rearRightMotorState.withDirection(direction);
   }
 
   @Override
-  public void setFrontLeftPower(double power) {
+  public synchronized void setFrontLeftPower(double power) {
     frontLeftMotorState = frontLeftMotorState.withPower(power);
   }
 
   @Override
-  public void setFrontRightPower(double power) {
+  public synchronized void setFrontRightPower(double power) {
     frontRightMotorState = frontRightMotorState.withPower(power);
   }
 
   @Override
-  public void setRearLeftPower(double power) {
+  public synchronized void setRearLeftPower(double power) {
     rearLeftMotorState = rearLeftMotorState.withPower(power);
   }
 
   @Override
-  public void setRearRightPower(double power) {
+  public synchronized void setRearRightPower(double power) {
     rearRightMotorState = rearRightMotorState.withPower(power);
   }
 
   @Override
-  public void setFrontLeftTarget(int ticks) {
+  public synchronized void setFrontLeftTarget(int ticks) {
     frontLeftMotorState = frontLeftMotorState.withTargetPosition(ticks);
   }
 
   @Override
-  public void setFrontRightTarget(int ticks) {
+  public synchronized void setFrontRightTarget(int ticks) {
     frontRightMotorState = frontRightMotorState.withTargetPosition(ticks);
   }
 
   @Override
-  public void setRearLeftTarget(int ticks) {
+  public synchronized void setRearLeftTarget(int ticks) {
     rearLeftMotorState = rearLeftMotorState.withTargetPosition(ticks);
   }
 
   @Override
-  public void setRearRightTarget(int ticks) {
+  public synchronized void setRearRightTarget(int ticks) {
     rearRightMotorState = rearRightMotorState.withTargetPosition(ticks);
   }
 
@@ -250,17 +250,20 @@ public class MecanumDrivetrain implements IMecanumDrivetrain {
 
     double factor = 1 / Math.max(Math.abs(sinAngleRadians), Math.abs(cosAngleRadians));
 
-    frontLeftMotorState =
-        frontLeftMotorState.withPower(wheelPower * cosAngleRadians * factor + turn);
-    frontRightMotorState =
-        frontRightMotorState.withPower(wheelPower * sinAngleRadians * factor - turn);
-    rearLeftMotorState = rearLeftMotorState.withPower(wheelPower * sinAngleRadians * factor + turn);
-    rearRightMotorState =
-        rearRightMotorState.withPower(wheelPower * cosAngleRadians * factor - turn);
+    synchronized (this) {
+      frontLeftMotorState =
+          frontLeftMotorState.withPower(wheelPower * cosAngleRadians * factor + turn);
+      frontRightMotorState =
+          frontRightMotorState.withPower(wheelPower * sinAngleRadians * factor - turn);
+      rearLeftMotorState =
+          rearLeftMotorState.withPower(wheelPower * sinAngleRadians * factor + turn);
+      rearRightMotorState =
+          rearRightMotorState.withPower(wheelPower * cosAngleRadians * factor - turn);
+    }
   }
 
   @Override
-  public void setPowerCurve(TriFunction<Double, Double, Double, Double> powerCurve) {
+  public synchronized void setPowerCurve(TriFunction<Double, Double, Double, Double> powerCurve) {
     frontLeftMotorState = frontLeftMotorState.withPowerCurve(powerCurve);
     frontRightMotorState = frontRightMotorState.withPowerCurve(powerCurve);
     rearLeftMotorState = rearLeftMotorState.withPowerCurve(powerCurve);
