@@ -32,7 +32,7 @@ public class OutreachBot extends LinearOpMode {
         .5; // This is init position and tracking of current position
     final double tapeMeasureUDServoTickMS =
         100; // This is milliseconds between allowed movements of each tick
-    final double tapeMeasureUDServoTick = .005; // This is amount of each tick
+    final double tapeMeasureUDServoTick = .01; // This is amount of each tick
 
     Servo rlServo = hardwareMap.servo.get("YAW_SERVO");
     Servo udServo = hardwareMap.servo.get("PITCH_SERVO");
