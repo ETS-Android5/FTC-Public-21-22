@@ -17,22 +17,22 @@ public class OutreachBot extends LinearOpMode {
     buttonTimer.reset();
 
     double buttonTimerCurrentLoopTime;
-    double buttonTimerPrevLoopTime = 0;
-    double buttonTimerSinceLastButton;
+    double buttonTimerPrevLoopTimeRL = 0;
+    double buttonTimerPrevLoopTimeUD = 0;
 
     // RL is Right/Left servo.
     double tapeMeasureRLServoPosition =
-        .55; // This is init position and tracking of current position
-    final double tapeMeasureRLServoTickMS =
-        100; // This is milliseconds between allowed movements of each tick
-    final double tapeMeasureRLServoTick = .005; // This is amount of each tick
+        .56; // This is init position and tracking of current position
+    double tapeMeasureRLServoTickMS =
+        50; // This is milliseconds between allowed movements of each tick
+    double tapeMeasureRLServoTick = 1.0 / 200.0; // This is amount of each tick
 
     // UD is Up/Down servo.
     double tapeMeasureUDServoPosition =
         .5; // This is init position and tracking of current position
-    final double tapeMeasureUDServoTickMS =
-        100; // This is milliseconds between allowed movements of each tick
-    final double tapeMeasureUDServoTick = 100.0 / 256.0; // This is amount of each tick
+    double tapeMeasureUDServoTickMS =
+        150; // This is milliseconds between allowed movements of each tick
+    double tapeMeasureUDServoTick = 1.0 / 100.0; // This is amount of each tick
 
     Servo rlServo = hardwareMap.servo.get("YAW_SERVO");
     Servo udServo = hardwareMap.servo.get("PITCH_SERVO");
@@ -59,59 +59,69 @@ public class OutreachBot extends LinearOpMode {
     while (opModeIsActive()) {
 
       buttonTimerCurrentLoopTime = buttonTimer.milliseconds();
-      buttonTimerSinceLastButton = buttonTimerCurrentLoopTime - buttonTimerPrevLoopTime;
 
-      if (gamepad1.dpad_up
-          && buttonTimerSinceLastButton > tapeMeasureUDServoTickMS) { // tips tape up
+      double g2LY = gamepad2.left_stick_y;
+      double g2LX = gamepad2.left_stick_x;
+
+      if (g2LY > 0
+          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeUD) > tapeMeasureUDServoTickMS / g2LY) { // tips tape up
         tapeMeasureUDServoPosition += tapeMeasureUDServoTick;
         udServo.setPosition(tapeMeasureUDServoPosition);
-        buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
+        buttonTimerPrevLoopTimeUD = buttonTimerCurrentLoopTime;
       }
 
-      if (gamepad1.dpad_down
-          && buttonTimerSinceLastButton > tapeMeasureUDServoTickMS) { // tips tape down
+      if (g2LY < 0
+          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeUD) > tapeMeasureUDServoTickMS / -g2LY) { // tips tape down
         tapeMeasureUDServoPosition -= tapeMeasureUDServoTick;
         udServo.setPosition(tapeMeasureUDServoPosition);
-        buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
+        buttonTimerPrevLoopTimeUD = buttonTimerCurrentLoopTime;
       }
 
-      if (gamepad1.dpad_right
-          && buttonTimerSinceLastButton > tapeMeasureRLServoTickMS) { // gamepad dpad_right is right
+      if (g2LX > 0
+          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeRL) > tapeMeasureRLServoTickMS / g2LX) { // turn right
         tapeMeasureRLServoPosition -= tapeMeasureRLServoTick;
         rlServo.setPosition(tapeMeasureRLServoPosition);
-        buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
+        buttonTimerPrevLoopTimeRL = buttonTimerCurrentLoopTime;
       }
 
-      if (gamepad1.dpad_left
-          && buttonTimerSinceLastButton > tapeMeasureRLServoTickMS) { // gamepad dpad_left is left
+      if (g2LX < 0
+          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeRL) > tapeMeasureRLServoTickMS / -g2LX) { // turn left
         tapeMeasureRLServoPosition += tapeMeasureRLServoTick;
         rlServo.setPosition(tapeMeasureRLServoPosition);
-        buttonTimerPrevLoopTime = buttonTimerCurrentLoopTime;
+        buttonTimerPrevLoopTimeRL = buttonTimerCurrentLoopTime;
       }
 
-      if (gamepad1.y) { // extends the tape measure
+
+      if (gamepad2.right_trigger > 0) { // extends the tape measure
         extensionServo.setPosition(0);
-      } else if (gamepad1.a) { // retracts the tape measure
+      } else if (gamepad2.left_trigger > 0) { // retracts the tape measure
         extensionServo.setPosition(1);
       } else extensionServo.setPosition(.5); // stopped
 
-      double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-      double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-      double rx = gamepad1.right_stick_x;
+
+      double g1Y = -gamepad1.left_stick_y;
+      double g1X = gamepad1.left_stick_x;
+      double g1RX = gamepad1.right_stick_x;
 
       // Denominator is the largest motor power (absolute value) or 1
       // This ensures all the powers maintain the same ratio, but only when
       // at least one is out of the range [-1, 1]
-      double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-      double frontLeftPower = (y + x + rx) / denominator;
-      double backLeftPower = (y - x + rx) / denominator;
-      double frontRightPower = (y - x - rx) / denominator;
-      double backRightPower = (y + x - rx) / denominator;
+      double denominator = Math.max(Math.abs(g1Y) + Math.abs(g1X) + Math.abs(g1RX), 1);
+      double frontLeftPower = (g1Y + g1X + g1RX) / denominator;
+      double backLeftPower = (g1Y - g1X + g1RX) / denominator;
+      double frontRightPower = (g1Y - g1X - g1RX) / denominator;
+      double backRightPower = (g1Y + g1X - g1RX) / denominator;
 
       motorFrontLeft.setPower(frontLeftPower);
       motorBackLeft.setPower(backLeftPower);
       motorFrontRight.setPower(frontRightPower);
       motorBackRight.setPower(backRightPower);
+
+      telemetry.addData("RL Servo: ", tapeMeasureRLServoPosition);
+      telemetry.addData("UD Servo: ", tapeMeasureUDServoPosition);
+      telemetry.update();
+
+
     }
   }
 }
