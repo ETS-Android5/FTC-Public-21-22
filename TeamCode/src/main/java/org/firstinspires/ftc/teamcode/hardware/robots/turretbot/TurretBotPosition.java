@@ -18,12 +18,9 @@ public enum TurretBotPosition {
   ALLIANCE_TOP_POSITION,
   TEAM_MARKER_GRAB_POSITION,
   TEAM_MARKER_DEPOSIT_POSITION,
-  AUTO_REACH_LEFT_BOTTOM,
-  AUTO_REACH_LEFT_MIDDLE,
-  AUTO_REACH_LEFT_TOP,
-  AUTO_REACH_RIGHT_BOTTOM,
-  AUTO_REACH_RIGHT_MIDDLE,
-  AUTO_REACH_RIGHT_TOP;
+  AUTO_REACH_BOTTOM,
+  AUTO_REACH_MIDDLE,
+  AUTO_REACH_TOP;
 
   public int turretTarget(Alliance alliance) {
     switch (this) {
@@ -44,14 +41,12 @@ public enum TurretBotPosition {
         return alliance == Alliance.RED
             ? Turret.TICKS_CCW_BACK
             : alliance == Alliance.BLUE ? Turret.TICKS_CW_BACK : Turret.TICKS_FRONT;
-      case AUTO_REACH_LEFT_BOTTOM:
-      case AUTO_REACH_LEFT_MIDDLE:
-      case AUTO_REACH_LEFT_TOP:
-        return Turret.TICKS_DIAGONAL_LEFT;
-      case AUTO_REACH_RIGHT_BOTTOM:
-      case AUTO_REACH_RIGHT_MIDDLE:
-      case AUTO_REACH_RIGHT_TOP:
-        return Turret.TICKS_DIAGONAL_RIGHT;
+      case AUTO_REACH_BOTTOM:
+      case AUTO_REACH_MIDDLE:
+      case AUTO_REACH_TOP:
+        return alliance == Alliance.RED
+            ? Turret.TICKS_DIAGONAL_RIGHT
+            : alliance == Alliance.BLUE ? Turret.TICKS_DIAGONAL_LEFT : Turret.TICKS_FRONT;
       default:
         return Turret.TICKS_FRONT;
     }
@@ -73,17 +68,17 @@ public enum TurretBotPosition {
       case TIPPED_FAR_POSITION:
         return -200;
       case ALLIANCE_BOTTOM_POSITION:
-      case AUTO_REACH_LEFT_BOTTOM:
-      case AUTO_REACH_RIGHT_BOTTOM:
         return -460;
+      case AUTO_REACH_BOTTOM:
+        return -485;
       case ALLIANCE_MIDDLE_POSITION:
-      case AUTO_REACH_LEFT_MIDDLE:
-      case AUTO_REACH_RIGHT_MIDDLE:
         return -100;
+      case AUTO_REACH_MIDDLE:
+        return -125;
       case ALLIANCE_TOP_POSITION:
-      case AUTO_REACH_LEFT_TOP:
-      case AUTO_REACH_RIGHT_TOP:
         return 540;
+      case AUTO_REACH_TOP:
+        return 115;
       case TEAM_MARKER_GRAB_POSITION:
         return -570;
       case TEAM_MARKER_DEPOSIT_POSITION:
@@ -108,17 +103,17 @@ public enum TurretBotPosition {
         return 0.44;
       case ALLIANCE_BOTTOM_POSITION:
       case TEAM_MARKER_GRAB_POSITION:
-      case AUTO_REACH_LEFT_BOTTOM:
-      case AUTO_REACH_RIGHT_BOTTOM:
         return 0.08;
+      case AUTO_REACH_BOTTOM:
+        return 0.11;
       case ALLIANCE_MIDDLE_POSITION:
-      case AUTO_REACH_LEFT_MIDDLE:
-      case AUTO_REACH_RIGHT_MIDDLE:
         return 0.23;
+      case AUTO_REACH_MIDDLE:
+        return 0.2;
       case ALLIANCE_TOP_POSITION:
-      case AUTO_REACH_LEFT_TOP:
-      case AUTO_REACH_RIGHT_TOP:
         return 0.52;
+      case AUTO_REACH_TOP:
+        return 0.25;
       case TEAM_MARKER_DEPOSIT_POSITION:
         return 0.38;
       default:

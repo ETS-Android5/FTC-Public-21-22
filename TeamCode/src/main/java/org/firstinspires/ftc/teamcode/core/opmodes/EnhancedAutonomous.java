@@ -83,4 +83,11 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
   public abstract void onStartPressed();
 
   public abstract void onStop();
+
+  protected void wait(int ms) {
+    long start = System.currentTimeMillis();
+    while (System.currentTimeMillis() - start < ms && opModeIsActive()) {
+      processChanges();
+    }
+  }
 }

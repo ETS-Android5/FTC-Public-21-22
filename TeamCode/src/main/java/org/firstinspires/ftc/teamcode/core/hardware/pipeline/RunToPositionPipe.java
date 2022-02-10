@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.RunMode;
@@ -110,19 +108,6 @@ public class RunToPositionPipe extends HardwarePipeline {
                     power = power > 1 ? 1 : power < -1 ? -1 : power;
                   }
                 }
-              }
-              if (motor.getName().equals("LIFT_JOINT_ONE_MOTOR")) {
-                Log.d(
-                    "RTP",
-                    "VELOCITY: " + (MotorTrackerPipe.getInstance().getVelocity(motor.getName())));
-                Log.d("RTP", "POWER: " + power);
-                Log.d("RTP", "INITIAL: " + motor.getStartingTicks());
-                Log.d(
-                    "RTP",
-                    "CURRENT POSITION: "
-                        + (MotorTrackerPipe.getInstance().getPositionOf(motor.getName())));
-                Log.d("RTP", "TARGET: " + motor.getTargetTicks());
-                Log.d("RTP", "***************************");
               }
               ((DcMotorEx) motorObj).setPower(power);
               motor.setLastPower(power);

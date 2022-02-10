@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class TurretBot implements Component {
-  public static final int AUTO_FIRST_JOINT_OFFSET = 115;
+  public static final int AUTO_FIRST_JOINT_OFFSET = 70;
   public static final int TELE_FIRST_JOINT_OFFSET = 260;
   private static final int ELBOW_JOINT_MOVEMENT_DELAY_MS = 250;
 
@@ -301,12 +301,9 @@ public class TurretBot implements Component {
       case TEAM_MARKER_DEPOSIT_POSITION:
         goToTeamMarkerDepositPosition(position);
         return;
-      case AUTO_REACH_LEFT_BOTTOM:
-      case AUTO_REACH_LEFT_MIDDLE:
-      case AUTO_REACH_LEFT_TOP:
-      case AUTO_REACH_RIGHT_BOTTOM:
-      case AUTO_REACH_RIGHT_MIDDLE:
-      case AUTO_REACH_RIGHT_TOP:
+      case AUTO_REACH_BOTTOM:
+      case AUTO_REACH_MIDDLE:
+      case AUTO_REACH_TOP:
         goToAutoReachPosition(position);
     }
   }
@@ -563,9 +560,7 @@ public class TurretBot implements Component {
         false,
         () -> {
           lift.setArmTwoPosition(position.secondJointTarget());
-          gripperIsNearGround.set(
-              position == TurretBotPosition.AUTO_REACH_LEFT_BOTTOM
-                  || position == TurretBotPosition.AUTO_REACH_RIGHT_BOTTOM);
+          gripperIsNearGround.set(position == TurretBotPosition.AUTO_REACH_BOTTOM);
         });
   }
 
@@ -630,13 +625,14 @@ public class TurretBot implements Component {
     TriFunction<Double, Double, Double, Double> powerCurve =
         PowerCurves.generatePowerCurve(maxPower, rampSlope);
     double initEncoderValue = drivetrain.avgEncoderValue();
+    double targetEncoderValue = initEncoderValue + (distanceInches * MecanumDrivetrain.TICKS_PER_INCH);
     while (opModeIsActive.get()
-        && Math.abs(drivetrain.avgEncoderValue() - initEncoderValue) > tolerance) {
+        && Math.abs(targetEncoderValue - drivetrain.avgEncoderValue()) > tolerance) {
       drivetrain.setAllPower(
           powerCurve.apply(
               drivetrain.avgEncoderValue(),
-              initEncoderValue,
-              distanceInches * MecanumDrivetrain.TICKS_PER_INCH));
+              distanceInches > 12 ? ((distanceInches - 12) * MecanumDrivetrain.TICKS_PER_INCH) : distanceInches < -12 ? ((distanceInches + 12) * MecanumDrivetrain.TICKS_PER_INCH) : initEncoderValue,
+                  targetEncoderValue));
       update.run();
     }
     drivetrain.setAllPower(0);
