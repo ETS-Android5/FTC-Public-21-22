@@ -31,7 +31,7 @@ public class SingleServoGripper implements ISingleServoGripper {
 
   private void initialize() {
     singleServoGripperServoState =
-        new ServoState(SINGLE_SERVO_GRIPPER_SERVO_NAME, Direction.FORWARD, OPEN_POSITION);
+        new ServoState(SINGLE_SERVO_GRIPPER_SERVO_NAME, Direction.FORWARD, OPEN_POSITION, false);
   }
 
   @Override

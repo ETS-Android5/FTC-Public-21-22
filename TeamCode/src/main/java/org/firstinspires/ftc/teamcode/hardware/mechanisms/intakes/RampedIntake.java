@@ -44,7 +44,8 @@ public class RampedIntake implements IRampedIntake {
 
   private void initialize() {
     intakeMotorState = new MotorState(INTAKE_MOTOR_NAME, Direction.FORWARD);
-    intakeServoState = new ServoState(INTAKE_SERVO_NAME, Direction.FORWARD, LOWERED_POSITION);
+    intakeServoState =
+        new ServoState(INTAKE_SERVO_NAME, Direction.FORWARD, LOWERED_POSITION, false);
   }
 
   @Override

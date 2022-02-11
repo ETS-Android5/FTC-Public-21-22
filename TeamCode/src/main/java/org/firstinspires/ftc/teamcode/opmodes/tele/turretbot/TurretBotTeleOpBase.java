@@ -225,8 +225,8 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   public void onLoop() {
     if (tapeMeasureMode.get()) {
       robot.tapeMeasure.adjustPitch(controller1.leftStickY());
-      robot.tapeMeasure.adjustYaw(controller1.rightStickX());
-      robot.tapeMeasure.setLengthRate(controller1.rightTrigger() - controller1.leftTrigger());
+      robot.tapeMeasure.adjustYaw(controller1.leftStickX());
+      robot.tapeMeasure.setLengthRate(controller1.leftTrigger() - controller1.rightTrigger());
     } else {
       double turnValue = controller1.rightStickX();
       double speed = halfSpeed.get() ? 0.5 : 0.9;

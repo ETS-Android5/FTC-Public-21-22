@@ -30,7 +30,7 @@ public class OuttakeBucket implements IOuttakeBucket {
 
   private void initialize() {
     outtakeServoState =
-        new ServoState(OUTTAKE_BUCKET_SERVO_NAME, Direction.FORWARD, CARRY_POSITION);
+        new ServoState(OUTTAKE_BUCKET_SERVO_NAME, Direction.FORWARD, CARRY_POSITION, false);
   }
 
   @Override

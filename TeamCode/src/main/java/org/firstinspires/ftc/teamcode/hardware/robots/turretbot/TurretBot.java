@@ -47,13 +47,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class TurretBot implements Component {
-  public static final int AUTO_FIRST_JOINT_OFFSET = 70;
-  public static final int TELE_FIRST_JOINT_OFFSET = 260;
+  public static final int AUTO_FIRST_JOINT_OFFSET = 50;
+  public static final int TELE_FIRST_JOINT_OFFSET = 210;
   private static final int ELBOW_JOINT_MOVEMENT_DELAY_MS = 250;
 
-  private static final int liftTolerance = 8;
+  private static final int liftTolerance = 12;
   private static final int nonIntakeLiftTolerance = 32;
-  private static final int turretTolerance = 6;
+  private static final int turretTolerance = 9;
   private static final int nonIntakeTurretTolerance = 18;
 
   public final IMecanumDrivetrain drivetrain = new MecanumDrivetrain();
@@ -133,7 +133,7 @@ public class TurretBot implements Component {
   @Override
   public List<? super State> getNextState() {
     List<? super State> states = new LinkedList<>();
-    Arrays.asList(drivetrain, intake, carouselSpinner, turret, lift, gripper)
+    Arrays.asList(drivetrain, intake, carouselSpinner, tapeMeasure, turret, lift, gripper)
         .forEach((component) -> component.getNextState().forEach((s) -> states.add((State) s)));
     return states;
   }
@@ -359,15 +359,13 @@ public class TurretBot implements Component {
                 position.turretTarget(alliance.get()),
                 position.firstJointTarget(),
                 true,
-                () ->
-                    afterTimedAction(
-                        dropFreight(),
-                        () -> {
-                          if (!isForAutonomous) {
-                            intake.beginIntaking();
-                          }
-                          gripperIsNearGround.set(false);
-                        })));
+                    () -> {
+                      dropFreight();
+                      if (!isForAutonomous) {
+                        intake.beginIntaking();
+                      }
+                      gripperIsNearGround.set(false);
+                    }));
   }
 
   private void goToIntakeHoverPosition(TurretBotPosition position, boolean inTippedMode) {
@@ -625,14 +623,19 @@ public class TurretBot implements Component {
     TriFunction<Double, Double, Double, Double> powerCurve =
         PowerCurves.generatePowerCurve(maxPower, rampSlope);
     double initEncoderValue = drivetrain.avgEncoderValue();
-    double targetEncoderValue = initEncoderValue + (distanceInches * MecanumDrivetrain.TICKS_PER_INCH);
+    double targetEncoderValue =
+        initEncoderValue + (distanceInches * MecanumDrivetrain.TICKS_PER_INCH);
     while (opModeIsActive.get()
         && Math.abs(targetEncoderValue - drivetrain.avgEncoderValue()) > tolerance) {
       drivetrain.setAllPower(
           powerCurve.apply(
               drivetrain.avgEncoderValue(),
-              distanceInches > 12 ? ((distanceInches - 12) * MecanumDrivetrain.TICKS_PER_INCH) : distanceInches < -12 ? ((distanceInches + 12) * MecanumDrivetrain.TICKS_PER_INCH) : initEncoderValue,
-                  targetEncoderValue));
+              distanceInches > 12
+                  ? ((distanceInches - 12) * MecanumDrivetrain.TICKS_PER_INCH)
+                  : distanceInches < -12
+                      ? ((distanceInches + 12) * MecanumDrivetrain.TICKS_PER_INCH)
+                      : initEncoderValue,
+              targetEncoderValue));
       update.run();
     }
     drivetrain.setAllPower(0);

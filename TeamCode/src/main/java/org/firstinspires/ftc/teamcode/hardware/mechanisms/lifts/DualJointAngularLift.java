@@ -66,7 +66,7 @@ public class DualJointAngularLift implements IDualJointAngularLift {
                                           / TICKS_IN_90_DEGREES)
                                       * Math.PI
                                       * 0.5);
-                          anglePower += 0.04;
+                          anglePower += 0.06;
                           return powerResult * anglePower * (powerResult < 0 ? 0.333333 : 1);
                         }))
             .withPowerAndTickRateRelation((power) -> power * 2800)
@@ -95,7 +95,7 @@ public class DualJointAngularLift implements IDualJointAngularLift {
                 });
     liftJointTwoServoState =
         new ServoState(
-            LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, LIFT_JOINT_TWO_INTAKE_POSITION);
+            LIFT_JOINT_TWO_SERVO_NAME, Direction.FORWARD, LIFT_JOINT_TWO_INTAKE_POSITION, false);
   }
 
   @Override

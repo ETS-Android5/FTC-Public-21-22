@@ -55,7 +55,7 @@ public enum TurretBotPosition {
   public int firstJointTarget() {
     switch (this) {
       case INTAKE_POSITION:
-        return -230;
+        return -210;
       case SHARED_CLOSE_POSITION:
       case SHARED_MIDDLE_POSITION:
         return 10;
@@ -70,15 +70,15 @@ public enum TurretBotPosition {
       case ALLIANCE_BOTTOM_POSITION:
         return -460;
       case AUTO_REACH_BOTTOM:
-        return -485;
+        return -465;
       case ALLIANCE_MIDDLE_POSITION:
         return -100;
       case AUTO_REACH_MIDDLE:
-        return -125;
+        return -105;
       case ALLIANCE_TOP_POSITION:
         return 540;
       case AUTO_REACH_TOP:
-        return 115;
+        return 135;
       case TEAM_MARKER_GRAB_POSITION:
         return -570;
       case TEAM_MARKER_DEPOSIT_POSITION:

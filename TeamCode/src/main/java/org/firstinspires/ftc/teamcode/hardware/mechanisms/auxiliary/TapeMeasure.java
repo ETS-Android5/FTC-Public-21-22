@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
@@ -17,17 +18,20 @@ public class TapeMeasure implements ITapeMeasure {
   private static final String YAW_SERVO_NAME = "TAPE_MEASURE_YAW_SERVO";
   private static final String PITCH_SERVO_NAME = "TAPE_MEASURE_PITCH_SERVO";
   private static final String LENGTH_SERVO_NAME = "TAPE_MEASURE_LENGTH_SERVO";
-  private static final double SERVO_INIT_SPEED = 0.5; // 0 is full reverse and 1 is full forwards
+  private static final double SERVO_INIT_SPEED = 0;
   private static final double ADJUSTMENT_RATE = 0.001;
 
   @Hardware(name = YAW_SERVO_NAME)
+  @SuppressWarnings("unused")
   public Servo yawServo;
 
-  @Hardware(name = YAW_SERVO_NAME)
+  @Hardware(name = PITCH_SERVO_NAME)
+  @SuppressWarnings("unused")
   public Servo pitchServo;
 
-  @Hardware(name = YAW_SERVO_NAME)
-  public Servo lengthServo;
+  @Hardware(name = LENGTH_SERVO_NAME)
+  @SuppressWarnings("unused")
+  public CRServo lengthServo;
 
   private IServoState yawServoState;
   private IServoState pitchServoState;
@@ -38,9 +42,13 @@ public class TapeMeasure implements ITapeMeasure {
   }
 
   private void initialize() {
-    yawServoState = new ServoState(YAW_SERVO_NAME, Direction.FORWARD, SERVO_INIT_SPEED);
-    pitchServoState = new ServoState(PITCH_SERVO_NAME, Direction.FORWARD, SERVO_INIT_SPEED);
-    lengthServoState = new ServoState(LENGTH_SERVO_NAME, Direction.FORWARD, SERVO_INIT_SPEED);
+    yawServoState =
+        new ServoState(YAW_SERVO_NAME, Direction.FORWARD, SERVO_INIT_SPEED, false)
+            .withPosition(0.56);
+    pitchServoState =
+        new ServoState(PITCH_SERVO_NAME, Direction.FORWARD, SERVO_INIT_SPEED, false)
+            .withPosition(0.5);
+    lengthServoState = new ServoState(LENGTH_SERVO_NAME, Direction.FORWARD, SERVO_INIT_SPEED, true);
   }
 
   @Override
@@ -61,22 +69,20 @@ public class TapeMeasure implements ITapeMeasure {
 
   @Override
   public synchronized void adjustYaw(double amt) {
-    yawServoState =
-        yawServoState.withPosition(yawServoState.getPosition() + (amt * ADJUSTMENT_RATE));
+    double position = yawServoState.getPosition() - (amt * ADJUSTMENT_RATE);
+    position = position < 0 ? 0 : position > 1 ? 1 : position;
+    yawServoState = yawServoState.withPosition(position);
   }
 
   @Override
   public synchronized void adjustPitch(double amt) {
-    pitchServoState =
-        pitchServoState.withPosition(pitchServoState.getPosition() + (amt * ADJUSTMENT_RATE));
+    double position = pitchServoState.getPosition() - (amt * ADJUSTMENT_RATE);
+    position = position < 0 ? 0 : position > 1 ? 1 : position;
+    pitchServoState = pitchServoState.withPosition(position);
   }
 
   @Override
   public synchronized void setLengthRate(double amt) {
-    lengthServoState = lengthServoState.withPosition(centerStickValueForServo(amt));
-  }
-
-  private double centerStickValueForServo(double stickValue) {
-    return (stickValue / 2.0) + 0.5;
+    lengthServoState = lengthServoState.withPosition(amt < -1 ? -1 : amt > 1 ? 1 : amt);
   }
 }

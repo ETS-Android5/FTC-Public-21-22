@@ -64,40 +64,42 @@ public class OutreachBot extends LinearOpMode {
       double g2LX = gamepad2.left_stick_x;
 
       if (g2LY > 0
-          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeUD) > tapeMeasureUDServoTickMS / g2LY) { // tips tape up
+          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeUD)
+              > tapeMeasureUDServoTickMS / g2LY) { // tips tape up
         tapeMeasureUDServoPosition += tapeMeasureUDServoTick;
         udServo.setPosition(tapeMeasureUDServoPosition);
         buttonTimerPrevLoopTimeUD = buttonTimerCurrentLoopTime;
       }
 
       if (g2LY < 0
-          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeUD) > tapeMeasureUDServoTickMS / -g2LY) { // tips tape down
+          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeUD)
+              > tapeMeasureUDServoTickMS / -g2LY) { // tips tape down
         tapeMeasureUDServoPosition -= tapeMeasureUDServoTick;
         udServo.setPosition(tapeMeasureUDServoPosition);
         buttonTimerPrevLoopTimeUD = buttonTimerCurrentLoopTime;
       }
 
       if (g2LX > 0
-          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeRL) > tapeMeasureRLServoTickMS / g2LX) { // turn right
+          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeRL)
+              > tapeMeasureRLServoTickMS / g2LX) { // turn right
         tapeMeasureRLServoPosition -= tapeMeasureRLServoTick;
         rlServo.setPosition(tapeMeasureRLServoPosition);
         buttonTimerPrevLoopTimeRL = buttonTimerCurrentLoopTime;
       }
 
       if (g2LX < 0
-          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeRL) > tapeMeasureRLServoTickMS / -g2LX) { // turn left
+          && (buttonTimerCurrentLoopTime - buttonTimerPrevLoopTimeRL)
+              > tapeMeasureRLServoTickMS / -g2LX) { // turn left
         tapeMeasureRLServoPosition += tapeMeasureRLServoTick;
         rlServo.setPosition(tapeMeasureRLServoPosition);
         buttonTimerPrevLoopTimeRL = buttonTimerCurrentLoopTime;
       }
-
 
       if (gamepad2.right_trigger > 0) { // extends the tape measure
         extensionServo.setPosition(0);
       } else if (gamepad2.left_trigger > 0) { // retracts the tape measure
         extensionServo.setPosition(1);
       } else extensionServo.setPosition(.5); // stopped
-
 
       double g1Y = -gamepad1.left_stick_y;
       double g1X = gamepad1.left_stick_x;
@@ -120,8 +122,6 @@ public class OutreachBot extends LinearOpMode {
       telemetry.addData("RL Servo: ", tapeMeasureRLServoPosition);
       telemetry.addData("UD Servo: ", tapeMeasureUDServoPosition);
       telemetry.update();
-
-
     }
   }
 }

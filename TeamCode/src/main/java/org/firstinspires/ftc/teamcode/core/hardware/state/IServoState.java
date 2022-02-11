@@ -17,4 +17,9 @@ public abstract class IServoState extends State {
   public abstract double getPosition();
 
   public abstract IServoState withPosition(double position);
+
+  @Observable(key = "ContinuousRotation")
+  public abstract boolean isContinuousRotation();
+
+  public abstract IServoState withContinuousRotation(boolean isContinuousRotation);
 }

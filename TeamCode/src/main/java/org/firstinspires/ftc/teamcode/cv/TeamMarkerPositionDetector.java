@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.cv;
 
-import android.util.Log;
-
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -34,11 +32,9 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
       crop =
           new Rect(
               0,
-              (int) Math.round(resized.height() / 2.1),
+              (int) Math.round(resized.height() / 2.0),
               resized.width(),
-              (int)
-                  Math.round(
-                      resized.height() - (resized.height() / 2.1) - (resized.height() / 4.7)));
+              (int) Math.round(resized.height() / 2.0));
     } else {
       crop = new Rect(0, 0, resized.width(), resized.height() / 2);
     }
@@ -48,7 +44,7 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
     Imgproc.cvtColor(cropped, hsvMat, Imgproc.COLOR_RGB2HSV);
     // Create a binary image highlighting the areas of the image containing the marker color
     Mat mask = new Mat();
-    Core.inRange(hsvMat, new Scalar(16, 90, 40), new Scalar(26, 180, 200), mask);
+    Core.inRange(hsvMat, new Scalar(20, 80, 100), new Scalar(30, 195, 180), mask);
     // Remove noise by eroding and dilating the image with this kernel
     Mat kernel = Mat.ones(1, 1, CvType.CV_8UC1);
     Imgproc.erode(mask, mask, kernel);
@@ -62,7 +58,6 @@ public class TeamMarkerPositionDetector implements ITeamMarkerPositionDetector {
         }
       }
     }
-    Log.d("CV", "Discovered " + xPositions.size() + " matching pixels");
     return findTeamMarker(xPositions, mask.width(), viewPortDescription);
   }
 

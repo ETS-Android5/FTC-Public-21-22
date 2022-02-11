@@ -52,7 +52,6 @@ public class Webcam implements FtcCamera {
   @SuppressWarnings("unused")
   public void init(WebcamName arg) {
     init();
-    Log.d("WEBCAM", "INITIALIZED");
   }
 
   @Override
@@ -151,15 +150,15 @@ public class Webcam implements FtcCamera {
   public void deinit() {
     try {
       if (session != null) {
-        session.stopCapture();
-        session.close();
         synchronized (this) {
+          session.stopCapture();
+          session.close();
           session = null;
         }
       }
       if (camera != null) {
-        camera.close();
         synchronized (this) {
+          camera.close();
           camera = null;
         }
       }

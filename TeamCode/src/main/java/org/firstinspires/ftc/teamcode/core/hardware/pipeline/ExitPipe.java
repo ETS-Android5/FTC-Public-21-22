@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.core.hardware.pipeline;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -68,13 +69,24 @@ public class ExitPipe extends HardwarePipeline {
   @SuppressWarnings("all")
   private void processServo(IServoState nextState, Map<String, Object> hardware) {
     IServoState currentState = State.currentStateOf(nextState.getName());
-    Servo servoObj = (Servo) hardware.get(nextState.getName());
-    boolean noState = currentState == null;
-    if (noState || currentState.getDirection() != nextState.getDirection()) {
-      servoObj.setDirection(nextState.getDirection().primitiveServoConversion());
-    }
-    if (noState || currentState.getPosition() != nextState.getPosition()) {
-      servoObj.setPosition(nextState.getPosition());
+    if (!nextState.isContinuousRotation()) {
+      Servo servoObj = (Servo) hardware.get(nextState.getName());
+      boolean noState = currentState == null;
+      if (noState || currentState.getDirection() != nextState.getDirection()) {
+        servoObj.setDirection(nextState.getDirection().primitiveServoConversion());
+      }
+      if (noState || currentState.getPosition() != nextState.getPosition()) {
+        servoObj.setPosition(nextState.getPosition());
+      }
+    } else {
+      CRServo servoObj = (CRServo) hardware.get(nextState.getName());
+      boolean noState = currentState == null;
+      if (noState || currentState.getDirection() != nextState.getDirection()) {
+        servoObj.setDirection(nextState.getDirection().primitiveConversion());
+      }
+      if (noState || currentState.getPosition() != nextState.getPosition()) {
+        servoObj.setPower(nextState.getPosition());
+      }
     }
     nextState.makeCurrent();
   }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.core.magic.runtime;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -30,6 +31,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
       new Class<?>[] {
         DcMotorEx.class,
         Servo.class,
+        CRServo.class,
         WebcamName.class,
         Rev2mDistanceSensor.class,
         BNO055IMU.class,
@@ -43,7 +45,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
           DcMotorEx.class,
         },
         {
-          Servo.class,
+          Servo.class, CRServo.class,
         },
         {
           WebcamName.class,
@@ -144,6 +146,15 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
         field.getAnnotationTargetField().set(field.getAnnotationContainer(), servo);
         initializedObjects.put(annotation.name(), servo);
         completePostInit(field, servo, Servo.class);
+      } catch (IllegalAccessException ignored) {
+      }
+    } else if (hardwareObj == CRServo.class) {
+      CRServo servo = hardwareMap.crservo.get(annotation.name());
+      servo.setDirection(annotation.direction().primitiveConversion());
+      try {
+        field.getAnnotationTargetField().set(field.getAnnotationContainer(), servo);
+        initializedObjects.put(annotation.name(), servo);
+        completePostInit(field, servo, CRServo.class);
       } catch (IllegalAccessException ignored) {
       }
     } else if (hardwareObj == WebcamName.class) {
