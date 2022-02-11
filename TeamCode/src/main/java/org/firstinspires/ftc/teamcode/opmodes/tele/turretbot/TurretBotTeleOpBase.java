@@ -103,8 +103,13 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
     controller1.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
 
-    controller1.registerOnPressedCallback(
-        () -> tapeMeasureMode.set(!tapeMeasureMode.get()), true, BooleanSurface.DPAD_DOWN);
+    controller1.registerOnPressedCallback(() -> {
+        boolean prev = tapeMeasureMode.get();
+        tapeMeasureMode.set(!prev);
+        if (prev) {
+            robot.tapeMeasure.setLengthRate(0);
+        }
+    }, true, BooleanSurface.DPAD_DOWN);
 
     controller2.registerOnPressedCallback(
         () -> {
