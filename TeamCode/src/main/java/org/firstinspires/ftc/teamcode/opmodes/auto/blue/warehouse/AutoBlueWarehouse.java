@@ -47,7 +47,7 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
             });
     worker.start();
     robot.gyro.startSampling();
-    robot.lift.setArmTwoPosition(0.86);
+    robot.lift.setArmTwoPosition(0.885);
     int delay = robot.grabFreight();
     processChanges();
     wait(delay);
@@ -100,7 +100,7 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     wait(1000);
     robot.lift.setArmOnePosition(570);
     wait(1000);
-    robot.lift.setArmTwoPosition(0.86);
+    robot.lift.setArmTwoPosition(0.885);
     wait(1000);
     robot.turret.turnToPosition(robot.turretAdjustment.get());
     wait(1000);
@@ -118,7 +118,7 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     wait(1000);
     robot.lift.setArmOnePosition(570);
     wait(1000);
-    robot.lift.setArmTwoPosition(0.86);
+    robot.lift.setArmTwoPosition(0.885);
     wait(1000);
     robot.turret.turnToPosition(robot.turretAdjustment.get());
     wait(1000);
@@ -136,7 +136,7 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     wait(1000);
     robot.lift.setArmOnePosition(570);
     wait(1000);
-    robot.lift.setArmTwoPosition(0.86);
+    robot.lift.setArmTwoPosition(0.885);
     wait(1000);
     robot.turnToHeading(90, 0.5, super::opModeIsActive, super::processChanges);
     retreat();

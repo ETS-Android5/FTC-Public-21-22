@@ -18,7 +18,7 @@ public class Turret implements ITurret {
   public static final String TURRET_MOTOR_NAME = "TURRET_MOTOR";
   public static final int DEFAULT_ADJUSTMENT_THRESHOLD = 40;
   public static final double DEGREES_FRONT = 0;
-  public static final int DEGREES_DIAGONAL = 136;
+  public static final int DEGREES_DIAGONAL = 135;
   public static final int DEGREES_RIGHT = 90;
   public static final int DEGREES_BACK = 180;
   public static final double DEGREES_TO_TICKS = 7.7394444444;

@@ -199,7 +199,7 @@ public class TurretBot implements Component {
         andThen.run();
       }
     } else {
-      int liftJointOneMaximizedTarget = Math.max(liftJointOneTarget, forIntake ? 90 : 0);
+      int liftJointOneMaximizedTarget = Math.max(liftJointOneTarget, forIntake ? 90 : 30);
       setLiftToPosition(liftJointOneMaximizedTarget, TurretBot.liftTolerance(forIntake))
           .andAfterMotorIsBeyond(
               (int)
@@ -591,6 +591,15 @@ public class TurretBot implements Component {
       double target, double tolerance, Supplier<Boolean> opModeIsActive, Runnable update) {
     TriFunction<Double, Double, Double, Double> powerCurve =
         PowerCurves.generatePowerCurve(0.25, .5);
+    turnToHeading(target, tolerance, powerCurve, opModeIsActive, update);
+  }
+
+  public void turnToHeading(
+      double target,
+      double tolerance,
+      TriFunction<Double, Double, Double, Double> powerCurve,
+      Supplier<Boolean> opModeIsActive,
+      Runnable update) {
     Double currentHeading =
         InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
     double initialHeading = currentHeading;

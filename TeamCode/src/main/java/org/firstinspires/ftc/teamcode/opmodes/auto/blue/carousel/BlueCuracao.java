@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.core.fn.PowerCurves;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
 import org.firstinspires.ftc.teamcode.cv.CameraPosition;
@@ -47,7 +48,7 @@ public class BlueCuracao extends EnhancedAutonomous {
             });
     worker.start();
     robot.gyro.startSampling();
-    robot.lift.setArmTwoPosition(0.86);
+    robot.lift.setArmTwoPosition(0.885);
     int delay = robot.grabFreight();
     processChanges();
     wait(delay);
@@ -104,23 +105,28 @@ public class BlueCuracao extends EnhancedAutonomous {
     wait(1000);
     robot.lift.setArmOnePosition(570);
     wait(1000);
-    robot.lift.setArmTwoPosition(0.86);
+    robot.lift.setArmTwoPosition(0.885);
     wait(1000);
     robot.turret.turnToPosition(robot.turretAdjustment.get());
     wait(1000);
     robot.driveForward(.5, 0.5, 9, 20, super::opModeIsActive, super::processChanges);
-    robot.turnToHeading(-93, 0.5, super::opModeIsActive, super::processChanges);
+    robot.turnToHeading(-94, 0.5, super::opModeIsActive, super::processChanges);
     wait(300);
-    robot.turnToHeading(-93, 0.5, super::opModeIsActive, super::processChanges);
+    robot.turnToHeading(-94, 0.5, super::opModeIsActive, super::processChanges);
     retreat();
   }
 
   private void retreat() {
     robot.driveForward(.5, 1.5, -32, 20, super::opModeIsActive, super::processChanges);
     wait(500);
-    robot.turnToHeading(-95, 0.5, super::opModeIsActive, super::processChanges);
+    robot.turnToHeading(
+        -95,
+        0.5,
+        PowerCurves.generatePowerCurve(.3, .3),
+        super::opModeIsActive,
+        super::processChanges);
     robot.carouselSpinner.spinBackward();
-    wait(4000);
+    wait(4250);
     robot.drivetrain.driveBySticks(0.6, 0, 0);
     wait(1100);
     robot.driveForward(.3, 1.5, -2, 20, super::opModeIsActive, super::processChanges);

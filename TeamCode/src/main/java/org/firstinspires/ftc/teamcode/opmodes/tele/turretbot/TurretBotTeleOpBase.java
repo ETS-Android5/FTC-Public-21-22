@@ -21,7 +21,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private final AtomicBoolean allianceHubMode = new AtomicBoolean(false);
   private final AtomicBoolean tippedMode = new AtomicBoolean(false);
   private final List<ScheduledFuture<?>> futures = new LinkedList<>();
-  private boolean firstTime = true;
 
   public TurretBotTeleOpBase(Alliance alliance) {
     super(new TurretBot(alliance, TurretBot.TELE_FIRST_JOINT_OFFSET, false));
@@ -85,11 +84,9 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         () -> {
           robot.clearFutureEvents();
           TurretBotPosition currentPosition = robot.getSetPosition();
-          if (firstTime
-              || currentPosition == TurretBotPosition.INTAKE_HOVER_POSITION
+          if (currentPosition == TurretBotPosition.INTAKE_HOVER_POSITION
               || currentPosition == TurretBotPosition.INTAKE_POSITION) {
             robot.goToPosition(TurretBotPosition.INTAKE_POSITION, tippedMode.get());
-            firstTime = false;
           } else {
             robot.afterTimedAction(
                 robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
@@ -103,7 +100,14 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         BooleanSurface.A);
 
     controller1.registerOnPressedCallback(
-        () -> robot.tapeMeasure.setYaw(0), true, BooleanSurface.B);
+        () -> {
+          robot.tapeMeasure.setYaw(0.15);
+          robot.afterTimedAction(250, () -> robot.tapeMeasure.setPitch(0.4));
+          robot.afterTimedAction(500, () -> robot.tapeMeasure.setLengthRate(-1));
+          robot.afterTimedAction(1250, () -> robot.tapeMeasure.setLengthRate(0));
+        },
+        true,
+        BooleanSurface.B);
 
     controller1.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
 
@@ -120,7 +124,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
     controller2.registerOnPressedCallback(
         () -> {
-          firstTime = false;
           robot.clearFutureEvents();
           robot.afterTimedAction(
               robot.grabFreight(),
@@ -162,7 +165,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     // Mode specific controls
     controller2.registerOnPressedCallback(
         () -> {
-          firstTime = false;
           robot.clearFutureEvents();
           TurretBotPosition position = botPositionFor(BooleanSurface.B);
           robot.afterTimedAction(
@@ -176,7 +178,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         BooleanSurface.B);
     controller2.registerOnPressedCallback(
         () -> {
-          firstTime = false;
           robot.clearFutureEvents();
           TurretBotPosition position = botPositionFor(BooleanSurface.X);
           robot.afterTimedAction(
@@ -204,7 +205,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         BooleanSurface.Y);
     controller1.registerOnPressedCallback(
         () -> {
-          firstTime = false;
           robot.clearFutureEvents();
           robot.intake.stop();
           robot.goToPosition(TurretBotPosition.TEAM_MARKER_GRAB_POSITION, tippedMode.get());
@@ -213,7 +213,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         BooleanSurface.DPAD_LEFT);
     controller1.registerOnPressedCallback(
         () -> {
-          firstTime = false;
           robot.clearFutureEvents();
           TurretBotPosition position = TurretBotPosition.TEAM_MARKER_DEPOSIT_POSITION;
           robot.afterTimedAction(
@@ -228,7 +227,8 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> tippedMode.set(!tippedMode.get()), true, BooleanSurface.DPAD_DOWN);
     robot.turret.turnToFront();
-    robot.lift.setArmOnePosition(0);
+    robot.lift.setArmOnePosition(TurretBotPosition.INTAKE_POSITION.firstJointTarget());
+    robot.gripper.open();
     hardwarePipeline.process(initializedHardware, new StateFilterResult(robotObject));
     hardwarePipeline.process(initializedHardware, new StateFilterResult(robotObject));
   }

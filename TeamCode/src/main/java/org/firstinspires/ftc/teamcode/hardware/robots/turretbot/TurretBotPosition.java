@@ -91,31 +91,30 @@ public enum TurretBotPosition {
   public double secondJointTarget() {
     switch (this) {
       case SHARED_CLOSE_POSITION:
-        return 0.68;
+        return 0.705;
       case SHARED_MIDDLE_POSITION:
-        return 0.48;
+        return 0.505;
       case SHARED_FAR_POSITION:
       case TIPPED_FAR_POSITION:
-        return 0.20;
+      case AUTO_REACH_MIDDLE:
+        return 0.225;
       case TIPPED_CLOSE_POSITION:
-        return 0.66;
+        return 0.685;
       case TIPPED_MIDDLE_POSITION:
-        return 0.44;
+        return 0.465;
       case ALLIANCE_BOTTOM_POSITION:
       case TEAM_MARKER_GRAB_POSITION:
-        return 0.08;
+        return 0.105;
       case AUTO_REACH_BOTTOM:
-        return 0.11;
+        return 0.135;
       case ALLIANCE_MIDDLE_POSITION:
-        return 0.23;
-      case AUTO_REACH_MIDDLE:
-        return 0.2;
+        return 0.255;
       case ALLIANCE_TOP_POSITION:
-        return 0.52;
+        return 0.545;
       case AUTO_REACH_TOP:
-        return 0.25;
+        return 0.275;
       case TEAM_MARKER_DEPOSIT_POSITION:
-        return 0.38;
+        return 0.405;
       default:
         return DualJointAngularLift.LIFT_JOINT_TWO_INTAKE_POSITION;
     }

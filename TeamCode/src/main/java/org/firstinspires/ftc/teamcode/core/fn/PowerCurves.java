@@ -35,7 +35,7 @@ public class PowerCurves {
           if (currentTicks > targetTicks) return 0.0; // We're past it, stop
           if (currentTicks < startingTicks) return 0.3;
           double percentProgress = (currentTicks - startingTicks) / (targetTicks - startingTicks);
-          if (percentProgress > .65) return 1.0;
+          if (percentProgress > .65) return 0.85;
           if (percentProgress > .1) return 0.4;
           return 0.3;
         } else {
@@ -43,7 +43,7 @@ public class PowerCurves {
           if (currentTicks < targetTicks) return 0.0;
           if (currentTicks > startingTicks) return -0.3;
           double percentProgress = (startingTicks - currentTicks) / (startingTicks - targetTicks);
-          if (percentProgress > .65) return -1.0;
+          if (percentProgress > .65) return -0.85;
           if (percentProgress > .1) return -0.4;
           return -0.3;
         }
