@@ -1,11 +1,23 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto.blue.carousel;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedAutonomous;
+import org.firstinspires.ftc.teamcode.cv.CameraPosition;
+import org.firstinspires.ftc.teamcode.cv.OpenCVWrapper;
+import org.firstinspires.ftc.teamcode.cv.TeamMarkerPosition;
+import org.firstinspires.ftc.teamcode.cv.TeamMarkerPositionDetector;
+import org.firstinspires.ftc.teamcode.cv.ViewPortDescription;
+import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.Turret;
 import org.firstinspires.ftc.teamcode.hardware.mechanisms.lifts.DualJointAngularLift;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBot;
+import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBotPosition;
+import org.opencv.core.Mat;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 @Autonomous(name = "CB_AUTO_BlueCuracao")
 @SuppressWarnings("unused")
@@ -18,48 +30,134 @@ public class BlueCuracao extends EnhancedAutonomous {
   }
 
   @Override
-  public void onInitPressed() {}
+  public void onInitPressed() {
+    OpenCVWrapper.load();
+  }
 
   @Override
   public void onStartPressed() {
+    AtomicReference<Mat> img = new AtomicReference<>();
+    AtomicReference<TeamMarkerPosition> teamMarkerPosition =
+            new AtomicReference<>(TeamMarkerPosition.RIGHT);
+    Thread worker =
+            new Thread(
+                    () -> {
+                      robot.webcam.start();
+                      img.set(robot.webcam.grabFrame());
+                      new Thread(robot.webcam::deinit).start();
+                    });
+    worker.start();
+    robot.gyro.startSampling();
     robot.lift.setArmTwoPosition(0.86);
     int delay = robot.grabFreight();
     processChanges();
-    sleep(delay);
-    robot.lift.setArmOnePosition(550);
-    processChanges();
-    robot.drivetrain.setAllPower(0.25);
-    double startAvg = robot.drivetrain.avgEncoderValue();
-    while (opModeIsActive() && robot.drivetrain.avgEncoderValue() - startAvg <= 700) {
-      processChanges();
+    wait(delay);
+    robot.lift.setArmOnePosition(570);
+    robot.turretAdjustment.addAndGet(-10 * Turret.DEGREES_TO_TICKS);
+    try {
+      worker.join();
+      worker =
+              new Thread(
+                      () ->
+                              teamMarkerPosition.set(
+                                      new TeamMarkerPositionDetector()
+                                              .calculateTeamMarkerPosition(
+                                                      img.get(),
+                                                      CameraPosition.REAR_LOW_AND_CENTERED,
+                                                      ViewPortDescription.LEFT_TWO_IN_VIEW)));
+      worker.start();
+    } catch (InterruptedException e) {
+      Log.e("TURRETBOT", "ERROR", e);
     }
-    robot.drivetrain.driveBySticks(0.5, 0, 0);
-    long strafeStart = System.currentTimeMillis();
-    while (opModeIsActive() && System.currentTimeMillis() - strafeStart < 750) {
-      processChanges();
+    wait(1000);
+    try {
+      worker.join();
+    } catch (InterruptedException e) {
+      Log.e("TURRETBOT", "ERROR", e);
     }
-    robot.drivetrain.setAllPower(-0.25);
-    robot.lift.setArmTwoPosition(0.59);
-    startAvg = robot.drivetrain.avgEncoderValue();
-    while (opModeIsActive() && startAvg - robot.drivetrain.avgEncoderValue() <= 430) {
-      processChanges();
+    switch (teamMarkerPosition.get()) {
+      case LEFT:
+        Log.d("TURRETBOT", "SAW LEFT");
+        handleBottomPosition();
+        break;
+      case CENTER:
+        Log.d("TURRETBOT", "SAW CENTER");
+        handleMiddlePosition();
+        break;
+      case RIGHT:
+        Log.d("TURRETBOT", "SAW RIGHT");
+        handleTopPosition();
+        break;
     }
-    robot.drivetrain.setAllPower(-0.02);
-    robot.lift.setArmOnePosition(-130);
-    processChanges();
-    robot.carouselSpinner.spinBackward();
-    long spinStart = System.currentTimeMillis();
-    while (opModeIsActive() && System.currentTimeMillis() - spinStart < 4000) {
-      processChanges();
-    }
-    robot.lift.setArmTwoPosition(DualJointAngularLift.LIFT_JOINT_TWO_INTAKE_POSITION);
-    robot.drivetrain.setAllPower(0.25);
-    startAvg = robot.drivetrain.avgEncoderValue();
-    while (opModeIsActive() && robot.drivetrain.avgEncoderValue() - startAvg <= 640) {
-      processChanges();
-    }
+  }
+
+  private void handleBottomPosition() {
+    robot.goToPosition(TurretBotPosition.AUTO_REACH_BOTTOM, false);
+    wait(2000);
+    robot.driveForward(.5, 0.5, -19, 20, super::opModeIsActive, super::processChanges);
+    wait(robot.dropFreight());
+    robot.driveForward(.5, 0.5, 12, 20, super::opModeIsActive, super::processChanges);
+    robot.turret.turnToPosition(Turret.TICKS_RIGHT);
+    wait(1000);
+    robot.lift.setArmOnePosition(570);
+    wait(1000);
+    robot.lift.setArmTwoPosition(0.86);
+    wait(1000);
+    robot.turret.turnToPosition(robot.turretAdjustment.get());
+    wait(1000);
+    robot.turnToHeading(-90, 0.5, super::opModeIsActive, super::processChanges);
+    retreat();
+  }
+
+  private void handleMiddlePosition() {
+    robot.goToPosition(TurretBotPosition.AUTO_REACH_MIDDLE, false);
+    wait(1000);
+    robot.driveForward(.5, 0.5, -19, 20, super::opModeIsActive, super::processChanges);
+    wait(robot.dropFreight());
+    robot.driveForward(.5, 0.5, 12, 20, super::opModeIsActive, super::processChanges);
+    robot.turret.turnToPosition(Turret.TICKS_RIGHT);
+    wait(1000);
+    robot.lift.setArmOnePosition(570);
+    wait(1000);
+    robot.lift.setArmTwoPosition(0.86);
+    wait(1000);
+    robot.turret.turnToPosition(robot.turretAdjustment.get());
+    wait(1000);
+    robot.turnToHeading(-90, 0.5, super::opModeIsActive, super::processChanges);
+    retreat();
+  }
+
+  private void handleTopPosition() {
+    robot.goToPosition(TurretBotPosition.AUTO_REACH_TOP, false);
+    wait(1000);
+    robot.driveForward(.5, 0.5, -19, 20, super::opModeIsActive, super::processChanges);
+    wait(robot.dropFreight());
+    robot.driveForward(.5, 0.5, 6, 20, super::opModeIsActive, super::processChanges);
+    robot.turret.turnToPosition(robot.turretAdjustment.get());
+    wait(1000);
+    robot.lift.setArmOnePosition(570);
+    wait(1000);
+    robot.lift.setArmTwoPosition(0.86);
+    wait(1000);
+    robot.turnToHeading(177, 0.5, super::opModeIsActive, super::processChanges);
+    retreat();
+  }
+
+  private void retreat() {
+    robot.drivetrain.driveBySticks(0.6, 0, 0);
+    wait(1300);
     robot.drivetrain.setAllPower(0);
-    processChanges();
+    wait(500);
+    robot.driveForward(.5, 1.5, -6, 20, super::opModeIsActive, super::processChanges);
+    robot.carouselSpinner.spinBackward();
+    wait(4000);
+    robot.driveForward(.5, 1.5, 12, 20, super::opModeIsActive, super::processChanges);
+    robot.intake.beginIntaking();
+    robot.lift.setArmTwoPosition(TurretBotPosition.INTAKE_POSITION.secondJointTarget());
+    wait(250);
+    robot.intake.stop();
+    robot.goToPosition(TurretBotPosition.INTAKE_POSITION, false);
+    wait(4000);
   }
 
   @Override
