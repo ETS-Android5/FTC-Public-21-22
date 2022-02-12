@@ -6,4 +6,6 @@ public interface HardwareMapDependentReflectionBasedMagicRuntime
     extends ReflectionBasedMagicRuntime {
 
   void setHardwareMap(HardwareMap hardwareMap);
+
+  void lateInit(String deviceName);
 }

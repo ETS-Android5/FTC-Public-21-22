@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.core.Namable;
 import org.firstinspires.ftc.teamcode.core.annotations.PostInit;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.LateInit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -58,6 +59,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
 
   private final Object robotObject;
   private final ConcurrentHashMap<String, Object> initializedObjects;
+  private final ConcurrentHashMap<String, Runnable> lateInitializables;
   private final List<AnnotationPair> hardwareFields;
   private final boolean isAutonomous;
   private HardwareMap hardwareMap;
@@ -68,6 +70,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
       boolean isAutonomous) {
     this.robotObject = robotObject;
     this.initializedObjects = initializedObjects;
+    this.lateInitializables = new ConcurrentHashMap<>();
     this.hardwareFields = new LinkedList<>();
     this.isAutonomous = isAutonomous;
   }
@@ -75,6 +78,15 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
   @Override
   public void setHardwareMap(HardwareMap hardwareMap) {
     this.hardwareMap = hardwareMap;
+  }
+
+  @Override
+  public void lateInit(String deviceName) {
+    Runnable initFunc = lateInitializables.get(deviceName);
+    if (initFunc != null) {
+      initFunc.run();
+      lateInitializables.remove(deviceName);
+    }
   }
 
   @Override
@@ -100,9 +112,11 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
         continue;
       }
       if (objField.isAnnotationPresent(AutonomousOnly.class) && !isAutonomous) continue;
-      if (objField.isAnnotationPresent(Hardware.class)) {
+      if (objField.isAnnotationPresent(Hardware.class) && objField.isAnnotationPresent(LateInit.class)) {
+        lateInitializables.put(Objects.requireNonNull(objField.getAnnotation(Hardware.class)).name(), () -> injectField(new AnnotationPair(objField.getAnnotation(Hardware.class), targetObject, objField)));
+      } else if (objField.isAnnotationPresent(Hardware.class)) {
         injectableFields.add(
-            new AnnotationPair(objField.getAnnotation(Hardware.class), targetObject, objField));
+                new AnnotationPair(objField.getAnnotation(Hardware.class), targetObject, objField));
       } else {
         try {
           Optional.ofNullable(objField.get(targetObject))
