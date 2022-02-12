@@ -28,7 +28,7 @@ public abstract class EnhancedTeleOp extends OpMode {
   protected Controller controller1;
   protected Controller controller2;
   protected Component robotObject;
-  private HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
+  protected HardwareMapDependentReflectionBasedMagicRuntime aotRuntime;
   private ReflectionBasedMagicRuntime serviceRuntime;
 
   public EnhancedTeleOp(Component robotObject) {

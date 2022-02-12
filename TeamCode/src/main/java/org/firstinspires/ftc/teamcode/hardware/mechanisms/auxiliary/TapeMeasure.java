@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.LateInit;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IServoState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.ServoState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
@@ -15,21 +16,24 @@ import java.util.List;
 import kotlin.Triple;
 
 public class TapeMeasure implements ITapeMeasure {
-  private static final String YAW_SERVO_NAME = "TAPE_MEASURE_YAW_SERVO";
-  private static final String PITCH_SERVO_NAME = "TAPE_MEASURE_PITCH_SERVO";
-  private static final String LENGTH_SERVO_NAME = "TAPE_MEASURE_LENGTH_SERVO";
+  public static final String YAW_SERVO_NAME = "TAPE_MEASURE_YAW_SERVO";
+  public static final String PITCH_SERVO_NAME = "TAPE_MEASURE_PITCH_SERVO";
+  public static final String LENGTH_SERVO_NAME = "TAPE_MEASURE_LENGTH_SERVO";
   private static final double SERVO_INIT_SPEED = 0;
   private static final double ADJUSTMENT_RATE = 0.001;
 
   @Hardware(name = YAW_SERVO_NAME)
+  @LateInit
   @SuppressWarnings("unused")
   public Servo yawServo;
 
   @Hardware(name = PITCH_SERVO_NAME)
+  @LateInit
   @SuppressWarnings("unused")
   public Servo pitchServo;
 
   @Hardware(name = LENGTH_SERVO_NAME)
+  @LateInit
   @SuppressWarnings("unused")
   public CRServo lengthServo;
 
