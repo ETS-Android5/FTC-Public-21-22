@@ -4,7 +4,6 @@ import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
-import org.firstinspires.ftc.teamcode.hardware.mechanisms.auxiliary.TapeMeasure;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBot;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBotPosition;
 
@@ -23,11 +22,11 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private final AtomicBoolean tippedMode = new AtomicBoolean(false);
   private final List<ScheduledFuture<?>> futures = new LinkedList<>();
   private boolean firstTime = true;
-  private boolean initializedTapeMeasure = false;
 
   public TurretBotTeleOpBase(Alliance alliance) {
     super(new TurretBot(alliance, TurretBot.TELE_FIRST_JOINT_OFFSET, false));
     this.robot = (TurretBot) super.robotObject;
+    this.robot.tapeMeasure.setInitRuntime(aotRuntime);
   }
 
   @Override
@@ -103,16 +102,13 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         true,
         BooleanSurface.A);
 
+    controller1.registerOnPressedCallback(
+        () -> robot.tapeMeasure.setYaw(0), true, BooleanSurface.B);
+
     controller1.registerOnPressedCallback(robot.gripper::toggle, true, BooleanSurface.DPAD_RIGHT);
 
     controller1.registerOnPressedCallback(
         () -> {
-          if (!initializedTapeMeasure) {
-            aotRuntime.lateInit(TapeMeasure.YAW_SERVO_NAME);
-            aotRuntime.lateInit(TapeMeasure.PITCH_SERVO_NAME);
-            aotRuntime.lateInit(TapeMeasure.LENGTH_SERVO_NAME);
-            initializedTapeMeasure = true;
-          }
           boolean prev = tapeMeasureMode.get();
           tapeMeasureMode.set(!prev);
           if (prev) {
