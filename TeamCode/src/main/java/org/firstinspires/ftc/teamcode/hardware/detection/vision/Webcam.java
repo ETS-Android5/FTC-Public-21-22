@@ -112,7 +112,6 @@ public class Webcam implements FtcCamera {
                                 cameraFrame.copyToBitmap(bmp);
                                 try {
                                   frameQueue.put(bmp);
-                                  deinit();
                                 } catch (InterruptedException e) {
                                   Log.e("WEBCAM", "ERROR", e);
                                 }
@@ -149,15 +148,15 @@ public class Webcam implements FtcCamera {
   @Override
   public void deinit() {
     try {
-      if (session != null) {
-        synchronized (this) {
+      synchronized (this) {
+        if (session != null) {
           session.stopCapture();
           session.close();
           session = null;
         }
       }
-      if (camera != null) {
-        synchronized (this) {
+      synchronized (this) {
+        if (camera != null) {
           camera.close();
           camera = null;
         }

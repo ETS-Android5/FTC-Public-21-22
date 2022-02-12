@@ -359,13 +359,13 @@ public class TurretBot implements Component {
                 position.turretTarget(alliance.get()),
                 position.firstJointTarget(),
                 true,
-                    () -> {
-                      dropFreight();
-                      if (!isForAutonomous) {
-                        intake.beginIntaking();
-                      }
-                      gripperIsNearGround.set(false);
-                    }));
+                () -> {
+                  dropFreight();
+                  if (!isForAutonomous) {
+                    intake.beginIntaking();
+                  }
+                  gripperIsNearGround.set(false);
+                }));
   }
 
   private void goToIntakeHoverPosition(TurretBotPosition position, boolean inTippedMode) {
