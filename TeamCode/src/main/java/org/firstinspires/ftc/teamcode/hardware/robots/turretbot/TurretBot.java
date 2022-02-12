@@ -359,13 +359,13 @@ public class TurretBot implements Component {
                 position.turretTarget(alliance.get()),
                 position.firstJointTarget(),
                 true,
-                    () -> {
-                      dropFreight();
-                      if (!isForAutonomous) {
-                        intake.beginIntaking();
-                      }
-                      gripperIsNearGround.set(false);
-                    }));
+                () -> {
+                  dropFreight();
+                  if (!isForAutonomous) {
+                    intake.beginIntaking();
+                  }
+                  gripperIsNearGround.set(false);
+                }));
   }
 
   private void goToIntakeHoverPosition(TurretBotPosition position, boolean inTippedMode) {
@@ -590,7 +590,7 @@ public class TurretBot implements Component {
   public void turnToHeading(
       double target, double tolerance, Supplier<Boolean> opModeIsActive, Runnable update) {
     TriFunction<Double, Double, Double, Double> powerCurve =
-        PowerCurves.generatePowerCurve(0.25, 1);
+        PowerCurves.generatePowerCurve(0.25, .5);
     Double currentHeading =
         InterpolatablePipe.getInstance().currentDataPointOf(InterpolatableRevGyro.GYRO_NAME);
     double initialHeading = currentHeading;

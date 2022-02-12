@@ -112,11 +112,17 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
         continue;
       }
       if (objField.isAnnotationPresent(AutonomousOnly.class) && !isAutonomous) continue;
-      if (objField.isAnnotationPresent(Hardware.class) && objField.isAnnotationPresent(LateInit.class)) {
-        lateInitializables.put(Objects.requireNonNull(objField.getAnnotation(Hardware.class)).name(), () -> injectField(new AnnotationPair(objField.getAnnotation(Hardware.class), targetObject, objField)));
+      if (objField.isAnnotationPresent(Hardware.class)
+          && objField.isAnnotationPresent(LateInit.class)) {
+        lateInitializables.put(
+            Objects.requireNonNull(objField.getAnnotation(Hardware.class)).name(),
+            () ->
+                injectField(
+                    new AnnotationPair(
+                        objField.getAnnotation(Hardware.class), targetObject, objField)));
       } else if (objField.isAnnotationPresent(Hardware.class)) {
         injectableFields.add(
-                new AnnotationPair(objField.getAnnotation(Hardware.class), targetObject, objField));
+            new AnnotationPair(objField.getAnnotation(Hardware.class), targetObject, objField));
       } else {
         try {
           Optional.ofNullable(objField.get(targetObject))
