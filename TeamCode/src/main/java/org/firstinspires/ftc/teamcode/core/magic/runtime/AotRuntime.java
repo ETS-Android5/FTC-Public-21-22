@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.core.Namable;
 import org.firstinspires.ftc.teamcode.core.annotations.PostInit;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.AutonomousOnly;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
-import org.firstinspires.ftc.teamcode.core.annotations.hardware.LateInit;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.LazyInject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -113,7 +113,7 @@ public class AotRuntime implements HardwareMapDependentReflectionBasedMagicRunti
       }
       if (objField.isAnnotationPresent(AutonomousOnly.class) && !isAutonomous) continue;
       if (objField.isAnnotationPresent(Hardware.class)
-          && objField.isAnnotationPresent(LateInit.class)) {
+          && objField.isAnnotationPresent(LazyInject.class)) {
         lateInitializables.put(
             Objects.requireNonNull(objField.getAnnotation(Hardware.class)).name(),
             () ->

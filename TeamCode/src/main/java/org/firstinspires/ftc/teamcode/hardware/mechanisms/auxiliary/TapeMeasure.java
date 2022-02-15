@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Direction;
 import org.firstinspires.ftc.teamcode.core.annotations.hardware.Hardware;
-import org.firstinspires.ftc.teamcode.core.annotations.hardware.LateInit;
+import org.firstinspires.ftc.teamcode.core.annotations.hardware.LazyInject;
 import org.firstinspires.ftc.teamcode.core.hardware.state.IServoState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.ServoState;
 import org.firstinspires.ftc.teamcode.core.hardware.state.State;
@@ -26,17 +26,17 @@ public class TapeMeasure implements ITapeMeasure {
   private final AtomicBoolean initialized = new AtomicBoolean(false);
 
   @Hardware(name = YAW_SERVO_NAME)
-  @LateInit
+  @LazyInject
   @SuppressWarnings("unused")
   public Servo yawServo;
 
   @Hardware(name = PITCH_SERVO_NAME)
-  @LateInit
+  @LazyInject
   @SuppressWarnings("unused")
   public Servo pitchServo;
 
   @Hardware(name = LENGTH_SERVO_NAME)
-  @LateInit
+  @LazyInject
   @SuppressWarnings("unused")
   public CRServo lengthServo;
 
