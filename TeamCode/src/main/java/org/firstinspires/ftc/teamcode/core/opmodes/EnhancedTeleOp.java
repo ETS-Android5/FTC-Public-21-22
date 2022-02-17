@@ -55,7 +55,7 @@ public abstract class EnhancedTeleOp extends OpMode {
   protected void initialize() {
     aotRuntime = new AotRuntime(robotObject, initializedHardware, false);
     aotRuntime.initialize();
-    serviceRuntime = new ServiceRuntime(telemetry, robotObject, controller1, controller2);
+    serviceRuntime = new ServiceRuntime(telemetry, robotObject, controller1, controller2, this);
     serviceRuntime.initialize();
   }
 

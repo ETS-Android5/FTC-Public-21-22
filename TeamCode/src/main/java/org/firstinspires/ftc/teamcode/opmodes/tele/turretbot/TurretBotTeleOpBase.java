@@ -1,31 +1,44 @@
 package org.firstinspires.ftc.teamcode.opmodes.tele.turretbot;
 
 import org.firstinspires.ftc.teamcode.core.controller.BooleanSurface;
+import org.firstinspires.ftc.teamcode.core.controller.ScalarSurface;
 import org.firstinspires.ftc.teamcode.core.game.related.Alliance;
 import org.firstinspires.ftc.teamcode.core.hardware.pipeline.StateFilterResult;
 import org.firstinspires.ftc.teamcode.core.opmodes.EnhancedTeleOp;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBot;
 import org.firstinspires.ftc.teamcode.hardware.robots.turretbot.TurretBotPosition;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private static final double MAX_SECOND_JOINT_ADJUSTMENT = 0.002;
-  public final AtomicBoolean tapeMeasureMode = new AtomicBoolean(false);
+  private static final double STICK_EXTREME_TOLERANCE = 0.02;
   private final TurretBot robot;
   private final AtomicBoolean halfSpeed = new AtomicBoolean(true);
   private final AtomicBoolean allianceHubMode = new AtomicBoolean(false);
   private final AtomicBoolean tippedMode = new AtomicBoolean(false);
-  private final List<ScheduledFuture<?>> futures = new LinkedList<>();
+  private final AtomicBoolean tapeMeasureMode = new AtomicBoolean(false);
 
   public TurretBotTeleOpBase(Alliance alliance) {
     super(new TurretBot(alliance, TurretBot.TELE_FIRST_JOINT_OFFSET, false));
     this.robot = (TurretBot) super.robotObject;
     this.robot.tapeMeasure.setInitRuntime(aotRuntime);
+  }
+
+  private static double scaleStick(double in) {
+    return Math.cbrt(in);
+  }
+
+  private static double maxStick(double in) {
+    return Math.abs(in) >= (1 - STICK_EXTREME_TOLERANCE) ? (1 * in > 0 ? 1 : -1) : in;
+  }
+
+  private static double translationalStickMovementManipulation(double in) {
+    return scaleStick(maxStick(in));
+  }
+
+  private static double rotationalStickMovementManipulation(double in) {
+    return scaleStick(maxStick(in));
   }
 
   @Override
@@ -36,37 +49,12 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onStartPressed() {
-    futures.add(
-        robot
-            .getExecutorService()
-            .schedule(
-                () -> {
-                  controller1.vibrate(0.25, 0.25, 3000);
-                  controller2.vibrate(0.25, 0.25, 3000);
-                },
-                81,
-                TimeUnit.SECONDS));
-
-    futures.add(
-        robot
-            .getExecutorService()
-            .schedule(
-                () -> {
-                  controller1.vibrate(0.5, 0.5, 3000);
-                  controller2.vibrate(0.5, 0.5, 3000);
-                },
-                84,
-                TimeUnit.SECONDS));
-    futures.add(
-        robot
-            .getExecutorService()
-            .schedule(
-                () -> {
-                  controller1.vibrate(1, 1, 3000);
-                  controller2.vibrate(1, 1, 3000);
-                },
-                87,
-                TimeUnit.SECONDS));
+    controller1.setManipulation(
+        TurretBotTeleOpBase::translationalStickMovementManipulation, ScalarSurface.LEFT_STICK_X);
+    controller1.setManipulation(
+        TurretBotTeleOpBase::translationalStickMovementManipulation, ScalarSurface.LEFT_STICK_Y);
+    controller1.setManipulation(
+        TurretBotTeleOpBase::rotationalStickMovementManipulation, ScalarSurface.RIGHT_STICK_X);
 
     controller1.registerOnPressedCallback(
         () -> halfSpeed.set(!halfSpeed.get()), true, BooleanSurface.X);
@@ -101,10 +89,10 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
     controller1.registerOnPressedCallback(
         () -> {
-          robot.tapeMeasure.setYaw(0.15);
-          robot.afterTimedAction(250, () -> robot.tapeMeasure.setPitch(0.4));
-          robot.afterTimedAction(500, () -> robot.tapeMeasure.setLengthRate(-1));
-          robot.afterTimedAction(1250, () -> robot.tapeMeasure.setLengthRate(0));
+          robot.tapeMeasure.setYaw(0.05);
+          robot.tapeMeasure.setPitch(0.37);
+          robot.tapeMeasure.setLengthRate(-1);
+          robot.afterTimedAction(1750, () -> robot.tapeMeasure.setLengthRate(0));
         },
         true,
         BooleanSurface.B);
@@ -264,8 +252,6 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
   @Override
   public void onStop() {
-    futures.forEach(future -> future.cancel(false));
-    futures.clear();
     robot.clearFutureEvents();
   }
 

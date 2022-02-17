@@ -53,7 +53,7 @@ public abstract class EnhancedAutonomous extends LinearOpMode {
   private void initialize() {
     aotRuntime = new AotRuntime(robotObject, initializedHardware, true);
     aotRuntime.initialize();
-    serviceRuntime = new ServiceRuntime(telemetry, robotObject);
+    serviceRuntime = new ServiceRuntime(telemetry, robotObject, this);
     serviceRuntime.initialize();
   }
 

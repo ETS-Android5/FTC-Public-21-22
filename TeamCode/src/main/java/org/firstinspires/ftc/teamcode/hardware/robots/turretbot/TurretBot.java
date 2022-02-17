@@ -218,7 +218,7 @@ public class TurretBot implements Component {
       setTurretToPosition(position, TurretBot.turretTolerance(true))
           .andThen(
               () ->
-                  setLiftToPosition(liftJointOneTarget, TurretBot.liftTolerance(true))
+                  setLiftToPosition(liftJointOneTarget, TurretBot.liftTolerance(false))
                       .andThen(andThen));
     } else if (liftJointOneTarget > secondJointSafeMovementLvl
         || Math.abs(
@@ -345,10 +345,6 @@ public class TurretBot implements Component {
     futures.clear();
     MotorTrackerPipe.getInstance().clearScheduledCallbacks();
     ExitPipe.getInstance().clearScheduledCallbacks();
-  }
-
-  public ScheduledExecutorService getExecutorService() {
-    return executorService;
   }
 
   private void goToIntakePosition(TurretBotPosition position, boolean inTippedMode) {
