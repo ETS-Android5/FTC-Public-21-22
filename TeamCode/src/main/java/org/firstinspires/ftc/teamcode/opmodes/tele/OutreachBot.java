@@ -34,9 +34,9 @@ public class OutreachBot extends LinearOpMode {
         150; // This is milliseconds between allowed movements of each tick
     double tapeMeasureUDServoTick = 1.0 / 100.0; // This is amount of each tick
 
-    Servo rlServo = hardwareMap.servo.get("YAW_SERVO");
-    Servo udServo = hardwareMap.servo.get("PITCH_SERVO");
-    Servo extensionServo = hardwareMap.servo.get("EXTENSION_SERVO");
+    Servo rlServo = hardwareMap.servo.get("TAPE_MEASURE_YAW_SERVO");
+    Servo udServo = hardwareMap.servo.get("TAPE_MEASURE_PITCH_SERVO");
+    Servo extensionServo = hardwareMap.servo.get("TAPE_MEASURE_LENGTH_SERVO");
 
     // init RL and UD servos
     rlServo.setPosition(tapeMeasureRLServoPosition);
@@ -44,10 +44,10 @@ public class OutreachBot extends LinearOpMode {
 
     // Declare our motors
     // Make sure your ID's match your configuration
-    DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-    DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-    DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
-    DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
+    DcMotor motorFrontLeft = hardwareMap.dcMotor.get("FRONT_LEFT_MOTOR");
+    DcMotor motorBackLeft = hardwareMap.dcMotor.get("REAR_LEFT_MOTOR");
+    DcMotor motorFrontRight = hardwareMap.dcMotor.get("FRONT_RIGHT_MOTOR");
+    DcMotor motorBackRight = hardwareMap.dcMotor.get("REAR_RIGHT_MOTOR");
 
     // Reverse the right side motors
     // Reverse left motors if you are using NeveRests
@@ -119,8 +119,12 @@ public class OutreachBot extends LinearOpMode {
       motorFrontRight.setPower(frontRightPower);
       motorBackRight.setPower(backRightPower);
 
-      telemetry.addData("RL Servo: ", tapeMeasureRLServoPosition);
-      telemetry.addData("UD Servo: ", tapeMeasureUDServoPosition);
+      //telemetry.addData("RL Servo: ", tapeMeasureRLServoPosition);
+      //telemetry.addData("UD Servo: ", tapeMeasureUDServoPosition);
+      telemetry.addData("LeftStickX", gamepad1.left_stick_x);
+      telemetry.addData("LeftStickY", gamepad1.left_stick_y);
+      telemetry.addData("RightStickX", gamepad1.right_stick_x);
+      telemetry.addData("RightStickY", gamepad1.right_stick_y);
       telemetry.update();
     }
   }
