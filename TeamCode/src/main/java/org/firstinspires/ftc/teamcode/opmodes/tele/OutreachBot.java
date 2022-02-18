@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.tele;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,7 +23,7 @@ public class OutreachBot extends LinearOpMode {
 
     // RL is Right/Left servo.
     double tapeMeasureRLServoPosition =
-        .56; // This is init position and tracking of current position
+        .5; // This is init position and tracking of current position
     double tapeMeasureRLServoTickMS =
         50; // This is milliseconds between allowed movements of each tick
     double tapeMeasureRLServoTick = 1.0 / 200.0; // This is amount of each tick
@@ -36,7 +37,7 @@ public class OutreachBot extends LinearOpMode {
 
     Servo rlServo = hardwareMap.servo.get("TAPE_MEASURE_YAW_SERVO");
     Servo udServo = hardwareMap.servo.get("TAPE_MEASURE_PITCH_SERVO");
-    Servo extensionServo = hardwareMap.servo.get("TAPE_MEASURE_LENGTH_SERVO");
+    CRServo extensionServo = hardwareMap.crservo.get("TAPE_MEASURE_LENGTH_SERVO");
 
     // init RL and UD servos
     rlServo.setPosition(tapeMeasureRLServoPosition);
@@ -96,10 +97,10 @@ public class OutreachBot extends LinearOpMode {
       }
 
       if (gamepad2.right_trigger > 0) { // extends the tape measure
-        extensionServo.setPosition(0);
+        extensionServo.setPower(-1);
       } else if (gamepad2.left_trigger > 0) { // retracts the tape measure
-        extensionServo.setPosition(1);
-      } else extensionServo.setPosition(.5); // stopped
+        extensionServo.setPower(1);
+      } else extensionServo.setPower(0); // stopped
 
       double g1Y = -gamepad1.left_stick_y;
       double g1X = gamepad1.left_stick_x;

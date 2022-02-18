@@ -18,6 +18,8 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
   private final AtomicBoolean allianceHubMode = new AtomicBoolean(false);
   private final AtomicBoolean tippedMode = new AtomicBoolean(false);
   private final AtomicBoolean tapeMeasureMode = new AtomicBoolean(false);
+  private final AtomicBoolean controller2TapeMeasureRetractionEnabled = new AtomicBoolean(false);
+  private final AtomicBoolean tapeMeasureShouldAutoPositionOnDpadDown = new AtomicBoolean(false);
 
   public TurretBotTeleOpBase(Alliance alliance) {
     super(new TurretBot(alliance, TurretBot.TELE_FIRST_JOINT_OFFSET, false));
@@ -78,10 +80,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           } else {
             robot.afterTimedAction(
                 robot.dropFreight() + (allianceHubMode.get() ? 750 : 0),
-                () -> {
-                  robot.grabTeamMarker();
-                  robot.goToPosition(TurretBotPosition.INTAKE_POSITION, tippedMode.get());
-                });
+                () -> robot.goToPosition(TurretBotPosition.INTAKE_POSITION, tippedMode.get()));
           }
         },
         true,
@@ -89,10 +88,14 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
 
     controller1.registerOnPressedCallback(
         () -> {
-          robot.tapeMeasure.setYaw(0.05);
+          robot.tapeMeasure.setYaw(0.12);
           robot.tapeMeasure.setPitch(0.37);
           robot.tapeMeasure.setLengthRate(-1);
-          robot.afterTimedAction(1750, () -> robot.tapeMeasure.setLengthRate(0));
+          robot.afterTimedAction(1750, () -> {
+              robot.tapeMeasure.setLengthRate(0);
+              controller2TapeMeasureRetractionEnabled.set(true);
+              tapeMeasureShouldAutoPositionOnDpadDown.set(true);
+          });
         },
         true,
         BooleanSurface.B);
@@ -105,6 +108,23 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           tapeMeasureMode.set(!prev);
           if (prev) {
             robot.tapeMeasure.setLengthRate(0);
+            if (tapeMeasureShouldAutoPositionOnDpadDown.get()) {
+                robot.tapeMeasure.setYaw(.15); // Gradual to 0.37
+                robot.afterTimedAction(100, () -> robot.tapeMeasure.setYaw(.18));
+                robot.afterTimedAction(200, () -> robot.tapeMeasure.setYaw(.21));
+                robot.afterTimedAction(300, () -> robot.tapeMeasure.setYaw(.24));
+                robot.afterTimedAction(400, () -> robot.tapeMeasure.setYaw(.27));
+                robot.afterTimedAction(500, () -> robot.tapeMeasure.setYaw(.3));
+                robot.afterTimedAction(600, () -> robot.tapeMeasure.setYaw(.33));
+                robot.afterTimedAction(700, () -> robot.tapeMeasure.setYaw(.37));
+                robot.tapeMeasure.setPitch(0.4); // Gradual to 0.55
+                robot.afterTimedAction(100, () -> robot.tapeMeasure.setPitch(.43));
+                robot.afterTimedAction(200, () -> robot.tapeMeasure.setPitch(.46));
+                robot.afterTimedAction(300, () -> robot.tapeMeasure.setPitch(.49));
+                robot.afterTimedAction(400, () -> robot.tapeMeasure.setPitch(.52));
+                robot.afterTimedAction(500, () -> robot.tapeMeasure.setPitch(.55));
+                tapeMeasureShouldAutoPositionOnDpadDown.set(false);
+            }
           }
         },
         true,
@@ -113,12 +133,12 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> {
           robot.clearFutureEvents();
+          robot.intake.beginOuttakingSlowly();
+          int delay = robot.grabFreight();
           robot.afterTimedAction(
-              robot.grabFreight(),
-              () -> {
-                robot.intake.stop();
-                robot.goToPosition(TurretBotPosition.INTAKE_HOVER_POSITION, tippedMode.get());
-              });
+              delay,
+              () -> robot.goToPosition(TurretBotPosition.INTAKE_HOVER_POSITION, tippedMode.get()));
+          robot.afterTimedAction(delay * 2, robot.intake::stop);
         },
         true,
         BooleanSurface.A);
@@ -154,26 +174,26 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> {
           robot.clearFutureEvents();
+          robot.intake.beginOuttakingSlowly();
           TurretBotPosition position = botPositionFor(BooleanSurface.B);
+          int delay = robot.grabFreight();
           robot.afterTimedAction(
-              robot.grabFreight(),
-              () -> {
-                robot.intake.stop();
-                robot.goToPosition(position, tippedMode.get());
-              });
+              delay,
+              () -> robot.goToPosition(position, tippedMode.get()));
+          robot.afterTimedAction(delay * 2, robot.intake::stop);
         },
         true,
         BooleanSurface.B);
     controller2.registerOnPressedCallback(
         () -> {
           robot.clearFutureEvents();
+            robot.intake.beginOuttakingSlowly();
           TurretBotPosition position = botPositionFor(BooleanSurface.X);
+          int delay = robot.grabFreight();
           robot.afterTimedAction(
-              robot.grabFreight(),
-              () -> {
-                robot.intake.stop();
-                robot.goToPosition(position, tippedMode.get());
-              });
+              delay,
+              () -> robot.goToPosition(position, tippedMode.get()));
+          robot.afterTimedAction(delay * 2, robot.intake::stop);
         },
         true,
         BooleanSurface.X);
@@ -181,13 +201,13 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
     controller2.registerOnPressedCallback(
         () -> {
           robot.clearFutureEvents();
+            robot.intake.beginOuttakingSlowly();
           TurretBotPosition position = botPositionFor(BooleanSurface.Y);
+          int delay = robot.grabFreight();
           robot.afterTimedAction(
-              robot.grabFreight(),
-              () -> {
-                robot.intake.stop();
-                robot.goToPosition(position, tippedMode.get());
-              });
+              delay,
+              () -> robot.goToPosition(position, tippedMode.get()));
+          robot.afterTimedAction(delay * 2, robot.intake::stop);
         },
         true,
         BooleanSurface.Y);
@@ -232,6 +252,9 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
       double speed = halfSpeed.get() ? 0.5 : 0.9;
       robot.drivetrain.driveBySticks(
           controller1.leftStickX() * speed, controller1.leftStickY() * speed, turnValue * speed);
+      if (controller2TapeMeasureRetractionEnabled.get()) {
+          robot.tapeMeasure.setLengthRate(controller2.leftTrigger() - controller2.rightTrigger());
+      }
     }
     if (controller2.rightStickY() < -0.02 || controller2.rightStickY() > 0.02) {
       robot.lift.setArmTwoPosition(
