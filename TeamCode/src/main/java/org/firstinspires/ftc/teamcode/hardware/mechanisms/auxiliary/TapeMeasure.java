@@ -26,7 +26,7 @@ public class TapeMeasure implements ITapeMeasure {
   private static final double ADJUSTMENT_RATE = 0.0007;
 
   private static final double YAW_MIN = 0;
-  private static final double YAW_MAX = 0.63;
+  private static final double YAW_MAX = 0.61;
   private static final double PITCH_MIN = 0;
   private static final double PITCH_MAX = 0.62;
 
@@ -59,7 +59,7 @@ public class TapeMeasure implements ITapeMeasure {
   private void initialize() {
     yawServoState =
         new ServoState(YAW_SERVO_NAME, Direction.FORWARD, SERVO_INIT_SPEED, false)
-            .withPosition(0.56);
+            .withPosition(0.61);
     pitchServoState =
         new ServoState(PITCH_SERVO_NAME, Direction.FORWARD, SERVO_INIT_SPEED, false)
             .withPosition(0.5);
