@@ -68,7 +68,7 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     } catch (InterruptedException e) {
       Log.e("TURRETBOT", "ERROR", e);
     }
-    wait(1000);
+    wait(1500);
     try {
       worker.join();
     } catch (InterruptedException e) {
@@ -158,8 +158,11 @@ public class AutoBlueWarehouse extends EnhancedAutonomous {
     robot.lift.setArmTwoPosition(TurretBotPosition.INTAKE_POSITION.secondJointTarget());
     wait(250);
     robot.intake.stop();
+    robot.gripper.close();
+    robot.firstJointAdjustment.getAndAdd(-200);
     robot.goToPosition(TurretBotPosition.INTAKE_POSITION, false);
     wait(4000);
+    robot.gripper.open();
     robot.driveForward(0.5, 0.5, 9, 20, super::opModeIsActive, super::processChanges);
   }
 

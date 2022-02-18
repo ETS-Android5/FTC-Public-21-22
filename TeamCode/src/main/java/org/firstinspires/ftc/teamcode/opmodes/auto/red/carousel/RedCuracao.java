@@ -69,7 +69,7 @@ public class RedCuracao extends EnhancedAutonomous {
     } catch (InterruptedException e) {
       Log.e("TURRETBOT", "ERROR", e);
     }
-    wait(1000);
+    wait(1500);
     try {
       worker.join();
     } catch (InterruptedException e) {
@@ -121,7 +121,7 @@ public class RedCuracao extends EnhancedAutonomous {
     robot.lift.setArmTwoPosition(0.885);
     wait(1000);
     robot.turret.turnToPosition(robot.turretAdjustment.get());
-    robot.driveForward(.5, 0.5, 13, 20, super::opModeIsActive, super::processChanges);
+    robot.driveForward(.5, 0.5, 12, 20, super::opModeIsActive, super::processChanges);
     robot.turnToHeading(95, 0.5, super::opModeIsActive, super::processChanges);
     wait(300);
     robot.turnToHeading(95, 0.5, super::opModeIsActive, super::processChanges);
@@ -129,7 +129,7 @@ public class RedCuracao extends EnhancedAutonomous {
   }
 
   private void retreat() {
-    robot.driveForward(.5, 1.5, -19, 20, super::opModeIsActive, super::processChanges);
+    robot.driveForward(.35, 1.5, -19, 20, super::opModeIsActive, super::processChanges);
     wait(500);
     robot.turnToHeading(95, 0.5, PowerCurves.generatePowerCurve(.3, .3), super::opModeIsActive, super::processChanges);
     robot.carouselSpinner.spinForward();
@@ -141,8 +141,12 @@ public class RedCuracao extends EnhancedAutonomous {
     robot.lift.setArmTwoPosition(TurretBotPosition.INTAKE_POSITION.secondJointTarget());
     wait(250);
     robot.intake.stop();
+    robot.gripper.close();
+    robot.firstJointAdjustment.getAndAdd(-200);
     robot.goToPosition(TurretBotPosition.INTAKE_POSITION, false);
-    wait(8000);
+    wait(4000);
+    robot.gripper.open();
+    wait(4000);
   }
 
   @Override

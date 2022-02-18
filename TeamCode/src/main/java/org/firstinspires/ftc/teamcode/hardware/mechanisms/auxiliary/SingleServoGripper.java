@@ -16,7 +16,7 @@ public class SingleServoGripper implements ISingleServoGripper {
   public static final int GRIPPER_ACTION_DELAY_MS = 250;
   private static final String SINGLE_SERVO_GRIPPER_SERVO_NAME = "SINGLE_SERVO_GRIPPER_SERVO";
   private static final double OPEN_POSITION = 0.72;
-  private static final double CLOSED_ON_FREIGHT_POSITION = 0.94;
+  private static final double CLOSED_ON_FREIGHT_POSITION = 0.95;
   private static final double CLOSED_ON_TEAM_MARKER_POSITION = 0.9;
 
   @Hardware(name = SINGLE_SERVO_GRIPPER_SERVO_NAME)

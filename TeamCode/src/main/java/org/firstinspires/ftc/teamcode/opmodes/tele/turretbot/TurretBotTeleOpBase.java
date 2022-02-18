@@ -85,7 +85,7 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
         },
         true,
         BooleanSurface.A);
-
+ // 0, 0.6
     controller1.registerOnPressedCallback(
         () -> {
           robot.tapeMeasure.setYaw(0.12);
@@ -109,21 +109,34 @@ public class TurretBotTeleOpBase extends EnhancedTeleOp {
           if (prev) {
             robot.tapeMeasure.setLengthRate(0);
             if (tapeMeasureShouldAutoPositionOnDpadDown.get()) {
+              if (robot.getAlliance().equals(Alliance.BLUE)) {
                 robot.tapeMeasure.setYaw(.15); // Gradual to 0.37
                 robot.afterTimedAction(100, () -> robot.tapeMeasure.setYaw(.18));
                 robot.afterTimedAction(200, () -> robot.tapeMeasure.setYaw(.21));
-                robot.afterTimedAction(300, () -> robot.tapeMeasure.setYaw(.24));
-                robot.afterTimedAction(400, () -> robot.tapeMeasure.setYaw(.27));
-                robot.afterTimedAction(500, () -> robot.tapeMeasure.setYaw(.3));
-                robot.afterTimedAction(600, () -> robot.tapeMeasure.setYaw(.33));
-                robot.afterTimedAction(700, () -> robot.tapeMeasure.setYaw(.37));
+                robot.afterTimedAction(300, () -> robot.tapeMeasure.setYaw(.23));
                 robot.tapeMeasure.setPitch(0.4); // Gradual to 0.55
                 robot.afterTimedAction(100, () -> robot.tapeMeasure.setPitch(.43));
                 robot.afterTimedAction(200, () -> robot.tapeMeasure.setPitch(.46));
                 robot.afterTimedAction(300, () -> robot.tapeMeasure.setPitch(.49));
                 robot.afterTimedAction(400, () -> robot.tapeMeasure.setPitch(.52));
                 robot.afterTimedAction(500, () -> robot.tapeMeasure.setPitch(.55));
-                tapeMeasureShouldAutoPositionOnDpadDown.set(false);
+              } else {
+                  robot.tapeMeasure.setYaw(.15); // Gradual to 0.37
+                  robot.afterTimedAction(100, () -> robot.tapeMeasure.setYaw(.18));
+                  robot.afterTimedAction(200, () -> robot.tapeMeasure.setYaw(.21));
+                  robot.afterTimedAction(300, () -> robot.tapeMeasure.setYaw(.24));
+                  robot.afterTimedAction(400, () -> robot.tapeMeasure.setYaw(.27));
+                  robot.afterTimedAction(500, () -> robot.tapeMeasure.setYaw(.3));
+                  robot.afterTimedAction(600, () -> robot.tapeMeasure.setYaw(.33));
+                  robot.afterTimedAction(700, () -> robot.tapeMeasure.setYaw(.37));
+                  robot.tapeMeasure.setPitch(0.4); // Gradual to 0.55
+                  robot.afterTimedAction(100, () -> robot.tapeMeasure.setPitch(.43));
+                  robot.afterTimedAction(200, () -> robot.tapeMeasure.setPitch(.46));
+                  robot.afterTimedAction(300, () -> robot.tapeMeasure.setPitch(.49));
+                  robot.afterTimedAction(400, () -> robot.tapeMeasure.setPitch(.52));
+                  robot.afterTimedAction(500, () -> robot.tapeMeasure.setPitch(.55));
+              }
+              tapeMeasureShouldAutoPositionOnDpadDown.set(false);
             }
           }
         },
