@@ -160,7 +160,7 @@ public class AutoRedWarehouse extends EnhancedAutonomous {
     robot.intake.stop();
     robot.goToPosition(TurretBotPosition.INTAKE_POSITION, false);
     wait(4000);
-    robot.driveForward(0.5, 0.5, 9, 20, super::opModeIsActive, super::processChanges);
+    robot.driveForward(0.5, 0.5, 11, 20, super::opModeIsActive, super::processChanges);
   }
 
   @Override

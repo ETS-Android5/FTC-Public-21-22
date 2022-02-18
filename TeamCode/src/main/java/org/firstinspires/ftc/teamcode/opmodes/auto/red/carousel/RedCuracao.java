@@ -75,41 +75,53 @@ public class RedCuracao extends EnhancedAutonomous {
     } catch (InterruptedException e) {
       Log.e("TURRETBOT", "ERROR", e);
     }
+    robot.driveForward(.5, 0.5, -19, 20, super::opModeIsActive, super::processChanges);
     switch (teamMarkerPosition.get()) {
       case LEFT:
         Log.d("TURRETBOT", "SAW LEFT");
-        robot.goToPosition(TurretBotPosition.AUTO_REACH_BOTTOM, false);
+        robot.turret.turnCCWToBack();
+        wait(500);
+        robot.lift.setArmOnePosition(TurretBotPosition.ALLIANCE_BOTTOM_POSITION.firstJointTarget() - 6);
+        robot.lift.setArmTwoPosition(TurretBotPosition.ALLIANCE_BOTTOM_POSITION.secondJointTarget() + .03);
+        wait(3000);
+        robot.turret.turnToPosition(TurretBotPosition.AUTO_REACH_BOTTOM.turretTarget(Alliance.BLUE));
         break;
       case CENTER:
         Log.d("TURRETBOT", "SAW CENTER");
-        robot.goToPosition(TurretBotPosition.AUTO_REACH_MIDDLE, false);
+        robot.turret.turnCCWToBack();
+        wait(500);
+        robot.lift.setArmOnePosition(TurretBotPosition.ALLIANCE_MIDDLE_POSITION.firstJointTarget() - 10);
+        robot.lift.setArmTwoPosition(TurretBotPosition.ALLIANCE_MIDDLE_POSITION.secondJointTarget() + .02);
+        wait(2000);
+        robot.turret.turnToPosition(TurretBotPosition.AUTO_REACH_MIDDLE.turretTarget(Alliance.BLUE) + (2 * Turret.DEGREES_TO_TICKS));
         break;
       case RIGHT:
         Log.d("TURRETBOT", "SAW RIGHT");
-        robot.goToPosition(TurretBotPosition.AUTO_REACH_TOP, false);
+        robot.turret.turnCCWToBack();
+        wait(500);
+        robot.lift.setArmOnePosition(TurretBotPosition.ALLIANCE_TOP_POSITION.firstJointTarget() - 320);
+        robot.lift.setArmTwoPosition(TurretBotPosition.ALLIANCE_TOP_POSITION.secondJointTarget() - 0.2);
+        wait(1500);
+        robot.turret.turnToPosition(TurretBotPosition.AUTO_REACH_TOP.turretTarget(Alliance.BLUE) + (10 * Turret.DEGREES_TO_TICKS));
         break;
     }
-    theRestOfCuracao(teamMarkerPosition.get() != TeamMarkerPosition.RIGHT);
+    wait(1000);
+    theRestOfCuracao();
   }
 
-  private void theRestOfCuracao(boolean shouldTurnTurretLeft) {
-    wait(2000);
-    robot.driveForward(.5, 0.5, -19, 20, super::opModeIsActive, super::processChanges);
+  private void theRestOfCuracao() {
     wait(robot.dropFreight());
-    robot.driveForward(.5, 0.5, 6, 20, super::opModeIsActive, super::processChanges);
-    if (shouldTurnTurretLeft) {
-      robot.turret.turnToPosition(Turret.TICKS_LEFT);
-    } else {
-      robot.turret.turnToPosition(robot.turretAdjustment.get());
-    }
+    robot.drivetrain.driveBySticks(0.6, 0.13, 0);
+    wait(700);
+    robot.drivetrain.setAllPower(0);
+    robot.turret.turnCCWToBack();
     wait(1000);
     robot.lift.setArmOnePosition(570);
     wait(1000);
     robot.lift.setArmTwoPosition(0.885);
     wait(1000);
     robot.turret.turnToPosition(robot.turretAdjustment.get());
-    wait(1000);
-    robot.driveForward(.5, 0.5, 9, 20, super::opModeIsActive, super::processChanges);
+    robot.driveForward(.5, 0.5, 13, 20, super::opModeIsActive, super::processChanges);
     robot.turnToHeading(95, 0.5, super::opModeIsActive, super::processChanges);
     wait(300);
     robot.turnToHeading(95, 0.5, super::opModeIsActive, super::processChanges);
@@ -117,25 +129,20 @@ public class RedCuracao extends EnhancedAutonomous {
   }
 
   private void retreat() {
-    robot.driveForward(.5, 1.5, -30, 20, super::opModeIsActive, super::processChanges);
+    robot.driveForward(.5, 1.5, -19, 20, super::opModeIsActive, super::processChanges);
     wait(500);
-    robot.turnToHeading(
-        95,
-        0.5,
-        PowerCurves.generatePowerCurve(.3, .3),
-        super::opModeIsActive,
-        super::processChanges);
+    robot.turnToHeading(95, 0.5, PowerCurves.generatePowerCurve(.3, .3), super::opModeIsActive, super::processChanges);
     robot.carouselSpinner.spinForward();
     wait(4250);
     robot.drivetrain.driveBySticks(-0.6, 0, 0);
-    wait(1100);
-    robot.driveForward(.3, 1.5, -2, 20, super::opModeIsActive, super::processChanges);
+    wait(1000);
+    robot.driveForward(.3, 1.5, -5, 20, super::opModeIsActive, super::processChanges);
     robot.intake.beginIntaking();
     robot.lift.setArmTwoPosition(TurretBotPosition.INTAKE_POSITION.secondJointTarget());
     wait(250);
     robot.intake.stop();
     robot.goToPosition(TurretBotPosition.INTAKE_POSITION, false);
-    wait(6000);
+    wait(8000);
   }
 
   @Override
