@@ -66,7 +66,7 @@ public enum TurretBotPosition {
       case TIPPED_MIDDLE_POSITION:
         return 110;
       case TIPPED_FAR_POSITION:
-        return -200;
+        return -120;
       case ALLIANCE_BOTTOM_POSITION:
         return -460;
       case AUTO_REACH_BOTTOM:
